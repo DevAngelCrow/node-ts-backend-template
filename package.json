@@ -1,0 +1,24 @@
+{
+  "name": "plantilla-backend-node-ts",
+  "version": "1.0.0",
+  "description": "Plantilla de desarrollo backend con el lenguaje typescript",
+  "main": "app.js",
+  "scripts": {
+    "dev": "tsnd --respawn --clear --env-file .env src/app.ts",
+    "build": "rimraf ./dist && tsc",
+    "start": "npm run build && node dist/app.js"
+  },
+  "author": "AngelDev",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.9",
+    "rimraf": "^6.0.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "luxon": "^3.5.0"
+  }
+}
