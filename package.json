@@ -13,16 +13,24 @@
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.9",
+    "prisma": "^6.2.1",
     "rimraf": "^6.0.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.3"
   },
   "dependencies": {
+    "axios": "^1.7.9",
+    "bcryptjs": "^2.4.3",
+    "env-var": "^7.5.0",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "luxon": "^3.5.0",
     "multer": "^1.4.5-lts.1",
-    "uuid": "^11.0.5"
+    "uuid": "^11.0.5",
+    "ws": "^8.18.0"
+  },
+  "prisma": {
+    "schema": "src/infrastructure/db/schema.prisma"
   }
 }
