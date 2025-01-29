@@ -17,16 +17,15 @@ export class Server {
     }
 
     async start(){
-        //este middleware nos sirve para que el servidor pueda recibir hasta un maximo de 100mb en cada petición http
+        //this middleware is used so that the server can receive a limit of 100mb per http request
         this.app.use(express.json({limit: '100mb'}));
-
-        //este middleware nos sirve para aceptar y enviar en las peticiones https data por medio de x-www-form-urlencoded
+        //this middleware is used to accept and send the http request data from x-www-form-urlencoded
         this.app.use(express.urlencoded({extended: true}));
 
         //public folder
         this.app.use(express.static(this.publicPath));
 
-        //Rutas de cada enpoint
+        //Enpoint of the routes api
         this.app.use('/api', this.routes);
 
         this.app.get(/^\/(?!api).*/, (request, response)=>{
@@ -36,7 +35,8 @@ export class Server {
 
         this.serverListener = this.app.listen(this.port, ()=>{
             console.log(`Server running on port ${this.port}`)
-        })
+        });
+
     }
 
     public close(){

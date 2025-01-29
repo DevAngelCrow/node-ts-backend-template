@@ -1,13 +1,13 @@
 import { CustomError } from "../..";
 
-export class UserFirstName {
+export class InsuranceName {
   constructor(readonly value: string) {
     this.required()
   }
 
   private required() {
     if (!this.value) {
-      throw CustomError.badRequest("The field first name is required");
+      throw CustomError.badRequest("The field name is required");
     }
   }
 }

@@ -1,7 +1,7 @@
 import { CustomError } from "../..";
 
-export class UserLastName {
-  constructor(readonly value: string) {
+export class UserLastAccess {
+  constructor(readonly value: Date) {
     this.required()
   }
 
