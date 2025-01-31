@@ -1,4 +1,4 @@
-import { People, PeopleBirthdate, PeopleEmail, PeopleFirstName, PeopleHasInsurance, PeopleIdGender, PeopleIdMaritalStatus, PeopleIdNationality, PeopleIdStatus, PeopleImgPath, PeopleLastName, PeopleMiddleName, PeoplePhone, PeopleRepository } from "../../../../domain";
+import { CountryId, People, PeopleBirthdate, PeopleEmail, PeopleFirstName, PeopleHasInsurance, PeopleIdGender, PeopleIdMaritalStatus, PeopleIdStatus, PeopleImgPath, PeopleLastName, PeopleMiddleName, PeoplePhone, PeopleRepository } from "../../../../domain";
 
 export class PeopleCreate {
     constructor(private repository: PeopleRepository){}
@@ -11,13 +11,13 @@ export class PeopleCreate {
         id_gender: number,
         email: string,
         id_marital_status: number,
-        id_nationality: number,
         img_path: string,
         phone: string,
         has_insurance: boolean,
         id_status: number,
+        nationality: number[]
     ) : Promise<void>{
-
+        const nationalities = nationality.map((id)=> new CountryId(id));
         const people = new People(
             new PeopleFirstName(firts_name),
             new PeopleMiddleName(middle_name),
@@ -26,11 +26,11 @@ export class PeopleCreate {
             new PeopleIdGender(id_gender),
             new PeopleEmail(email),
             new PeopleIdMaritalStatus(id_marital_status),
-            new PeopleIdNationality(id_nationality),
             new PeopleImgPath(img_path),
             new PeoplePhone(phone),
             new PeopleHasInsurance(has_insurance),
-            new PeopleIdStatus(id_status)
+            new PeopleIdStatus(id_status),
+            nationalities
         );
 
         return this.repository.create(people);

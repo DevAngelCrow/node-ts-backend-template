@@ -1,4 +1,5 @@
 import {
+  CountryId,
   People,
   PeopleBirthdate,
   PeopleEmail,
@@ -7,7 +8,6 @@ import {
   PeopleId,
   PeopleIdGender,
   PeopleIdMaritalStatus,
-  PeopleIdNationality,
   PeopleIdStatus,
   PeopleImgPath,
   PeopleLastName,
@@ -28,12 +28,13 @@ export class PeopleEdit {
     id_gender: number,
     email: string,
     id_marital_status: number,
-    id_nationality: number,
     img_path: string,
     phone: string,
     has_insurance: boolean,
     id_status: number,
+    nationality: number[],
   ): Promise<void> {
+    const nationalities = nationality.map((id)=> new CountryId(id));
     const people = new People(
       new PeopleFirstName(first_name),
       new PeopleMiddleName(middle_name),
@@ -42,11 +43,11 @@ export class PeopleEdit {
       new PeopleIdGender(id_gender),
       new PeopleEmail(email),
       new PeopleIdMaritalStatus(id_marital_status),
-      new PeopleIdNationality(id_nationality),
       new PeopleImgPath(img_path),
       new PeoplePhone(phone),
       new PeopleHasInsurance(has_insurance),
       new PeopleIdStatus(id_status),
+      nationalities,
       new PeopleId(id)
     );
 

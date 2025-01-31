@@ -93,3 +93,47 @@ export * from './document-value-object/document.description.value.object';
 export * from './document-value-object/document.id.type.document';
 export * from './document-value-object/document.id.value.object';
 export * from './document-value-object/document.state.value.object';
+
+//Country value objects
+export * from './country-value-object/country.abbreviation.value.object';
+export * from './country-value-object/country.code.value.object';
+export * from './country-value-object/country.id.value.object';
+export * from './country-value-object/country.name.value.object';
+export * from './country-value-object/country.state.value.object';
+
+//Municipality value objects
+export * from './municipality-value-object/municipality.description.value.object';
+export * from './municipality-value-object/municipality.id.department.value.object';
+export * from './municipality-value-object/municipality.id.value.object';
+export * from './municipality-value-object/municipality.name.value.object';
+
+//District value objects
+export * from './district-value-object/district.description.value.object';
+export * from './district-value-object/district.id.municipality.value.object';
+export * from './district-value-object/district.id.value-object';
+export * from './district-value-object/district.name.value.object';
+export * from './district-value-object/district.state.value.object';
+
+//Department value objects
+export * from './department-value-object/department.description.value.object';
+export * from './department-value-object/department.id.country.value.object';
+export * from './department-value-object/department.id.value.object';
+export * from './department-value-object/department.name.value.object';
+
+//Gender value objects
+export * from './gender-value-object/gender.id.value.object';
+export * from './gender-value-object/gender.name.value.object';
+
+//Marital Status value objects
+export * from './marital-status-value-object/marital.status.id.value.object';
+export * from './marital-status-value-object/marital.status.name.value.object';
+
+//Status People value objects
+export * from './people-status-value-object/people.status.description.value.object';
+export * from './people-status-value-object/people.status.id.value.object';
+export * from './people-status-value-object/people.status.name.value.object';
+
+//People Country value objects
+export * from './people-country-value-object/people.country.id.country.value.object';
+export * from './people-country-value-object/people.country.id.people.value.object';
+export * from './people-country-value-object/people.country.id.value.object';

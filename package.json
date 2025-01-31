@@ -12,6 +12,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/express": "^5.0.0",
+    "@types/luxon": "^3.4.2",
     "@types/node": "^22.10.9",
     "@types/nodemailer": "^6.4.17",
     "prisma": "^6.2.1",

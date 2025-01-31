@@ -10,3 +10,7 @@ export * from './insurance/insurance.entity';
 export * from './rol-permission/rol.permission.entity'
 export * from './type-insurance/type.insurance.entity';
 export * from './document-people/document.people.entity';
+export * from './country/coutnry.entity';
+export * from './municipality/municipality.entity';
+export * from './district/district.entity';
+export * from './department/department.entity';

@@ -42,6 +42,7 @@ model ctl_district {
   updated_at       DateTime?        @db.Timestamp(6)
   deleted_at       DateTime?        @db.Timestamp(6)
   ctl_municipality ctl_municipality @relation(fields: [id_municipality], references: [id], onDelete: Cascade, map: "ctl_district_ctl_municipality_fk")
+  mnt_address      mnt_address[]
 }
 
 model ctl_gender {
@@ -70,7 +71,6 @@ model ctl_municipality {
   deleted_at     DateTime?      @db.Timestamp(6)
   ctl_district   ctl_district[]
   ctl_department ctl_department @relation(fields: [id_departament], references: [id], onDelete: Cascade, map: "ctl_municipality_ctl_department_fk")
-  mnt_address    mnt_address[]
 }
 
 model ctl_permission {
@@ -145,22 +145,22 @@ model document_people {
 }
 
 model mnt_address {
-  id               Int              @id(map: "mnt_address_pk") @default(autoincrement())
-  id_people        Int
-  street           String?          @db.VarChar
-  street_number    String?          @db.VarChar
-  neighborhood     String?          @db.VarChar
-  id_municipality  Int
-  house_number     Int
-  block            String?          @db.VarChar
-  pathway          String?          @db.VarChar
-  description      String?          @db.VarChar
-  created_at       DateTime         @default(now()) @db.Timestamp(6)
-  updated_at       DateTime?        @db.Timestamp(6)
-  deleted_at       DateTime?        @db.Timestamp(6)
-  current          Boolean?
-  ctl_municipality ctl_municipality @relation(fields: [id_municipality], references: [id], onDelete: Cascade, map: "mnt_address_ctl_municipality_fk")
-  mnt_people       mnt_people       @relation(fields: [id_people], references: [id], onDelete: Cascade, map: "mnt_address_mnt_people_fk")
+  id            Int          @id(map: "mnt_address_pk") @default(autoincrement())
+  id_people     Int
+  street        String?      @db.VarChar
+  street_number String?      @db.VarChar
+  neighborhood  String?      @db.VarChar
+  id_district   Int
+  house_number  Int
+  block         String?      @db.VarChar
+  pathway       String?      @db.VarChar
+  description   String?      @db.VarChar
+  created_at    DateTime     @default(now()) @db.Timestamp(6)
+  updated_at    DateTime?    @db.Timestamp(6)
+  deleted_at    DateTime?    @db.Timestamp(6)
+  current       Boolean?
+  ctl_district  ctl_district @relation(fields: [id_district], references: [id], onDelete: Cascade, map: "mnt_address_ctl_district_fk")
+  mnt_people    mnt_people   @relation(fields: [id_people], references: [id], onDelete: Cascade, map: "mnt_address_mnt_people_fk")
 }
 
 model mnt_document {
@@ -198,7 +198,6 @@ model mnt_people {
   id_gender          Int
   email              String             @db.VarChar
   id_marital_status  Int
-  id_nationality     Int
   img_path           String?            @db.VarChar
   phone              String             @db.VarChar
   has_insurance      Boolean?

@@ -1,4 +1,5 @@
 import {
+  CountryId,
   PeopleBirthdate,
   PeopleEmail,
   PeopleFirstName,
@@ -6,7 +7,6 @@ import {
   PeopleId,
   PeopleIdGender,
   PeopleIdMaritalStatus,
-  PeopleIdNationality,
   PeopleIdStatus,
   PeopleImgPath,
   PeopleLastName,
@@ -23,11 +23,11 @@ export class People {
     readonly id_gender: PeopleIdGender,
     readonly email: PeopleEmail,
     readonly id_marital_status: PeopleIdMaritalStatus,
-    readonly id_nationality: PeopleIdNationality,
     readonly img_path: PeopleImgPath,
     readonly phone: PeoplePhone,
     readonly has_insurance: PeopleHasInsurance,
     readonly id_status: PeopleIdStatus,
-    readonly id?: PeopleId
+    readonly nationality: CountryId[],
+    readonly id?: PeopleId,
   ) {}
 }
