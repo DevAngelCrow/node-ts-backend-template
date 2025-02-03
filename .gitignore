@@ -7,4 +7,5 @@ build/
 coverage/
 /postgres
 token.json
-credentials.json
+credentials.jsoncredentials.json
+token.json
