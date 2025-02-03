@@ -11,28 +11,13 @@ export class ImplPeopleRepository implements PeopleRepository {
 
     async create(people: People): Promise<void> {
        try {
-
         
-
         const peoplePrismaData = new mapperToPrismaData().mntPeopleToPrismaCreate(people);
-        // const data : number[]= people.nationality.map((i) => i.value);
-        // const existingCountries = await this.prisma.ctl_country.findMany({
-        //     where: {id: { in: data }},
-        //     select: {id: true}
-        // });
-
-        // const existingCountriesIds : number[] = existingCountries.map((country)=>country.id);
-        
-        // const nonExistingCountry = data.filter((id) => !existingCountriesIds.includes(id));
-        // if(nonExistingCountry.length){
-        //     throw 
-        // }
 
         await this.prisma.mnt_people.create({
             data: peoplePrismaData
         })
        } catch (error) {
-        //console.log(error)
         if(error instanceof PrismaClientKnownRequestError){
 
             //console.log(error);

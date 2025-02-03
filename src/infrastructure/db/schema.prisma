@@ -8,12 +8,12 @@ datasource db {
 }
 
 model ctl_country {
-  id             Int              @id(map: "ctl_country_pk") @default(autoincrement())
+  id             Int              @id @default(autoincrement())
   name           String           @db.VarChar
   abbreviation   String?          @db.VarChar
   code           String?          @db.VarChar
   state          Boolean?
-  created_at     DateTime         @default(now()) @db.Timestamp(6)
+  created_at     DateTime?        @default(now()) @db.Timestamp(6)
   updated_at     DateTime?        @db.Timestamp(6)
   deleted_at     DateTime?        @db.Timestamp(6)
   ctl_department ctl_department[]
@@ -21,99 +21,99 @@ model ctl_country {
 }
 
 model ctl_department {
-  id               Int                @id(map: "ctl_department_pk") @default(autoincrement())
+  id               Int                @id @default(autoincrement())
   name             String             @db.VarChar
   description      String?            @db.VarChar
   id_country       Int
-  created_at       DateTime           @default(now()) @db.Timestamp(6)
+  created_at       DateTime?          @default(now()) @db.Timestamp(6)
   updated_at       DateTime?          @db.Timestamp(6)
   deleted_at       DateTime?          @db.Timestamp(6)
-  ctl_country      ctl_country        @relation(fields: [id_country], references: [id], onDelete: Cascade, map: "ctl_department_ctl_country_fk")
+  ctl_country      ctl_country        @relation(fields: [id_country], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "ctl_department_ctl_country_fk")
   ctl_municipality ctl_municipality[]
 }
 
 model ctl_district {
-  id               Int              @id(map: "ctl_district_pk") @default(autoincrement())
+  id               Int              @id @default(autoincrement())
   id_municipality  Int
   name             String           @db.VarChar
   description      String?          @db.VarChar
   state            Boolean?
-  created_at       DateTime         @default(now()) @db.Timestamp(6)
+  created_at       DateTime?        @default(now()) @db.Timestamp(6)
   updated_at       DateTime?        @db.Timestamp(6)
   deleted_at       DateTime?        @db.Timestamp(6)
-  ctl_municipality ctl_municipality @relation(fields: [id_municipality], references: [id], onDelete: Cascade, map: "ctl_district_ctl_municipality_fk")
+  ctl_municipality ctl_municipality @relation(fields: [id_municipality], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "ctl_district_ctl_municipality_fk")
   mnt_address      mnt_address[]
 }
 
 model ctl_gender {
-  id         Int          @id(map: "ctl_gender_pk") @default(autoincrement())
+  id         Int          @id @default(autoincrement())
   name       String       @db.VarChar
-  created_at DateTime     @default(now()) @db.Timestamp(6)
+  created_at DateTime?    @default(now()) @db.Timestamp(6)
   updated_at DateTime?    @db.Timestamp(6)
   mnt_people mnt_people[]
 }
 
 model ctl_marital_status {
-  id         Int          @id(map: "ctl_marital_status_pk") @default(autoincrement())
+  id         Int          @id @default(autoincrement())
   name       String       @db.VarChar
-  created_at DateTime     @default(now()) @db.Timestamp(6)
+  created_at DateTime?    @default(now()) @db.Timestamp(6)
   update_at  DateTime?    @db.Timestamp(6)
   mnt_people mnt_people[]
 }
 
 model ctl_municipality {
-  id             Int            @id(map: "ctl_municipality_pk") @default(autoincrement())
+  id             Int            @id @default(autoincrement())
   id_departament Int
   name           String         @db.VarChar
   description    String?        @db.VarChar
-  created_at     DateTime       @default(now()) @db.Timestamp(6)
+  created_at     DateTime?      @default(now()) @db.Timestamp(6)
   updated_at     DateTime?      @db.Timestamp(6)
   deleted_at     DateTime?      @db.Timestamp(6)
   ctl_district   ctl_district[]
-  ctl_department ctl_department @relation(fields: [id_departament], references: [id], onDelete: Cascade, map: "ctl_municipality_ctl_department_fk")
+  ctl_department ctl_department @relation(fields: [id_departament], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "ctl_municipality_ctl_department_fk")
 }
 
 model ctl_permission {
-  id             Int              @id(map: "ctl_permission_pk") @default(autoincrement())
+  id             Int              @id @default(autoincrement())
   name           String           @db.VarChar
   description    String?          @db.VarChar
-  created_at     DateTime         @default(now()) @db.Timestamp(6)
+  created_at     DateTime?        @default(now()) @db.Timestamp(6)
   updated_at     DateTime?        @db.Timestamp(6)
   deleted_at     DateTime?        @db.Timestamp(6)
   rol_permission rol_permission[]
 }
 
 model ctl_status_people {
-  id          Int          @id(map: "ctl_status_people_pk") @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   name        String       @db.VarChar
   description String?      @db.VarChar
-  created_at  DateTime     @default(now()) @db.Timestamp(6)
+  created_at  DateTime?    @default(now()) @db.Timestamp(6)
   updated_at  DateTime?    @db.Timestamp(6)
   deleted_at  DateTime?    @db.Timestamp(6)
   mnt_people  mnt_people[]
 }
 
 model ctl_status_rol {
-  id          Int       @id(map: "ctl_status_rol_pk") @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   name        String    @db.VarChar
   description String?   @db.VarChar
-  created_at  DateTime  @default(now()) @db.Timestamp(6)
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
   udpataed_at DateTime? @db.Timestamp(6)
   mnt_rol     mnt_rol[]
 }
 
 model ctl_status_user {
-  id          Int        @id(map: "ctl_status_user_pk") @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   name        String     @db.VarChar
   description String?    @db.VarChar
-  created_at  DateTime   @default(now()) @db.Timestamp(6)
+  created_at  DateTime?  @default(now()) @db.Timestamp(6)
   updated_at  DateTime?  @db.Timestamp(6)
   deleted_at  DateTime?  @db.Timestamp(6)
   mnt_user    mnt_user[]
 }
 
 model ctl_type_document {
-  id           Int            @id(map: "ctl_type_document_pk") @default(autoincrement())
+  id           Int            @id @default(autoincrement())
   name         String         @db.VarChar
   description  String?        @db.VarChar
   created_at   DateTime?      @default(now()) @db.Timestamp(6)
@@ -124,73 +124,73 @@ model ctl_type_document {
 }
 
 model ctl_type_insurance {
-  id            Int             @id(map: "ctl_type_insurance_pk") @default(autoincrement())
+  id            Int             @id @default(autoincrement())
   name          String          @db.VarChar
   description   String?         @db.VarChar
-  created_at    DateTime        @default(now()) @db.Timestamp(6)
+  created_at    DateTime?       @default(now()) @db.Timestamp(6)
   updated_at    DateTime?       @db.Timestamp(6)
   deleted_at    DateTime?       @db.Timestamp(6)
   mnt_insurance mnt_insurance[]
 }
 
 model document_people {
-  id           Int          @id(map: "document_people_pk") @default(autoincrement())
+  id           Int          @id @default(autoincrement())
   id_document  Int
   id_people    Int
-  created_at   DateTime     @default(now()) @db.Timestamp(6)
+  created_at   DateTime?    @default(now()) @db.Timestamp(6)
   updated_at   DateTime?    @db.Timestamp(6)
   deleted_at   DateTime?    @db.Timestamp(6)
-  mnt_document mnt_document @relation(fields: [id_document], references: [id], onDelete: Cascade, map: "document_people_mnt_document_fk")
-  mnt_people   mnt_people   @relation(fields: [id_people], references: [id], onDelete: Cascade, map: "document_people_mnt_people_fk")
+  mnt_document mnt_document @relation(fields: [id_document], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "document_people_mnt_document_fk")
+  mnt_people   mnt_people   @relation(fields: [id_people], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "document_people_mnt_people_fk")
 }
 
 model mnt_address {
-  id            Int          @id(map: "mnt_address_pk") @default(autoincrement())
+  id            Int          @id @default(autoincrement())
   id_people     Int
   street        String?      @db.VarChar
   street_number String?      @db.VarChar
   neighborhood  String?      @db.VarChar
   id_district   Int
-  house_number  Int
+  house_number  Int?
   block         String?      @db.VarChar
   pathway       String?      @db.VarChar
   description   String?      @db.VarChar
-  created_at    DateTime     @default(now()) @db.Timestamp(6)
+  created_at    DateTime?    @default(now()) @db.Timestamp(6)
   updated_at    DateTime?    @db.Timestamp(6)
   deleted_at    DateTime?    @db.Timestamp(6)
   current       Boolean?
-  ctl_district  ctl_district @relation(fields: [id_district], references: [id], onDelete: Cascade, map: "mnt_address_ctl_district_fk")
-  mnt_people    mnt_people   @relation(fields: [id_people], references: [id], onDelete: Cascade, map: "mnt_address_mnt_people_fk")
+  ctl_district  ctl_district @relation(fields: [id_district], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "mnt_address_ctl_district_fk")
+  mnt_people    mnt_people   @relation(fields: [id_people], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "mnt_address_mnt_people_fk")
 }
 
 model mnt_document {
-  id                Int               @id(map: "mnt_document_pk") @default(autoincrement())
+  id                Int               @id @default(autoincrement())
   id_type_document  Int
   description       String?           @db.VarChar
   state             Boolean?
-  created_at        DateTime          @default(now()) @db.Timestamp(6)
+  created_at        DateTime?         @default(now()) @db.Timestamp(6)
   updated_at        DateTime?         @db.Timestamp(6)
   deleted_at        DateTime?         @db.Timestamp(6)
   document_people   document_people[]
-  ctl_type_document ctl_type_document @relation(fields: [id_type_document], references: [id], onDelete: Cascade, map: "mnt_document_ctl_type_document_fk")
+  ctl_type_document ctl_type_document @relation(fields: [id_type_document], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "mnt_document_ctl_type_document_fk")
 }
 
 model mnt_insurance {
-  id                        Int                @id(map: "mnt_insurance_pk") @default(autoincrement())
+  id                        Int                @id @default(autoincrement())
   name                      String             @db.VarChar
   description               String?            @db.VarChar
   id_people                 Int
   id_type_medical_insurance Int
-  created_at                DateTime           @default(now()) @db.Timestamp(6)
+  created_at                DateTime?          @default(now()) @db.Timestamp(6)
   updated_at                DateTime?          @db.Timestamp(6)
   deleted_at                DateTime?          @db.Timestamp(6)
   state                     Boolean?
-  ctl_type_insurance        ctl_type_insurance @relation(fields: [id_type_medical_insurance], references: [id], onDelete: Cascade, map: "mnt_insurance_ctl_type_insurance_fk")
-  mnt_people                mnt_people         @relation(fields: [id_people], references: [id], onDelete: Cascade, map: "mnt_insurance_mnt_people_fk")
+  mnt_people                mnt_people         @relation(fields: [id_people], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "mnt_insurance_mnt_people_fk")
+  ctl_type_insurance        ctl_type_insurance @relation(fields: [id_type_medical_insurance], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "mnt_insurance_ctl_type_insurance_fk")
 }
 
 model mnt_people {
-  id                 Int                @id(map: "mnt_people_pk") @default(autoincrement())
+  id                 Int                @id @default(autoincrement())
   first_name         String             @db.VarChar
   middle_name        String?            @db.VarChar
   last_name          String?            @db.VarChar
@@ -202,75 +202,75 @@ model mnt_people {
   phone              String             @db.VarChar
   has_insurance      Boolean?
   id_status          Int
-  created_at         DateTime           @default(now()) @db.Timestamp(6)
+  created_at         DateTime?          @default(now()) @db.Timestamp(6)
   updated_at         DateTime?          @db.Timestamp(6)
   deleted_at         DateTime?          @db.Timestamp(6)
   document_people    document_people[]
   mnt_address        mnt_address[]
   mnt_insurance      mnt_insurance[]
-  ctl_gender         ctl_gender         @relation(fields: [id_gender], references: [id], onDelete: Cascade, map: "mnt_people_ctl_gender_fk")
-  ctl_marital_status ctl_marital_status @relation(fields: [id_marital_status], references: [id], onDelete: Cascade, map: "mnt_people_ctl_marital_status_fk")
-  ctl_status_people  ctl_status_people  @relation(fields: [id_status], references: [id], onDelete: Cascade, map: "mnt_people_ctl_status_people_fk")
+  ctl_gender         ctl_gender         @relation(fields: [id_gender], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "mnt_people_ctl_gender_fk")
+  ctl_marital_status ctl_marital_status @relation(fields: [id_marital_status], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "mnt_people_ctl_marital_status_fk")
+  ctl_status_people  ctl_status_people  @relation(fields: [id_status], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "mnt_people_ctl_status_people_fk")
   mnt_user           mnt_user[]
   people_country     people_country[]
 }
 
 model mnt_rol {
-  id             Int              @id(map: "mnt_rol_pk") @default(autoincrement())
+  id             Int              @id @default(autoincrement())
   name           String           @db.VarChar
   description    String?          @db.VarChar
   id_status      Int
-  created_at     DateTime         @default(now()) @db.Timestamp(6)
+  created_at     DateTime?        @default(now()) @db.Timestamp(6)
   updated_at     DateTime?        @db.Timestamp(6)
   deleted_at     DateTime?        @db.Timestamp(6)
-  ctl_status_rol ctl_status_rol   @relation(fields: [id_status], references: [id], onDelete: Cascade, map: "mnt_rol_ctl_status_rol_fk")
+  ctl_status_rol ctl_status_rol   @relation(fields: [id_status], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "mnt_rol_ctl_status_rol_fk")
   rol_permission rol_permission[]
   user_rol       user_rol[]
 }
 
 model mnt_user {
-  id              Int             @id(map: "mnt_user_pk") @default(autoincrement())
+  id              Int             @id @default(autoincrement())
   id_people       Int
   user_name       String          @db.VarChar
   password        String          @db.VarChar
   id_status       Int
-  last_access     DateTime        @default(now()) @db.Timestamp(6)
-  created_at      DateTime        @default(now()) @db.Timestamp(6)
+  last_access     DateTime?       @default(now()) @db.Timestamp(6)
+  created_at      DateTime?       @default(now()) @db.Timestamp(6)
   updated_at      DateTime?       @db.Timestamp(6)
   deleted_at      DateTime?       @db.Timestamp(6)
-  ctl_status_user ctl_status_user @relation(fields: [id_status], references: [id], onDelete: Cascade, map: "mnt_user_ctl_status_user_fk")
-  mnt_people      mnt_people      @relation(fields: [id_people], references: [id], onDelete: Cascade, map: "mnt_user_mnt_people_fk")
+  mnt_people      mnt_people      @relation(fields: [id_people], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "mnt_user_mnt_people_fk")
+  ctl_status_user ctl_status_user @relation(fields: [id_status], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "mnt_user_ctl_status_user_fk")
   user_rol        user_rol[]
 }
 
 model people_country {
-  id          Int         @id(map: "people_country_pk") @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   id_people   Int
   id_country  Int
-  created_at  DateTime    @default(now()) @db.Timestamp(6)
+  created_at  DateTime?   @default(now()) @db.Timestamp(6)
   update_at   DateTime?   @db.Timestamp(6)
-  ctl_country ctl_country @relation(fields: [id_country], references: [id], onDelete: Cascade, map: "people_country_ctl_country_fk")
-  mnt_people  mnt_people  @relation(fields: [id_people], references: [id], onDelete: Cascade, map: "people_country_mnt_people_fk")
+  ctl_country ctl_country @relation(fields: [id_country], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "people_country_ctl_country_fk")
+  mnt_people  mnt_people  @relation(fields: [id_people], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "people_country_mnt_people_fk")
 }
 
 model rol_permission {
-  id             Int            @id(map: "rol_permission_pk") @default(autoincrement())
+  id             Int            @id @default(autoincrement())
   id_permission  Int
   id_rol         Int
-  created_at     DateTime       @default(now()) @db.Timestamp(6)
+  created_at     DateTime?      @default(now()) @db.Timestamp(6)
   updated_at     DateTime?      @db.Timestamp(6)
   deleted_at     DateTime?      @db.Timestamp(6)
-  ctl_permission ctl_permission @relation(fields: [id_permission], references: [id], onDelete: Cascade, map: "rol_permission_ctl_permission_fk")
-  mnt_rol        mnt_rol        @relation(fields: [id_rol], references: [id], onDelete: Cascade, map: "rol_permission_mnt_rol_fk")
+  ctl_permission ctl_permission @relation(fields: [id_permission], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "rol_permission_ctl_permission_fk")
+  mnt_rol        mnt_rol        @relation(fields: [id_rol], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "rol_permission_mnt_rol_fk")
 }
 
 model user_rol {
-  id         Int       @id(map: "user_rol_pk") @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   id_rol     Int
   id_user    Int
-  created_at DateTime  @default(now()) @db.Timestamp(6)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
   updated_at DateTime? @db.Timestamp(6)
   deleted_at DateTime? @db.Timestamp(6)
-  mnt_rol    mnt_rol   @relation(fields: [id_rol], references: [id], onDelete: Cascade, map: "user_rol_mnt_rol_fk")
-  mnt_user   mnt_user  @relation(fields: [id_user], references: [id], onDelete: Cascade, map: "user_rol_mnt_user_fk")
+  mnt_rol    mnt_rol   @relation(fields: [id_rol], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_rol_mnt_rol_fk")
+  mnt_user   mnt_user  @relation(fields: [id_user], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_rol_mnt_user_fk")
 }

@@ -1,7 +1,7 @@
 import { CustomError } from "../..";
 
 export class CountryState {
-  constructor(readonly value: boolean) {
+  constructor(readonly value: boolean | null) {
     this.required()
   }
 

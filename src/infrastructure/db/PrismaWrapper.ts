@@ -5,6 +5,7 @@ const prismaClient = new PrismaClient();
 const prismaClientKnownRequestError = PrismaClientKnownRequestError;
 const prismaClientUnknownRequestError = PrismaClientUnknownRequestError;
 
+
 export {
     prismaClient,
     PrismaClientKnownRequestError,

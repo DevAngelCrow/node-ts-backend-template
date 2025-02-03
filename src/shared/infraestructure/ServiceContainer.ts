@@ -20,11 +20,15 @@ import {
   ImplCountryRepository,
   ImplExampleRepository,
   ImplPeopleRepository,
+  ImplStorageRepository,
+  ImplTransactionManagerRepository,
 } from "../../infrastructure/implementation";
 
 const exampleRepository = new ImplExampleRepository();
 const peopleRepository = new ImplPeopleRepository();
 const countryRepository = new ImplCountryRepository();
+const transactionManagerRepository = new ImplTransactionManagerRepository();
+const storageRepository = new ImplStorageRepository();
 
 export const ServiceContainer = {
   example: {
@@ -35,7 +39,7 @@ export const ServiceContainer = {
     delete: new ExampleDelete(exampleRepository),
   },
   people: {
-    create: new PeopleCreate(peopleRepository),
+    create: new PeopleCreate(peopleRepository, countryRepository, transactionManagerRepository, storageRepository),
     update: new PeopleEdit(peopleRepository),
     getOneById: new PeopleGetOneById(peopleRepository),
     getAll: new PeopleGetAll(peopleRepository),

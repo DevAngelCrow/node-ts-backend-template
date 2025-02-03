@@ -1,13 +1,13 @@
 import { Router } from "express";
-//import { PeopleController } from "./people.controller";
+import { CountryController } from "./country.controller";
 
-// export class CountryRoutes {
-//     static get routes() : Router {
-//         const router = Router();
-//         const controller = new PeopleController();
+export class CountryRoutes {
+    static get routes() : Router {
+        const router = Router();
+        const controller = new CountryController;
 
-//         router.post('/create', controller.createPeople );
+        router.get('/:id', controller.getById );
         
-//         return router;
-//     }
-// }
+        return router;
+    }
+}

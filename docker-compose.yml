@@ -2,7 +2,7 @@ version: '3.9'
 services:
   postgres-db:
     image: postgres
-    container_name: ${POSTGRES_CONTAINER}
+    #container_name: ${POSTGRES_CONTAINER}
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
