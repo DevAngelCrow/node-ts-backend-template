@@ -1,7 +1,7 @@
 import { CustomError } from "../..";
 
 export class CountryAbbreviation {
-  constructor(readonly value: string) {
+  constructor(readonly value: string | null) {
     this.required()
   }
 

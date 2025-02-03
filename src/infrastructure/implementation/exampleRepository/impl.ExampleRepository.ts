@@ -4,7 +4,7 @@ export class ImplExampleRepository implements ExampleRepository {
     //use a property with implemented ORM
     create(example: Example): Promise<void> {
        return new Promise((resolve, reject) =>{
-        console.log("Ejemplo creado", example);
+        //console.log("Ejemplo creado", example);
         resolve();
        })
     }

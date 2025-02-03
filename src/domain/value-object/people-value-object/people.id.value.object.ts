@@ -2,6 +2,7 @@ import { CustomError } from "../..";
 
 export class PeopleId {
   constructor(readonly value: number) {
+    
     this.idIsNumberValid();
   }
 

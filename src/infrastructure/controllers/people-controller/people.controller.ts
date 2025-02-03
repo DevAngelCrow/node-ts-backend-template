@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import DateTimeService from "../../services/date-time/date.time.services";
 import { ServiceContainer } from "../../../shared/infraestructure/ServiceContainer";
-//import { DateTime } from "luxon";
+
 
 export class PeopleController {
   async createPeople(request: Request, response: Response) {
@@ -14,15 +14,13 @@ export class PeopleController {
       id_gender,
       email,
       id_marital_status,
-      img_path,
       phone,
       has_insurance,
       id_status,
       nationality
     } = request.body;
-    
     const birthdateFormated = dt.fromISO(birthdate).toJSDate();
-    
+    const img_path = request.file!;
     await ServiceContainer.people.create.run(
       first_name,
       middle_name,
@@ -33,7 +31,7 @@ export class PeopleController {
       id_marital_status,
       img_path,
       phone,
-      has_insurance,
+      Boolean(has_insurance),
       id_status,
       nationality,
     ).then(()=> response.status(201).send({message: "People created successful"}))

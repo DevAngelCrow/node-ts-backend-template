@@ -8,4 +8,15 @@ export class Country{
         readonly state?: CountryState,
         readonly id?: CountryId,
     ){}
+
+
+    public mapToPrimitives(){
+        return {
+            id: this.id?.value,
+            name: this.name.value,
+            abbreviation: this.abbreviation?.value,
+            code: this.code?.value,
+            state: this.state?.value 
+        }
+    }
 }

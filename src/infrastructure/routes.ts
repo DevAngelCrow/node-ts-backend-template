@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ExampleRoutes, PeopleRoutes } from "./controllers";
+import { CountryRoutes, ExampleRoutes, PeopleRoutes } from "./controllers";
 
 
 export class AppRoutes {
@@ -9,6 +9,7 @@ export class AppRoutes {
     
         router.use('/example', ExampleRoutes.routes);
         router.use('/people', PeopleRoutes.routes);
+        router.use('/country', CountryRoutes.routes);
         return router;
     }
 }

@@ -5,3 +5,4 @@ export type PostgresCountry = {
     code: string | null;
     state: boolean | null;
 }
+
