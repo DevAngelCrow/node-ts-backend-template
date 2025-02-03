@@ -6,3 +6,5 @@ dist/
 build/
 coverage/
 /postgres
+token.json
+credentials.json
