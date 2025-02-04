@@ -43,6 +43,7 @@ export class PeopleCreate {
     nationality: number[]
   ): Promise<void> {
     const url_img = await this.repositoryStorage.updload(img_path);
+    const id_img = url_img.split("=")[1];
     return this.repositoryTransaction.runInTransaction(async () => {
       const nationalities = nationality.map((id) => new CountryId(id));
       const foundNationalities = await this.repositoryCountry.findMany(
@@ -64,26 +65,29 @@ export class PeopleCreate {
 
       if (nonExistingCountry.length) {
         throw CustomError.badRequest(
-          "Los siguientes Id no existen " + nonExistingCountry
+          "The following nationality ids do not exist " + nonExistingCountry
         );
       }
 
       const people = new People(
         new PeopleFirstName(firts_name),
-        new PeopleMiddleName(middle_name),
-        new PeopleLastName(last_name),
         new PeopleBirthdate(birthdate),
         new PeopleIdGender(+id_gender),
         new PeopleEmail(email),
         new PeopleIdMaritalStatus(+id_marital_status),
-        new PeopleImgPath(url_img),
         new PeoplePhone(phone),
-        new PeopleHasInsurance(has_insurance),
         new PeopleIdStatus(+id_status),
-        nationalities
+        nationalities,
+        new PeopleMiddleName(middle_name),
+        new PeopleLastName(last_name),
+        new PeopleImgPath(url_img),
+        new PeopleHasInsurance(has_insurance),
       );
 
       return this.repository.create(people);
+    }).catch(async (error)=>{
+      await this.repositoryStorage.delete(id_img);
+      throw error;
     });
   }
 }

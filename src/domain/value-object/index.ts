@@ -137,3 +137,4 @@ export * from './people-status-value-object/people.status.name.value.object';
 export * from './people-country-value-object/people.country.id.country.value.object';
 export * from './people-country-value-object/people.country.id.people.value.object';
 export * from './people-country-value-object/people.country.id.value.object';
+export * from './people-country-value-object/people.country.state.value.object';

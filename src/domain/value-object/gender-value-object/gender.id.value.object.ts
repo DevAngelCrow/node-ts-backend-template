@@ -4,7 +4,6 @@ export class GenderId {
   constructor(readonly value: number) {
     this.idIsNumberValid();
   }
-
   private idIsNumberValid() {
     if (isNaN(this.value)) {
       throw CustomError.badRequest(`The field type is not valid`);

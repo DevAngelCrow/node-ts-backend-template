@@ -43,14 +43,30 @@ export class ImplStorageRepository implements StorageRepository {
 
             const url_path_img = `https://drive.google.com/uc?id=${fileId}`;
             return url_path_img;
-        
-            
+
         }catch(error){
+            console.log(error, 'error')
             throw CustomError.internalServer("Error in request from google drive")
         }
-        throw new Error("Method not implemented.");
+
     }
     uploadMultiple(multimedias: MultimediaFile[]): Promise<PeopleImgPath[]> {
+        throw new Error("Method not implemented.");
+    }
+    async delete(id: string): Promise<void> {
+        try {
+            const authenticate = await googleAuth.getAuthClient();
+            const serviceGoogleDrive = google.drive({version: 'v3', auth: authenticate});
+            
+            const response = await serviceGoogleDrive.files.delete({
+                fileId: id,
+            });
+        } catch (error) {
+            throw CustomError.internalServer("Error in request from google drive")
+        }
+        //throw new Error("Method not implemented.");
+    }
+    get(id: string): Promise<MultimediaFile> {
         throw new Error("Method not implemented.");
     }
     
