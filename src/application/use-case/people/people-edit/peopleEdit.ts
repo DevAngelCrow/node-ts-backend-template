@@ -1,5 +1,6 @@
 import {
   CountryId,
+  MultimediaFile,
   People,
   PeopleBirthdate,
   PeopleEmail,
@@ -14,13 +15,15 @@ import {
   PeopleMiddleName,
   PeoplePhone,
   PeopleRepository,
+  StorageRepository,
   TransactionManagerRepository,
 } from "../../../../domain";
 
 export class PeopleEdit {
   constructor(
     private respository: PeopleRepository,
-    private respositoryTransaction: TransactionManagerRepository
+    private respositoryTransaction: TransactionManagerRepository,
+    private respositoryStorage: StorageRepository
   ) {}
 
   async run(
@@ -32,12 +35,16 @@ export class PeopleEdit {
     id_gender: number,
     email: string,
     id_marital_status: number,
-    img_path: string,
+    img_path: MultimediaFile,
     phone: string,
     has_insurance: boolean,
     id_status: number,
     nationality: number[]
   ): Promise<void> {
+    let img_path_edit : string = "";
+    if(img_path){
+      img_path_edit = await this.respositoryStorage.updload(img_path);
+    }
     return this.respositoryTransaction.runInTransaction(async () => {
       const nationalities = nationality.map((id) => new CountryId(id));
       const people = new People(
@@ -51,7 +58,7 @@ export class PeopleEdit {
         nationalities,
         new PeopleMiddleName(middle_name),
         new PeopleLastName(last_name),
-        new PeopleImgPath(img_path),
+        new PeopleImgPath(img_path_edit),
         new PeopleHasInsurance(has_insurance),
         undefined,
         undefined,
@@ -59,10 +66,16 @@ export class PeopleEdit {
         new PeopleId(id)
       );
 
-      await this.respository.getOneById(people?.id!);
-      await this.respository.updatePeopleCountry(people.id, )
+      const personDb = await this.respository.getOneById(people?.id!);
+
+     
+      await this.respository.updatePeopleCountry(people.id!, nationalities);
+      await this.respositoryStorage.delete(personDb?.img_path?.value.split("=")[1]!);
 
       return this.respository.update(people);
-    });
+    }).catch(async (error)=>{
+      await this.respositoryStorage.delete(img_path_edit.split("=")[1]!);
+      throw error;
+    })
   }
 }

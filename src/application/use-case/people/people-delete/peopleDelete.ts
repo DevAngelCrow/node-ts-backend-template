@@ -6,7 +6,7 @@ export class PeopleDelete{
     async run(id: number) : Promise<void> {
         
         await this.repository.getOneById(new PeopleId(id));
-
+        
         return this.repository.delete(new PeopleId(id));
     }
 }

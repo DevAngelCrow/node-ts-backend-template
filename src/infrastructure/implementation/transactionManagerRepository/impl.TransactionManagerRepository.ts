@@ -7,7 +7,6 @@ export class ImplTransactionManagerRepository implements TransactionManagerRepos
         try{
             return this.prisma.$transaction(work);
         }catch(error){
-            console.log(error, 'error de transacción')
             throw CustomError.internalServer("Internal server error in the transaction");
         }
         

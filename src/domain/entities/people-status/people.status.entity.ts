@@ -3,7 +3,7 @@ import { PeopleStatusDescription, PeopleStatusId, PeopleStatusName } from "../..
 export class PeopleStatus {
     constructor(
         readonly name: PeopleStatusName,
-        readonly description: PeopleStatusDescription,
+        readonly description?: PeopleStatusDescription,
         readonly id?: PeopleStatusId
     ){}
 }

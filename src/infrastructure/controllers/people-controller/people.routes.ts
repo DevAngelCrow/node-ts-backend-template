@@ -10,6 +10,7 @@ export class PeopleRoutes {
     router.post("/create", upload.single("img_path"), controller.createPeople);
     router.get("/", controller.getAllPeople);
     router.get("/:id", controller.getPeopleById);
+    router.put("/:id", upload.single("img_path"), controller.updatePerson )
 
     return router;
   }

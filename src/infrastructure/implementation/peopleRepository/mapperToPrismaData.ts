@@ -3,6 +3,12 @@ import { CountryId, People } from "../../../domain";
 
 export class mapperToPrismaData {
     mntPeopleToPrismaCreate(people: People): Prisma.mnt_peopleCreateInput {
+        let nationalities : {[key:string] : number} [] = [];
+        people.nationality.map((nation) => {
+            if(nation instanceof CountryId){
+                nationalities.push({id_country: nation.value})
+            }
+        })
         return {
             first_name: people.first_name.value,
             middle_name: people?.middle_name?.value ?? null,
@@ -16,7 +22,8 @@ export class mapperToPrismaData {
             ctl_marital_status: { connect: { id: people.id_marital_status.value }},
             ctl_status_people: { connect: { id: people.id_status.value }},
             people_country: {
-                create: people.nationality.map((nationality) => ({ctl_country: { connect: { id: +nationality }}}))
+                create: nationalities.map((nationality) => ({ctl_country: { connect: { id: +nationality.id_country }}}))
+                // people.nationality.map((nationality) => ({ctl_country: { connect: { id: +nationality }}}))
             }
         }
     }

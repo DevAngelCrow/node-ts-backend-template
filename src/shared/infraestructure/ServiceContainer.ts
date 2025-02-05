@@ -40,7 +40,7 @@ export const ServiceContainer = {
   },
   people: {
     create: new PeopleCreate(peopleRepository, countryRepository, transactionManagerRepository, storageRepository),
-    update: new PeopleEdit(peopleRepository, transactionManagerRepository),
+    update: new PeopleEdit(peopleRepository, transactionManagerRepository, storageRepository),
     getOneById: new PeopleGetOneById(peopleRepository),
     getAll: new PeopleGetAll(peopleRepository),
     delete: new PeopleDelete(peopleRepository),

@@ -1,7 +1,7 @@
 import { CustomError } from "../..";
 
 export class PeopleStatusDescription {
-  constructor(readonly value: string) {
+  constructor(readonly value: string | null) {
     this.required()
   }
 

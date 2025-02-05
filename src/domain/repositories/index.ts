@@ -5,3 +5,4 @@ export * from './country/CountryRepository';
 export * from './transaction-manager/TransactionManagerRepository';
 export * from './storage/StorageRepository';
 export * from './http-client/HttpClientRepository';
+export * from './people-status/PeopleStatusRepository';

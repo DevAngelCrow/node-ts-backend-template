@@ -57,7 +57,7 @@ export class People {
     return {
       id: this.ctl_status_people?.id?.value,
       name: this.ctl_status_people?.name.value,
-      description: this.ctl_status_people?.description.value,
+      description: this.ctl_status_people?.description?.value,
     };
   }
   public mapToPrimitivesMaritalStatus() {

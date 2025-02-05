@@ -5,5 +5,5 @@ export interface StorageRepository {
     updload(multimedia: MultimediaFile) : Promise<string>;
     uploadMultiple(multimedias: MultimediaFile[]) : Promise<PeopleImgPath[]>;
     delete(id: string) : Promise<void>;
-    get(id: string) : Promise<MultimediaFile>;
+    get(id: string) : Promise<Buffer>;
 }

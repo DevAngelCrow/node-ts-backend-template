@@ -45,7 +45,6 @@ export class ImplStorageRepository implements StorageRepository {
             return url_path_img;
 
         }catch(error){
-            console.log(error, 'error')
             throw CustomError.internalServer("Error in request from google drive")
         }
 
@@ -66,8 +65,45 @@ export class ImplStorageRepository implements StorageRepository {
         }
         //throw new Error("Method not implemented.");
     }
-    get(id: string): Promise<MultimediaFile> {
-        throw new Error("Method not implemented.");
+    async get(id: string): Promise<Buffer> {
+        try {
+            const authenticate = await googleAuth.getAuthClient();
+            const serviceGoogleDrive = google.drive({version: 'v3', auth: authenticate});
+            const index: number = id.toString().indexOf("id=");
+            let param: string = id;
+            if (index !== -1) {
+              param = id.substring(
+                index + 3,
+                id.toString().length
+              );
+            }
+            const imgFile = await serviceGoogleDrive.files.get(
+              { fileId: param, alt: "media" },
+              { responseType: "stream" }
+            );
+            const streamValue: Buffer = await this.readStream(imgFile.data);
+            return streamValue;
+          } catch (error) {
+            throw error;
+          }
     }
+
+    private async readStream(stream: Readable): Promise<Buffer> {
+        let data: Buffer[] = [];
+        return new Promise((resolve, reject) => {
+          stream
+            .on("data", (chunk: Buffer) => {
+              data.push(chunk);
+            })
+            .on("end", () => {
+              const buffer = Buffer.concat(data);
+              resolve(buffer);
+            })
+            .on("error", (err: Error) => {
+              reject(err);
+            });
+        });
+
+      }
     
 }

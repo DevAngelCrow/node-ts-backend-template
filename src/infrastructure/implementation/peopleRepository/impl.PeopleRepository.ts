@@ -154,11 +154,32 @@ export class ImplPeopleRepository implements PeopleRepository {
   }
   async update(person: People): Promise<void> {
     try {
-      const personDb = new mapperToPrismaData().mntPeopleToPrismaUpdate(person);
-    } catch (error) {}
+      const personEdit = new mapperToPrismaData().mntPeopleToPrismaUpdate(
+        person
+      );
+
+      await this.prisma.mnt_people.update({
+        where: {
+          id: person.id?.value,
+        },
+        data: personEdit,
+      });
+    } catch (error) {
+      throw CustomError.internalServer(
+        "Internal server error in update person"
+      );
+    }
   }
-  delete(id: PeopleId): Promise<void> {
+  async delete(id: PeopleId): Promise<void> {
     try {
+      await this.prisma.mnt_people.update({
+        where: {
+          id: id.value,
+        },
+        data: {
+          id_status: 
+        }
+      })
       throw new Error("Method not implemented.");
     } catch (error) {
       throw CustomError.internalServer(
@@ -166,83 +187,77 @@ export class ImplPeopleRepository implements PeopleRepository {
       );
     }
   }
-  async updatePeopleCountry(id: PeopleId, countries: CountryId[]): Promise<void> {
+  async updatePeopleCountry(
+    id: PeopleId,
+    countries: CountryId[]
+  ): Promise<void> {
     try {
-        const nationalities = countries.map((nation) => nation.value);
-        const people_country = await this.prisma.people_country.findMany({
-            where: {
-                id: id.value,
+      const nationalities = countries.map((nation) => (+nation.value));
+      const people_country = await this.prisma.people_country.findMany({
+        where: {
+          id_people: id.value,
+        },
+        select: {
+          id: true,
+          id_country: true,
+          id_people: true,
+          state: true,
+        },
+      });
+
+      const existingIds = new Set(
+        people_country.map((person) => (+person.id_country))
+      );
+      const countriesToInactivate = people_country.filter(
+        (person) => !nationalities.includes(+person.id_country)
+      );
+      const countriesToReactivate = people_country.filter(
+        (person) =>
+          nationalities.includes(+person.id_country) && person.state === false
+      );
+      const newCountries = nationalities.filter(
+        (nation) => !existingIds.has(+nation)
+      );
+
+      if (countriesToInactivate.length) {
+        await this.prisma.people_country.updateMany({
+          where: {
+            id_people: id.value,
+            id_country: {
+              in: countriesToInactivate.map((nation) => nation.id_country),
             },
-            select: {
-                id: true,
-                id_country: true,
-                id_people: true,
-                state: true,
-            }
+          },
+          data: {
+            state: false,
+            update_at: new Date(Date.now()),
+          },
         });
+      }
 
-        const existingIds = new Set(people_country.map((persona) => persona.id_country));
-        const countriesToInactivate = people_country.filter((persona) => !nationalities.includes(persona.id_country));
-        const countriesToReactivate = people_country.filter((persona) => nationalities.includes(persona.id_country) && persona.state === false);
-        const newCountries = nationalities.filter((nation) => !existingIds.has(nation));
-        
+      if (countriesToReactivate.length) {
+        await this.prisma.people_country.updateMany({
+          where: {
+            id_people: id.value,
+            id_country: {
+              in: countriesToReactivate.map((nation) => nation.id_country),
+            },
+          },
+          data: { state: true, update_at: new Date(Date.now()) },
+        });
+      }
 
-        if(countriesToInactivate.length){
-            await this.prisma.people_country.updateMany({
-                where: {
-                    id_people: id.value,
-                    id_country: { in: countriesToInactivate.map((nation) => nation.id_country) },
-                },
-                data: {
-                    state: false,
-                    update_at: new Date(Date.now()),
-                }
-            });
-        }
-
-        if(countriesToReactivate.length){
-            await this.prisma.people_country.updateMany({
-                where:{
-                    id_people: id.value,
-                    id_country: { in: countriesToReactivate.map((nation) => nation.id_country)}
-                },
-                data: { state: true, update_at: new Date(Date.now())},
-            });
-        }
-
-        if(newCountries.length){  
-            await this.prisma.people_country.createMany({
-                data: newCountries.map((nation) => ({id_people: id.value, id_country: nation, state: true })),
-            })
-        }
-        // await this.prisma.people_country.updateMany({
-        //     where: {
-        //         id_people: id.value,
-        //         id_country: {
-        //             in: countries.map((nation) => (nation.value))
-        //         },
-        //         state: {
-        //              equals: false,
-        //         }
-        //     },
-        //     data: {
-        //         state: true,
-        //         update_at: new Date(Date.now())
-        //     }
-        // });
-
-        // await this.prisma.people_country.updateMany({
-        //     where: {
-        //         id_people: id.value,
-        //         id_country: {
-        //             not: countries.map((nation) => (nation.value))
-        //         }
-        //     }
-        // });
+      if (newCountries.length) {
+        await this.prisma.people_country.createMany({
+          data: newCountries.map((nation) => ({
+            id_people: id.value,
+            id_country: +nation,
+            state: true,
+          })),
+        });
+      }
     } catch (error) {
-        console.log(error)
+      throw CustomError.internalServer("Internal server error")
     }
-    throw new Error("Method not implemented.");
   }
   deletePeopleCoutry(id: PeopleId, countries: CountryId[]): Promise<void> {
     throw new Error("Method not implemented.");
