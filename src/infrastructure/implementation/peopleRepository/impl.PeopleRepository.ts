@@ -170,17 +170,17 @@ export class ImplPeopleRepository implements PeopleRepository {
       );
     }
   }
-  async delete(id: PeopleId): Promise<void> {
+  async delete(id: PeopleId, id_status: PeopleStatusId): Promise<void> {
     try {
       await this.prisma.mnt_people.update({
         where: {
           id: id.value,
         },
         data: {
-          id_status: 
+          id_status: id_status.value
         }
       })
-      throw new Error("Method not implemented.");
+      //throw new Error("Method not implemented.");
     } catch (error) {
       throw CustomError.internalServer(
         "Internal server error in delete person"

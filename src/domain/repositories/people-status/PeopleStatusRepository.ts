@@ -1,6 +1,7 @@
 import { PeopleStatus } from "../../entities";
-import { PeopleStatusId } from "../../value-object";
+import { PeopleStatusId, PeopleStatusName } from "../../value-object";
 
 export interface PeopleStatusRepository {
-    getOneById(id: PeopleStatusId): Promise<PeopleStatus | null>;
+    getOneById(status_name: PeopleStatusName): Promise<PeopleStatusId | null>;
+    getAll():Promise<PeopleStatus[]>
 }

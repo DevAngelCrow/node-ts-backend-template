@@ -107,4 +107,13 @@ export class PeopleController {
       response.status(error.statusCode).json({ message: error.message });
     });
   }
+
+  async deletePerson(request: Request, response: Response){
+    const { id } = request.params;
+    await ServiceContainer.people.delete.run(+id)
+    .then(() => response.status(200).send({message: "Person inactivated successful"}))
+    .catch((error) => {
+      response.status(error.statusCode).json({message: error.message})
+    })
+  }
 }

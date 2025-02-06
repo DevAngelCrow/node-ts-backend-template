@@ -10,13 +10,16 @@ import {
 import { prismaClient } from "../../db/PrismaWrapper";
 
 export class ImplPeopleStatusRepository implements PeopleStatusRepository {
+  getAll(): Promise<PeopleStatus[]> {
+    throw new Error("Method not implemented.");
+  }
   private people_status: PeopleStatus[] = [];
   private prisma = prismaClient;
-  async getOneById(id: PeopleStatusId): Promise<PeopleStatus | null> {
+  async getOneById(status_name: PeopleStatusName): Promise<PeopleStatusId | null> {
     try {
-      const peopleStatus = await this.prisma.ctl_status_people.findUnique({
+      const peopleStatus = await this.prisma.ctl_status_people.findFirst({
         where: {
-          id: id.value,
+          name: status_name.value,
         },
         select: {
           id: true,
@@ -26,10 +29,10 @@ export class ImplPeopleStatusRepository implements PeopleStatusRepository {
       });
 
       if (!peopleStatus) {
-        return null;
+         return null;
       }
 
-      return this.mapToDomain(peopleStatus);
+      return new PeopleStatusId(peopleStatus.id);
     } catch (error) {
       throw CustomError.internalServer("Internal server error");
     }
