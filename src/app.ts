@@ -12,5 +12,6 @@ async function main(){
         port: envs.PORT,
         routes: AppRoutes.routes,
     })
+    console.log("xd")
     server.start();
 }
