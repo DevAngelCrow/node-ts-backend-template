@@ -4,3 +4,4 @@ export * from "./countryRepository/impl.CountryRepository";
 export * from "./transactionManagerRepository/impl.TransactionManagerRepository";
 export * from "./storageRepository/impl.StorageRepository";
 export * from "./peopleStatusRepository/impl.PeopleStatusRepository";
+export * from "./httpClientRepository/impl.HttpClientRepository";

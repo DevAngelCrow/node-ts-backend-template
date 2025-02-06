@@ -35,4 +35,7 @@ export class CustomError extends Error{
     static internalServer(message: string){
         return new CustomError(500, message)
     }
+    static wrapperError(message: string, status_num: number){
+        return new CustomError(status_num, message);
+    }
 }

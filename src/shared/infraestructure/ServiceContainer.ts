@@ -1,3 +1,4 @@
+import { HttpClientDelete, HttpClientGet, HttpClientPost, HttpClientPut } from "../../application/services";
 import {
   ExampleCreate,
   ExampleDelete,
@@ -16,9 +17,11 @@ import {
   CountryGetOneById
   
 } from "../../application/use-case";
+import { envs } from "../../infrastructure/config/envs";
 import {
   ImplCountryRepository,
   ImplExampleRepository,
+  ImplHttpClientRepository,
   ImplPeopleRepository,
   ImplPeopleStatusRepository,
   ImplStorageRepository,
@@ -31,6 +34,7 @@ const countryRepository = new ImplCountryRepository();
 const transactionManagerRepository = new ImplTransactionManagerRepository();
 const storageRepository = new ImplStorageRepository();
 const peopleStatusRepository = new ImplPeopleStatusRepository();
+const httpClientRepository = new ImplHttpClientRepository(envs.HTTP_CLIENT_ADAPTER);
 
 export const ServiceContainer = {
   example: {
@@ -54,4 +58,10 @@ export const ServiceContainer = {
     getAll: new CountryGetAll(countryRepository),
     delete: new CountryDelete(countryRepository),
   },
+  httpClient: {
+    get: new HttpClientGet(httpClientRepository),
+    post: new HttpClientPost(httpClientRepository),
+    put: new HttpClientPut(httpClientRepository),
+    delete: new HttpClientDelete(httpClientRepository),
+  }
 };
