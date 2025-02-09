@@ -1,5 +1,5 @@
 import { People } from "../../entities";
-import { CountryId, PeopleId, PeopleStatusId, PeopleStatusName } from "../../value-object";
+import { CountryId, PeopleEmail, PeopleId, PeopleStatusId, PeopleStatusName } from "../../value-object";
 
 export interface PeopleRepository {
   create(example: People): Promise<void>;
@@ -8,5 +8,6 @@ export interface PeopleRepository {
   update(example: People): Promise<void>;
   delete(id: PeopleId, id_status: PeopleStatusId): Promise<void>;
   updatePeopleCountry(id: PeopleId, countries: CountryId[]) : Promise<void>;
-  deletePeopleCoutry(id: PeopleId, countries: CountryId[]) : Promise<void>
+  deletePeopleCoutry(id: PeopleId, countries: CountryId[]) : Promise<void>;
+  findByEmail(email: PeopleEmail) : Promise<People | null>;
 }

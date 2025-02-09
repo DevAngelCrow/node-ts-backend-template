@@ -14,5 +14,7 @@ export const envs = {
     GOOGLE_REFRESH_TOKEN: get('GOOGLE_REFRESH_TOKEN').required().asString(),
     GOOGLE_REDIRECT_URI: get('GOOGLE_REDIRECT_URI').required().asString(),
     FOLDER_ID: get('FOLDER_ID').required().asString(),
-    HTTP_CLIENT_ADAPTER: get('HTTP_CLIENT_ADAPTER').required().asString()
+    HTTP_CLIENT_ADAPTER: get('HTTP_CLIENT_ADAPTER').required().asString(),
+    JWT_SECRET: get('JWT_SECRET').required().asString(),
+    JWT_EXPIRATION: get('JWT_EXPIRATION').required().asPortNumber()
 }

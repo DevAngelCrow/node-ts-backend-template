@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ServiceContainer } from "../../../shared/infraestructure/ServiceContainer";
+import { ServiceContainer } from "../../../../../shared/infraestructure/services-container/ServiceContainer";
 export class ExampleController {
     async create(request: Request, response: Response){
         const { example_name } = request.body;

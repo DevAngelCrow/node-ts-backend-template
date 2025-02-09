@@ -177,9 +177,9 @@ export class ImplPeopleRepository implements PeopleRepository {
           id: id.value,
         },
         data: {
-          id_status: id_status.value
-        }
-      })
+          id_status: id_status.value,
+        },
+      });
       //throw new Error("Method not implemented.");
     } catch (error) {
       throw CustomError.internalServer(
@@ -192,7 +192,7 @@ export class ImplPeopleRepository implements PeopleRepository {
     countries: CountryId[]
   ): Promise<void> {
     try {
-      const nationalities = countries.map((nation) => (+nation.value));
+      const nationalities = countries.map((nation) => +nation.value);
       const people_country = await this.prisma.people_country.findMany({
         where: {
           id_people: id.value,
@@ -206,7 +206,7 @@ export class ImplPeopleRepository implements PeopleRepository {
       });
 
       const existingIds = new Set(
-        people_country.map((person) => (+person.id_country))
+        people_country.map((person) => +person.id_country)
       );
       const countriesToInactivate = people_country.filter(
         (person) => !nationalities.includes(+person.id_country)
@@ -256,7 +256,51 @@ export class ImplPeopleRepository implements PeopleRepository {
         });
       }
     } catch (error) {
-      throw CustomError.internalServer("Internal server error")
+      throw CustomError.internalServer("Internal server error");
+    }
+  }
+  async findByEmail(email: PeopleEmail): Promise<People | null> {
+    try {
+      const person = await this.prisma.mnt_people.findFirst({
+        where: {
+          email: email.value,
+        },
+        select: {
+          ctl_gender: true,
+          ctl_marital_status: true,
+          ctl_status_people: true,
+          id: true,
+          first_name: true,
+          middle_name: true,
+          last_name: true,
+          birthdate: true,
+          email: true,
+          img_path: true,
+          phone: true,
+          has_insurance: true,
+          people_country: {
+            select: {
+              ctl_country: {
+                select: {
+                  id: true,
+                  name: true,
+                  code: true,
+                  abbreviation: true,
+                  state: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!person) {
+        throw CustomError.notFound("Email not found");
+      }
+
+      return this.mapToDomain(person);
+    } catch (error) {
+      throw CustomError.internalServer("Internal server error in find by email")
     }
   }
   deletePeopleCoutry(id: PeopleId, countries: CountryId[]): Promise<void> {

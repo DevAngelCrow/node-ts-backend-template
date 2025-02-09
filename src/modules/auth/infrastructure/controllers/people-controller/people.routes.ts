@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { PeopleController } from "./people.controller";
-import upload from "../../config/multer";
+import upload from "../../../../../shared/infraestructure/config/multer";
 
 export class PeopleRoutes {
   static get routes(): Router {
