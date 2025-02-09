@@ -1,4 +1,4 @@
-import { envs } from "../../../../../shared/infraestructure/config/envs";
+import { envs } from "../../../../../shared/infrastructure/config/envs";
 import { AuthServiceRepository, User } from "../../../domain";
 import jwt, { SignOptions } from "jsonwebtoken";
 import bycrypt from "bcryptjs";

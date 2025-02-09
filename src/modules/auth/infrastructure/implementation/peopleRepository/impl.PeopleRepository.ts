@@ -33,7 +33,7 @@ import {
 import {
   prismaClient,
   PrismaClientKnownRequestError,
-} from "../../../../../shared/infraestructure/db/PrismaWrapper";
+} from "../../../../../shared/infrastructure/db/PrismaWrapper";
 import { PostgresPeople } from "../../../../../shared/domain/types";
 import { mapperToPrismaData } from "./mapperToPrismaData";
 import { PrismaClientUnknownRequestError } from "@prisma/client/runtime/library";

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import DateTimeService from "../../../../../shared/infraestructure/services/date-time/date.time.services";
-import { ServiceContainer } from "../../../../../shared/infraestructure/services-container/ServiceContainer";
+import DateTimeService from "../../../../../shared/infrastructure/services/date-time/date.time.services";
+import { ServiceContainer } from "../../../../../shared/infrastructure/services-container/ServiceContainer";
 
 export class PeopleController {
   async createPeople(request: Request, response: Response) {

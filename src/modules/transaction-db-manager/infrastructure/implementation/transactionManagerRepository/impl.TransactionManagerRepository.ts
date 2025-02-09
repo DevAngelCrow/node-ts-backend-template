@@ -1,5 +1,5 @@
 import { TransactionManagerRepository } from "../../../domain/repositories/transaction-manager/TransactionManagerRepository";
-import { prismaClient } from "../../../../../shared/infraestructure/db/PrismaWrapper";
+import { prismaClient } from "../../../../../shared/infrastructure/db/PrismaWrapper";
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 
 export class ImplTransactionManagerRepository implements TransactionManagerRepository{

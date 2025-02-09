@@ -3,9 +3,9 @@ import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 import { MultimediaFile } from "../../../../../shared/domain/types";
 import {  StorageRepository } from "../../../domain/repositories/storage/StorageRepository";
 import { PeopleImgPath } from "../../../../../shared/domain/domain-container/DomainContainer";
-import googleAuth from "../../../../../shared/infraestructure/config/googleAuth";
+import googleAuth from "../../../../../shared/infrastructure/config/googleAuth";
 import { google } from "googleapis";
-import { envs } from "../../../../..//shared/infraestructure/config/envs";
+import { envs } from "../../../../../shared/infrastructure/config/envs";
 
 
 export class ImplStorageRepository implements StorageRepository {

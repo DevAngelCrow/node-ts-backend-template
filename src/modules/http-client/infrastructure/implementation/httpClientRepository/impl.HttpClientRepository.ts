@@ -1,6 +1,6 @@
 import { HttpClientRepository } from "../../../domain/repositories/http-client/HttpClientRepository";
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
-import { HttpClient } from "../../../../../shared/infraestructure/config/httpCient";
+import { HttpClient } from "../../../../../shared/infrastructure/config/httpCient";
 
 export class ImplHttpClientRepository implements HttpClientRepository{
     private provider : "axios" | "fetch";

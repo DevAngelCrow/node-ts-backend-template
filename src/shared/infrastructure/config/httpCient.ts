@@ -1,5 +1,5 @@
-import { CustomError } from "../../../shared/domain/errors/custom.error";
-import { HttpClientInterface } from "../../../shared/infraestructure/interfaces/HttpClientInterface";
+import { CustomError } from "../../domain/errors/custom.error";
+import { HttpClientInterface } from "../interfaces/HttpClientInterface";
 import axios, { AxiosInstance } from "axios";
 
 export class HttpClient {

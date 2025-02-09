@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ServiceContainer } from "../../../../../shared/infraestructure/services-container/ServiceContainer";
+import { ServiceContainer } from "../../../../../shared/infrastructure/services-container/ServiceContainer";
 
 export class CountryController {
     async getById(request: Request, response: Response){

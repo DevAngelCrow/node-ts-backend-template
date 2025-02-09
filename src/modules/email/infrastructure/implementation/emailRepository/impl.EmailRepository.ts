@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { envs } from "../../../../../shared/infraestructure/config/envs";
+import { envs } from "../../../../../shared/infrastructure/config/envs";
 import { Attachement, SendMailOptions } from "../../../domain/interfaces/index";
 import { EmailRepository } from "../../../../auth/domain";
 export class EmailService implements EmailRepository {

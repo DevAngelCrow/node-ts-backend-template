@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ServiceContainer } from "../../../../../shared/infraestructure/services-container/ServiceContainer";
+import { ServiceContainer } from "../../../../../shared/infrastructure/services-container/ServiceContainer";
 
 export class AuthServiceController {
     async login(request: Request, response: Response){

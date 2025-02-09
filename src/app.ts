@@ -1,6 +1,6 @@
-import { Server } from "./shared/infraestructure/server";
-import { AppRoutes } from "./shared/infraestructure/routes";
-import { envs } from "./shared/infraestructure/config/envs";
+import { Server } from "./shared/infrastructure/server";
+import { AppRoutes } from "./shared/infrastructure/routes";
+import { envs } from "./shared/infrastructure/config/envs";
 
 (async ()=>{
     main();

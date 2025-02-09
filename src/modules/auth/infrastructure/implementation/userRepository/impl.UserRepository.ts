@@ -1,7 +1,7 @@
-import { prismaClient } from "../../../../../shared/infraestructure/db/PrismaWrapper";
+import { prismaClient } from "../../../../../shared/infrastructure/db/PrismaWrapper";
 import { PeopleId, User, UserId, UserIdPeople, UserIdStatus, UserLastAccess, UserName, UserPassword, UserRepository } from "../../../domain";
 import { PostgresUser } from "../../../../../shared/domain/types/postgres-types/postgresUser";
-import DateTimeService from "../../../../../shared/infraestructure/services/date-time/date.time.services";
+import DateTimeService from "../../../../../shared/infrastructure/services/date-time/date.time.services";
 export class ImplUserRepository implements UserRepository {
     private prisma = prismaClient;
     private dt = new DateTimeService().dateTime;

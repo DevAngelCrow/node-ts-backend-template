@@ -7,7 +7,7 @@ import {
   CountryRepository,
   CountryState,
 } from "../../../domain";
-import { prismaClient } from "../../../../../shared/infraestructure/db/PrismaWrapper";
+import { prismaClient } from "../../../../../shared/infrastructure/db/PrismaWrapper";
 import { mapperToPrismaData } from "./mapperToPrismaData";
 import { PostgresCountry } from "../../../../../shared/domain/types";
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";

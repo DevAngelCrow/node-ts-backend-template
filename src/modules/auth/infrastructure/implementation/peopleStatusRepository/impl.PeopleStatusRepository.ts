@@ -6,7 +6,7 @@ import {
   PeopleStatusName,
   PeopleStatusRepository,
 } from "../../../domain";
-import { prismaClient } from "../../../../../shared/infraestructure/db/PrismaWrapper";
+import { prismaClient } from "../../../../../shared/infrastructure/db/PrismaWrapper";
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 import { PostgresPeopleStatus } from "../../../../../shared/domain/types";
 

@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
 import path from 'path';
-import { ServerOptions } from '../infraestructure/interfaces/ServerOptionsInterface';
+import { ServerOptions } from './interfaces/ServerOptionsInterface';
 
 export class Server {
     public readonly app = express();
