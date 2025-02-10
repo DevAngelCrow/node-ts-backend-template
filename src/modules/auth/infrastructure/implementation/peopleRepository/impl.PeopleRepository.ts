@@ -261,6 +261,7 @@ export class ImplPeopleRepository implements PeopleRepository {
   }
   async findByEmail(email: PeopleEmail): Promise<People | null> {
     try {
+      
       const person = await this.prisma.mnt_people.findFirst({
         where: {
           email: email.value,
@@ -300,6 +301,7 @@ export class ImplPeopleRepository implements PeopleRepository {
 
       return this.mapToDomain(person);
     } catch (error) {
+      console.log(error, 'error en find email people')
       throw CustomError.internalServer("Internal server error in find by email")
     }
   }

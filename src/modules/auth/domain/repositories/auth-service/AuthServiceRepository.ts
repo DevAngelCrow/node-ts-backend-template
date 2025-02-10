@@ -5,5 +5,7 @@ export interface AuthServiceRepository {
     generateToken(user: User) : string;
     verifyToken(token: string) : unknown;
     comparePassword(plain: string, hashed: string) : boolean;
-    AuthenticateUser(email: PeopleEmail, password: UserPassword) : Promise<{user: User; token: string}>;  
+    authenticateUser(email: PeopleEmail, password: UserPassword) : Promise<{user: User; token: string}>;
+    hashPassword(password: UserPassword) : Promise<UserPassword>;
+
 }

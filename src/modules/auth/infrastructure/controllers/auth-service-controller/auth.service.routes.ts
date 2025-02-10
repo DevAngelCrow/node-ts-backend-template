@@ -6,7 +6,7 @@ export class AuthServiceRoutes {
         const router = Router();
         const controller = new AuthServiceController;
 
-        router.get('/login', controller.login);
+        router.post('/login', controller.login);
         
         return router;
     }

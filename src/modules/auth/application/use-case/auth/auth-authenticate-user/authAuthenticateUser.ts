@@ -6,7 +6,7 @@ export class AuthenticateUser {
 
     async run(email: string, password: string) : Promise<{user: User; token: string}>{
         
-        return await this.repository.AuthenticateUser(new PeopleEmail(email), new UserPassword(password));
+        return await this.repository.authenticateUser(new PeopleEmail(email), new UserPassword(password));
         
     }
 

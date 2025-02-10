@@ -15,7 +15,12 @@ import {
   CountryEdit,
   CountryGetAll,
   CountryGetOneById,
-  PeopleFindByEmail
+  PeopleFindByEmail,
+  UserCreate,
+  UserUpdate,
+  UserGetById,
+  UserGetAll,
+  UserDelete
 
 } from "../../../modules/auth/application/use-case/index";
 import { envs } from "../config/envs";
@@ -33,6 +38,10 @@ import { ImplAuthServiceRepository } from "../../../modules/auth/infrastructure/
 import { AuthGenerateToken, AuthVerifyToken } from "../../../modules/auth/application/services/auth";
 import { AuthenticateUser } from "../../../modules/auth/application/use-case/auth/auth-authenticate-user/authAuthenticateUser";
 import { ImplUserRepository } from "../../../modules/auth/infrastructure/implementation/userRepository/impl.UserRepository";
+import { AuthPasswordHash } from "../../../modules/auth/application/services/auth/auth-password-hash/authPasswordHash";
+
+
+
 
 const exampleRepository = new ImplExampleRepository();
 const peopleRepository = new ImplPeopleRepository();
@@ -41,8 +50,8 @@ const transactionManagerRepository = new ImplTransactionManagerRepository();
 const storageRepository = new ImplStorageRepository();
 const peopleStatusRepository = new ImplPeopleStatusRepository();
 const httpClientRepository = new ImplHttpClientRepository(envs.HTTP_CLIENT_ADAPTER);
-const authServiceRepository = new ImplAuthServiceRepository();
-const userRepository = new ImplUserRepository()
+const userRepository = new ImplUserRepository();
+const authServiceRepository = new ImplAuthServiceRepository(userRepository, peopleRepository);
 
 export const ServiceContainer = {
   example: {
@@ -76,6 +85,14 @@ export const ServiceContainer = {
   authService: {
     generateToken: new AuthGenerateToken(authServiceRepository),
     verifyToken: new AuthVerifyToken(authServiceRepository),
-    authenticateUser: new AuthenticateUser(authServiceRepository, userRepository, peopleRepository),
+    authenticateUser: new AuthenticateUser(authServiceRepository),
+    hashPassword: new AuthPasswordHash(authServiceRepository),
+  },
+  user: {
+    create: new UserCreate(userRepository),
+    update: new UserUpdate(userRepository),
+    getOneById: new UserGetById(userRepository),
+    getAll: new UserGetAll(userRepository),
+    delete: new UserDelete(userRepository)
   }
 };

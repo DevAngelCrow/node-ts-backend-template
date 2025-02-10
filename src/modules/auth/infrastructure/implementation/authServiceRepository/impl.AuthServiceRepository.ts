@@ -6,7 +6,8 @@ import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 export class ImplAuthServiceRepository implements AuthServiceRepository {
   private secretKey = envs.JWT_SECRET;
   private expirationJWT: number = envs.JWT_EXPIRATION;
-  constructor(private repositoryUser: UserRepository, private repositoryPeople: PeopleRepository, private repository: AuthServiceRepository){}
+  constructor(private repositoryUser: UserRepository, private repositoryPeople: PeopleRepository){}
+  
   generateToken(user: User): string {
     try {
       const payload = { username: user.user_name.value };
@@ -29,30 +30,42 @@ export class ImplAuthServiceRepository implements AuthServiceRepository {
       throw new Error("Error in the comparation password");
     }
   }
-  async AuthenticateUser(email: PeopleEmail, password: UserPassword): Promise<{ user: User; token: string; }> {
+  async authenticateUser(email: PeopleEmail, password: UserPassword): Promise<{ user: User; token: string; }> {
     try {
       const person = await this.repositoryPeople.findByEmail(email);
+      
       if(!person){
         throw CustomError.unauthorized("Invalid credentials");
       }
       
+      
       const user = await this.repositoryUser.findByEmailPeople(new PeopleId(person.id?.value!));
 
+      
       if(!user){
         throw CustomError.unauthorized("Invalid credentials");
       }
 
-      const passwordComparison = await this.repository.comparePassword(password.value, user.password.value);
+      const passwordComparison = await this.comparePassword(password.value, user.password.value);
 
       if(!passwordComparison){
         throw CustomError.unauthorized("Invalid credentials")
       }
 
-      const token = this.repository.generateToken(user);
+      const token = this.generateToken(user);
 
       return { user, token};
     } catch (error) {
+      console.log(error, 'error autenticacion authenticateUser')
       throw CustomError.unauthorized("Invalid credentials")
     }
+  }
+  async hashPassword(password: UserPassword): Promise<UserPassword> {
+    const saltRounds = 10;
+    const hashedPassword = await bycrypt.hash(password.value, saltRounds);
+
+    const passwordFormated = new UserPassword(hashedPassword);
+
+    return passwordFormated;
   }
 }
