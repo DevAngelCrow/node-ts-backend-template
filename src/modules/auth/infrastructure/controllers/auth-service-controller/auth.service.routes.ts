@@ -1,12 +1,12 @@
 import { Router } from "express";
-//import { CountryController } from "./country.controller";
+import { AuthServiceController } from "./auth.service.controller";
 
-export class CountryRoutes {
+export class AuthServiceRoutes {
     static get routes() : Router {
         const router = Router();
-        //const controller = new CountryController;
+        const controller = new AuthServiceController;
 
-        router.get('/:id', controller.getById );
+        router.get('/login', controller.login);
         
         return router;
     }

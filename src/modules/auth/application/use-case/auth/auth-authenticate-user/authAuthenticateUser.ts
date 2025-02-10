@@ -1,18 +1,13 @@
 import { CustomError } from "../../../../../../shared/domain/errors/custom.error";
-import { AuthServiceRepository, User, UserRepository } from "../../../../domain";
+import { AuthServiceRepository, PeopleEmail, User, UserPassword } from "../../../../domain";
 
 export class AuthenticateUser {
-    constructor(private repository: AuthServiceRepository, private repositoryUser: UserRepository){}
+    constructor(private repository: AuthServiceRepository){}
 
     async run(email: string, password: string) : Promise<{user: User; token: string}>{
-        const user = await this.repositoryUser.findByEmail(email);
-
-        if(!user || !this.repository.comparePassword(password, user.password.value)){
-            throw CustomError.unauthorized("Invalid credentials");
-        }
-
-        const token = this.repository.generateToken(user);
-        return { user, token};
+        
+        return await this.repository.AuthenticateUser(new PeopleEmail(email), new UserPassword(password));
+        
     }
 
     

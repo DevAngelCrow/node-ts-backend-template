@@ -4,5 +4,5 @@ export type PostgresUser = {
     user_name: string,
     password: string,
     id_status: number,
-    last_access: Date | null
+    last_access: Date
 }

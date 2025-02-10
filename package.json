@@ -40,6 +40,6 @@
     "ws": "^8.18.0"
   },
   "prisma": {
-    "schema": "src/infrastructure/db/schema.prisma"
+    "schema": "src/shared/infrastructure/db/schema.prisma"
   }
 }

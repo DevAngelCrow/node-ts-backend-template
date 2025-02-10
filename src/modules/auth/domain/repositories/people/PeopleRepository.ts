@@ -1,5 +1,5 @@
 import { People } from "../../entities";
-import { CountryId, PeopleEmail, PeopleId, PeopleStatusId, PeopleStatusName } from "../../value-object";
+import { CountryId, PeopleEmail, PeopleId, PeopleStatusId } from "../../value-object";
 
 export interface PeopleRepository {
   create(example: People): Promise<void>;

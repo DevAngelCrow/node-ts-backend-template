@@ -1,10 +1,9 @@
 import { prismaClient } from "../../../../../shared/infrastructure/db/PrismaWrapper";
 import { PeopleId, User, UserId, UserIdPeople, UserIdStatus, UserLastAccess, UserName, UserPassword, UserRepository } from "../../../domain";
 import { PostgresUser } from "../../../../../shared/domain/types/postgres-types/postgresUser";
-import DateTimeService from "../../../../../shared/infrastructure/services/date-time/date.time.services";
 export class ImplUserRepository implements UserRepository {
     private prisma = prismaClient;
-    private dt = new DateTimeService().dateTime;
+
     async findByEmailPeople(id: PeopleId): Promise<User | null> {
         try {
             const user = await this.prisma.mnt_user.findFirst({
@@ -29,11 +28,24 @@ export class ImplUserRepository implements UserRepository {
         }
         
     }
-    
+    create(user: User): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
+    update(user: User): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
+    getAll(): Promise<User[]> {
+        throw new Error("Method not implemented.");
+    }
+    getById(id: UserId): Promise<User | null> {
+        throw new Error("Method not implemented.");
+    }
+    delete(id: UserId): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
    
 
     private mapToDomain(user: PostgresUser) : User{
-        const formatedLastAccess = this.dt.fromISO(user.last_access).toJSDate();
         return new User(
             new UserIdPeople(user.id_people),
             new UserName(user.user_name),

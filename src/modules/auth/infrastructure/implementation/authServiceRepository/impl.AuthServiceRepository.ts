@@ -1,11 +1,12 @@
 import { envs } from "../../../../../shared/infrastructure/config/envs";
-import { AuthServiceRepository, User } from "../../../domain";
+import { AuthServiceRepository, PeopleEmail, PeopleId, PeopleRepository, User, UserPassword, UserRepository } from "../../../domain";
 import jwt, { SignOptions } from "jsonwebtoken";
 import bycrypt from "bcryptjs";
+import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 export class ImplAuthServiceRepository implements AuthServiceRepository {
   private secretKey = envs.JWT_SECRET;
   private expirationJWT: number = envs.JWT_EXPIRATION;
-
+  constructor(private repositoryUser: UserRepository, private repositoryPeople: PeopleRepository, private repository: AuthServiceRepository){}
   generateToken(user: User): string {
     try {
       const payload = { username: user.user_name.value };
@@ -26,6 +27,32 @@ export class ImplAuthServiceRepository implements AuthServiceRepository {
       return bycrypt.compareSync(plain, hashed);
     } catch (error) {
       throw new Error("Error in the comparation password");
+    }
+  }
+  async AuthenticateUser(email: PeopleEmail, password: UserPassword): Promise<{ user: User; token: string; }> {
+    try {
+      const person = await this.repositoryPeople.findByEmail(email);
+      if(!person){
+        throw CustomError.unauthorized("Invalid credentials");
+      }
+      
+      const user = await this.repositoryUser.findByEmailPeople(new PeopleId(person.id?.value!));
+
+      if(!user){
+        throw CustomError.unauthorized("Invalid credentials");
+      }
+
+      const passwordComparison = await this.repository.comparePassword(password.value, user.password.value);
+
+      if(!passwordComparison){
+        throw CustomError.unauthorized("Invalid credentials")
+      }
+
+      const token = this.repository.generateToken(user);
+
+      return { user, token};
+    } catch (error) {
+      throw CustomError.unauthorized("Invalid credentials")
     }
   }
 }

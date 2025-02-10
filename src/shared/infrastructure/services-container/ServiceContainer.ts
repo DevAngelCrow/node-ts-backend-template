@@ -76,6 +76,6 @@ export const ServiceContainer = {
   authService: {
     generateToken: new AuthGenerateToken(authServiceRepository),
     verifyToken: new AuthVerifyToken(authServiceRepository),
-    authenticateUser: new AuthenticateUser(authServiceRepository, userRepository),
+    authenticateUser: new AuthenticateUser(authServiceRepository, userRepository, peopleRepository),
   }
 };
