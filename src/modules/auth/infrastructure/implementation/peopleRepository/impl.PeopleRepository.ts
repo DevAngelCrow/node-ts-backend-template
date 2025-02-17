@@ -29,6 +29,7 @@ import {
   PeopleStatusDescription,
   PeopleStatusId,
   PeopleStatusName,
+  User,
 } from "../../../domain";
 import {
   prismaClient,
@@ -40,18 +41,37 @@ import { PrismaClientUnknownRequestError } from "@prisma/client/runtime/library"
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 
 export class ImplPeopleRepository implements PeopleRepository {
+  async createUserWithPerson(people: People, user: User): Promise<void> {
+    try {
+      if(!people){
+        throw CustomError.internalServer("No se hizo el registro correctamente")
+      }
+      if(!user){
+        throw CustomError.internalServer("No se hizo el registro correctamente")
+      }
+      this.getOneById(people.getId);
+    } catch (error) {
+      throw CustomError.badRequest(`El error ${error}`)
+    }
+  }
+  
   private people: People[] = [];
   private prisma = prismaClient;
 
-  async create(people: People): Promise<void> {
+  async create(people: People): Promise<People> {
     try {
       const peoplePrismaData = new mapperToPrismaData().mntPeopleToPrismaCreate(
         people
       );
 
-      await this.prisma.mnt_people.create({
+      const person = await this.prisma.mnt_people.create({
         data: peoplePrismaData,
       });
+
+      people.setId = new PeopleId(person.id);
+
+      return people;
+
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         //console.log(error);
@@ -59,7 +79,7 @@ export class ImplPeopleRepository implements PeopleRepository {
       if (error instanceof PrismaClientUnknownRequestError) {
         //console.log(error.constructor.name);
       }
-
+      //console.log(error, 'error')
       throw CustomError.internalServer(
         "Internal server error in create people"
       );
@@ -157,10 +177,10 @@ export class ImplPeopleRepository implements PeopleRepository {
       const personEdit = new mapperToPrismaData().mntPeopleToPrismaUpdate(
         person
       );
-
+      const id = person.getId.value;
       await this.prisma.mnt_people.update({
         where: {
-          id: person.id?.value,
+          id: id,
         },
         data: personEdit,
       });
@@ -305,6 +325,7 @@ export class ImplPeopleRepository implements PeopleRepository {
       throw CustomError.internalServer("Internal server error in find by email")
     }
   }
+  
   deletePeopleCoutry(id: PeopleId, countries: CountryId[]): Promise<void> {
     throw new Error("Method not implemented.");
   }

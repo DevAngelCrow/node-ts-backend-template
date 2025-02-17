@@ -12,7 +12,7 @@ export class UserCreate {
     ) : Promise<void>{
 
         const user = new User(
-            new UserIdPeople(id_people),
+            new UserIdPeople(+id_people),
             new UserName(user_name),
             new UserPassword(password),
             new UserIdStatus(id_status),

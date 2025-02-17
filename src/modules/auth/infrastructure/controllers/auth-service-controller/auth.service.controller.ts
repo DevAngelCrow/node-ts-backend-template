@@ -7,7 +7,8 @@ export class AuthServiceController {
      await ServiceContainer.authService.authenticateUser
       .run(email, password)
       .then(({user, token}) => {
-        response.status(200).json({ user, token });
+        user.mapToPrimitivesLogin
+        response.status(200).json({ user: user.mapToPrimitivesLogin(), token});
       })
       .catch((error) =>
         response.status(error.statusCode).json({ message: error.message })

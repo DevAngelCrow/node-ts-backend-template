@@ -40,7 +40,7 @@ export class PeopleCreate {
     has_insurance: boolean,
     id_status: number,
     nationality: number[]
-  ): Promise<void> {
+  ): Promise<People> {
     const url_img = await this.repositoryStorage.updload(img_path);
     const id_img = url_img.split("=")[1];
     return this.repositoryTransaction.runInTransaction(async () => {

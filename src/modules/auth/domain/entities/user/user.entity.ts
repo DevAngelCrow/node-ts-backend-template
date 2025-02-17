@@ -9,4 +9,12 @@ export class User{
         readonly last_access: UserLastAccess,
         readonly id?: UserId 
     ){}
+
+    public mapToPrimitivesLogin(){
+        return {
+            user_name: this.user_name.value,
+            last_access: this.last_access.value,
+            id_status: this.id_status.value,
+        }
+    }
 }

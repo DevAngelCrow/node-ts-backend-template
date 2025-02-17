@@ -16,6 +16,7 @@ import {
 import { Country, Gender, MaritalStatus, PeopleStatus } from "../index";
 
 export class People {
+  
   constructor(
     readonly first_name: PeopleFirstName,
     readonly birthdate: PeopleBirthdate,
@@ -32,7 +33,7 @@ export class People {
     readonly ctl_gender?: Gender,
     readonly ctl_marital_status?: MaritalStatus,
     readonly ctl_status_people?: PeopleStatus,
-    readonly id?: PeopleId
+    private id?: PeopleId
   ) {}
 
   public mapToPrimitives() {
@@ -80,5 +81,13 @@ export class People {
       }
     });
     return nationalities;
+  }
+
+  get getId() : PeopleId {
+    return this.id!;
+  }
+
+  set setId(newId: PeopleId){
+    this.id = newId
   }
 }

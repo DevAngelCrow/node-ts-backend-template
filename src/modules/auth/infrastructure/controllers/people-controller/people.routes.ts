@@ -11,7 +11,8 @@ export class PeopleRoutes {
     router.get("/", controller.getAllPeople);
     router.get("/:id", controller.getPeopleById);
     router.put("/:id", upload.single("img_path"), controller.updatePerson );
-    router.delete("/:id", controller.deletePerson )
+    router.delete("/:id", controller.deletePerson );
+    router.post('/sign-up', upload.single("img_path"), controller.createPeopleUser)
 
     return router;
   }

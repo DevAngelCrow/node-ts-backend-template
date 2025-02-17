@@ -65,9 +65,9 @@ export class PeopleEdit {
         new PeopleId(id)
       );
 
-      const personDb = await this.respository.getOneById(people?.id!);
+      const personDb = await this.respository.getOneById(people.getId);
 
-      await this.respository.updatePeopleCountry(people.id!, nationalities);
+      await this.respository.updatePeopleCountry(people.getId, nationalities);
       await this.respositoryStorage.delete(personDb?.img_path?.value.split("=")[1]!);
 
       return this.respository.update(people);

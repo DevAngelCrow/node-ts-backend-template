@@ -20,7 +20,8 @@ import {
   UserUpdate,
   UserGetById,
   UserGetAll,
-  UserDelete
+  UserDelete,
+  PeopleCreateUser
 
 } from "../../../modules/auth/application/use-case/index";
 import { envs } from "../config/envs";
@@ -68,6 +69,7 @@ export const ServiceContainer = {
     getAll: new PeopleGetAll(peopleRepository),
     delete: new PeopleDelete(peopleRepository, peopleStatusRepository),
     findByEmail: new PeopleFindByEmail(peopleRepository),
+    createUserWithPerson: new PeopleCreateUser(peopleRepository, userRepository, transactionManagerRepository, storageRepository)
   },
   country: {
     create: new CountryCreate(countryRepository),

@@ -7,6 +7,6 @@ export class UserFindByEmail {
         
         const emailPeople = await this.respositoryPeople.findByEmail(new PeopleEmail(email));
         
-        return this.repository.findByEmailPeople(emailPeople?.id!);
+        return this.repository.findByEmailPeople(emailPeople?.getId!);
     }
 }
