@@ -43,7 +43,7 @@ export class PeopleCreate {
   ): Promise<People> {
     const url_img = await this.repositoryStorage.updload(img_path);
     const id_img = url_img.split("=")[1];
-    return this.repositoryTransaction.runInTransaction(async () => {
+    //return this.repositoryTransaction.runInTransaction(async () => {
       const nationalities = nationality.map((id) => new CountryId(id));
       const foundNationalities = await this.repositoryCountry.findMany(
         nationalities
@@ -82,9 +82,9 @@ export class PeopleCreate {
       );
 
       return this.repository.create(people);
-    }).catch(async (error)=>{
-      await this.repositoryStorage.delete(id_img);
-      throw error;
-    });
+    //}).catch(async (error)=>{
+      //await this.repositoryStorage.delete(id_img);
+      //throw error;
+    //});
   }
 }
