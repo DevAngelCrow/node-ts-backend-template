@@ -1,7 +1,7 @@
 export type PostgresPeople = {
     id: number;
     first_name: string;
-    middle_name: string | null;
+    middle_name?: string | null;
     last_name: string | null;
     birthdate: Date;
     ctl_gender: {[key:string]:any};
@@ -9,7 +9,7 @@ export type PostgresPeople = {
     email: string;
     ctl_marital_status: {[key:string]:any};
     //id_marital_status: number;
-    img_path: string | null;
+    img_path?: string | null;
     phone: string;
     has_insurance: boolean | null;
     ctl_status_people: {[key:string]:any};

@@ -31,9 +31,7 @@ import {
   PeopleStatusName,
   User,
 } from "../../../domain";
-import {
-  prismaClient,
-} from "../../../../../shared/infrastructure/db/PrismaWrapper";
+import { prismaClient } from "../../../../../shared/infrastructure/db/PrismaWrapper";
 import { PostgresPeople } from "../../../../../shared/domain/types";
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 import { MntPeople } from "../../../../../shared/infrastructure/db/entities/MntPeople";
@@ -76,29 +74,9 @@ export class ImplPeopleRepository implements PeopleRepository {
       });
 
       const personRepo = AppDataSource.dataSource.getRepository(MntPeople);
-      const genderRepo = AppDataSource.dataSource.getRepository(CtlGender);
-      const maritalStatusRepo =
-        AppDataSource.dataSource.getRepository(CtlMaritalStatus);
-      const statusRepo =
-        AppDataSource.dataSource.getRepository(CtlStatusPeople);
+
       const peopleCountryRepo =
         AppDataSource.dataSource.getRepository(PeopleCountry);
-
-      const [gender, maritalStatus, statusPeople] = await Promise.all([
-        genderRepo.findOneBy({ id: people.id_gender.value }),
-        maritalStatusRepo.findOneBy({ id: people.id_marital_status.value }),
-        statusRepo.findOneBy({ id: people.id_status.value }),
-      ]);
-
-      if (!gender) {
-        throw CustomError.badRequest("The provided id_gender does not exist in the records");
-      }
-      if (!maritalStatus) {
-        throw CustomError.badRequest("The provided id_marital_status does not exist in the records");
-      }
-      if (!statusPeople) {
-        throw CustomError.badRequest("The provided id_status does not exist in the records");
-      }
 
       const newPerson = await personRepo.create({
         firstName: people.first_name.value,
@@ -110,11 +88,13 @@ export class ImplPeopleRepository implements PeopleRepository {
         phone: people.phone.value,
         hasInsurance: people.has_insurance?.value,
         idGender: { id: people.id_gender.value },
-        idStatus: {id: people.id_status.value},
+        idStatus: { id: people.id_status.value },
         idMaritalStatus: { id: people.id_marital_status.value },
       });
 
       const savedPerson = await personRepo.save(newPerson);
+
+
 
       const peopleCountries = nationalities.map((nationality) =>
         peopleCountryRepo.create({
@@ -125,11 +105,12 @@ export class ImplPeopleRepository implements PeopleRepository {
       );
 
       await peopleCountryRepo.save(peopleCountries);
+      
       people.setId = new PeopleId(savedPerson.id!);
-      console.log(people, 'Entidad persona')
+
       return people;
-    } catch (error: any) {
-      console.log(error.driverError, "error de instancia");
+
+    } catch (error) {
       throw CustomError.internalServer(
         "Internal server error in create people"
       );
@@ -137,43 +118,54 @@ export class ImplPeopleRepository implements PeopleRepository {
   }
   async getAll(): Promise<People[]> {
     try {
-      const people = await this.prisma.mnt_people.findMany({
-        select: {
-          ctl_gender: true,
-          ctl_marital_status: true,
-          ctl_status_people: true,
-          id: true,
-          first_name: true,
-          middle_name: true,
-          last_name: true,
-          birthdate: true,
-          email: true,
-          img_path: true,
-          phone: true,
-          has_insurance: true,
-          people_country: {
-            select: {
-              ctl_country: {
-                select: {
-                  id: true,
-                  name: true,
-                  code: true,
-                  abbreviation: true,
-                  state: true,
-                },
-              },
-            },
-          },
-        },
-        orderBy: {
-          id: "asc",
-        },
-      });
 
-      this.people = people.map((person) => this.mapToDomain(person));
+      const peopleRepo = AppDataSource.dataSource.getRepository(MntPeople);
+
+      const people = await peopleRepo.find({
+        select: {
+          id: true,
+          firstName: true,
+          middleName: true,
+          lastName: true,
+          birthdate: true,
+          idGender: {
+            id: true,
+          },
+          email: true,
+          idMaritalStatus: {
+            id: true,
+          },
+          imgPath: true,
+          phone: true,
+          hasInsurance: true,
+          idStatus: {
+            id: true,
+          },
+          peopleCountries: true
+        }
+      });
+      
+
+      console.log(people, 'esto regresa typeORM')
+      this.people = people.map((person) => this.mapToDomain({
+        id: person.id,
+        first_name: person.firstName,
+        middle_name: person?.middleName,
+        last_name: person.lastName,
+        birthdate: new Date(person.birthdate),
+        ctl_gender: person.idGender,
+        email: person.email, 
+        ctl_marital_status: person.idMaritalStatus, 
+        img_path: person?.imgPath,
+        phone: person.phone,
+        has_insurance: person.hasInsurance,
+        ctl_status_people: person.idStatus,
+        people_country: person.peopleCountries, 
+      }));
 
       return this.people;
     } catch (error) {
+      console.log(error, 'error')
       throw CustomError.internalServer("Internal server error in get people");
     }
   }
@@ -381,6 +373,7 @@ export class ImplPeopleRepository implements PeopleRepository {
     throw new Error("Method not implemented.");
   }
   private mapToDomain(people: PostgresPeople): People {
+    console.log(people.people_country, 'people_country')
     const nationalities = people.people_country.map(
       (pc) =>
         new Country(

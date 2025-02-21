@@ -21,7 +21,8 @@ import {
   UserGetById,
   UserGetAll,
   UserDelete,
-  PeopleCreateUser
+  PeopleCreateUser,
+  UserFindByEmail
 
 } from "../../../modules/auth/application/use-case/index";
 import { envs } from "../config/envs";
@@ -40,14 +41,14 @@ import { AuthGenerateToken, AuthVerifyToken } from "../../../modules/auth/applic
 import { AuthenticateUser } from "../../../modules/auth/application/use-case/auth/auth-authenticate-user/authAuthenticateUser";
 import { ImplUserRepository } from "../../../modules/auth/infrastructure/implementation/userRepository/impl.UserRepository";
 import { AuthPasswordHash } from "../../../modules/auth/application/services/auth/auth-password-hash/authPasswordHash";
-
+import AppDataSource from "../db/TypeOrmConfig"
 
 
 
 const exampleRepository = new ImplExampleRepository();
 const peopleRepository = new ImplPeopleRepository();
 const countryRepository = new ImplCountryRepository();
-const transactionManagerRepository = new ImplTransactionManagerRepository();
+const transactionManagerRepository = new ImplTransactionManagerRepository(AppDataSource.dataSource);
 const storageRepository = new ImplStorageRepository();
 const peopleStatusRepository = new ImplPeopleStatusRepository();
 const httpClientRepository = new ImplHttpClientRepository(envs.HTTP_CLIENT_ADAPTER);
@@ -64,12 +65,12 @@ export const ServiceContainer = {
   },
   people: {
     create: new PeopleCreate(peopleRepository, countryRepository, transactionManagerRepository, storageRepository),
-    update: new PeopleEdit(peopleRepository, transactionManagerRepository, storageRepository),
+    //update: new PeopleEdit(peopleRepository, transactionManagerRepository, storageRepository),
     getOneById: new PeopleGetOneById(peopleRepository),
     getAll: new PeopleGetAll(peopleRepository),
     delete: new PeopleDelete(peopleRepository, peopleStatusRepository),
     findByEmail: new PeopleFindByEmail(peopleRepository),
-    createUserWithPerson: new PeopleCreateUser(peopleRepository, userRepository, transactionManagerRepository, storageRepository)
+    //createUserWithPerson: new PeopleCreateUser(peopleRepository, userRepository, transactionManagerRepository, storageRepository)
   },
   country: {
     create: new CountryCreate(countryRepository),
@@ -95,6 +96,7 @@ export const ServiceContainer = {
     update: new UserUpdate(userRepository),
     getOneById: new UserGetById(userRepository),
     getAll: new UserGetAll(userRepository),
-    delete: new UserDelete(userRepository)
+    delete: new UserDelete(userRepository),
+    getOneByEmail: new UserFindByEmail(userRepository, peopleRepository)
   }
 };

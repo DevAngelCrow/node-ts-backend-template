@@ -3,25 +3,63 @@ import { PeopleId, User, UserId, UserIdPeople, UserIdStatus, UserLastAccess, Use
 import { PostgresUser } from "../../../../../shared/domain/types/postgres-types/postgresUser";
 import { mapperToPrismaData } from './mapperToPrismaData';
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
+import AppDataSource from "../../../../../shared/infrastructure/db/TypeOrmConfig"
+import { MntUser } from "../../../../../shared/infrastructure/db/entities/MntUser";
+
 export class ImplUserRepository implements UserRepository {
     private prisma = prismaClient;
     private users : User[] = [];
     async findByEmailPeople(id: PeopleId): Promise<User | null> {
         
         try {
-            const user = await this.prisma.mnt_user.findFirst({
-                where: { id_people: id.value },
-                select: {
-                    id_people: true,
-                    id_status: true,
-                    user_name: true,
-                    last_access: true,
-                    password: true,
-                    id: true
-                }
-            });
+            console.log(id, 'idPeople')
+            const userRepo = AppDataSource.dataSource.getRepository(MntUser)
 
-            
+            const userDb = await userRepo.findOne({
+                where:{
+                    idPeople: {id: id.value}
+                },
+                select: {
+                    password: true,
+                    lastAccess: true,
+                    userName: true,
+                    id: true,
+                    idPeople: {
+                        id: true,
+                    },
+                    idStatus: {
+                        id: true,
+                    },
+                },
+            });
+            console.log(userDb, 'userDb')
+            // const user = await this.prisma.mnt_user.findFirst({
+            //     where: { id_people: id.value },
+            //     select: {
+            //         id_people: true,
+            //         id_status: true,
+            //         user_name: true,
+            //         last_access: true,
+            //         password: true,
+            //         id: true
+            //     }
+            // });
+
+            if(!userDb){
+                return null;
+            }
+
+           const user = {
+            id: userDb.id,
+            id_people: userDb.idPeople.id,
+            user_name: userDb.userName,
+            password: userDb.password,
+            id_status: userDb.idStatus.id,
+            last_access: userDb.lastAccess,
+           }
+
+
+
             if(!user){
                 return null;
             }
@@ -34,12 +72,25 @@ export class ImplUserRepository implements UserRepository {
     }
     async create(user: User): Promise<void> {
         try {
-            const userPrismaData = new mapperToPrismaData().mntUserToPrismaCreate(user)
-            await this.prisma.mnt_user.create({
-                data: userPrismaData
+
+            const userRepo = AppDataSource.dataSource.getRepository(MntUser);
+
+            const newUser = await userRepo.create({
+                userName: user.user_name.value,
+                password: user.password.value,
+                idPeople: {id: user.id_people.value},
+                idStatus: {id: user.id_status.value},
             });
+
+            const savedUser = await userRepo.save(newUser);
+
+
+            // const userPrismaData = new mapperToPrismaData().mntUserToPrismaCreate(user)
+            // await this.prisma.mnt_user.create({
+            //     data: userPrismaData
+            // });
+
         } catch (error) {
-            console.log(error)
             throw CustomError.internalServer("Internal server error in create user")
         }
         
