@@ -9,7 +9,7 @@ class AppDataSource {
         port: envs.POSTGRES_DB_PORT,
         username: envs.POSTGRES_USER,
         password: envs.POSTGRES_PASSWORD,
-        database: envs.POSTGRES_PASSWORD,
+        database: envs.POSTGRES_DB,
         synchronize: false,
         entities: Object.values(entities),
         migrations: ["src/infrastructure/db/migrations/*.ts"]

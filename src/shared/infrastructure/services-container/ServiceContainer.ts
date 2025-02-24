@@ -29,6 +29,7 @@ import { envs } from "../config/envs";
 import {
   ImplCountryRepository,
   ImplExampleRepository,
+  ImplPeopleCountryRepository,
   ImplPeopleRepository,
   ImplPeopleStatusRepository,
 } from "../../../modules/auth/infrastructure/implementation/index";
@@ -54,6 +55,7 @@ const peopleStatusRepository = new ImplPeopleStatusRepository();
 const httpClientRepository = new ImplHttpClientRepository(envs.HTTP_CLIENT_ADAPTER);
 const userRepository = new ImplUserRepository();
 const authServiceRepository = new ImplAuthServiceRepository(userRepository, peopleRepository);
+const peopleCountryRepository = new ImplPeopleCountryRepository();
 
 export const ServiceContainer = {
   example: {
@@ -64,13 +66,13 @@ export const ServiceContainer = {
     delete: new ExampleDelete(exampleRepository),
   },
   people: {
-    create: new PeopleCreate(peopleRepository, countryRepository, transactionManagerRepository, storageRepository),
-    //update: new PeopleEdit(peopleRepository, transactionManagerRepository, storageRepository),
+    create: new PeopleCreate(peopleRepository, countryRepository, transactionManagerRepository, storageRepository, peopleCountryRepository),
+    update: new PeopleEdit(peopleRepository, transactionManagerRepository, storageRepository, peopleCountryRepository),
     getOneById: new PeopleGetOneById(peopleRepository),
     getAll: new PeopleGetAll(peopleRepository),
-    delete: new PeopleDelete(peopleRepository, peopleStatusRepository),
+    delete: new PeopleDelete(peopleRepository, peopleStatusRepository, transactionManagerRepository, peopleCountryRepository),
     findByEmail: new PeopleFindByEmail(peopleRepository),
-    //createUserWithPerson: new PeopleCreateUser(peopleRepository, userRepository, transactionManagerRepository, storageRepository)
+    createUserWithPerson: new PeopleCreateUser(peopleRepository, userRepository, transactionManagerRepository, storageRepository, peopleCountryRepository)
   },
   country: {
     create: new CountryCreate(countryRepository),

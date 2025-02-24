@@ -8,6 +8,7 @@ import {
   CountryId,
   People,
   PeopleBirthdate,
+  PeopleCountryRepository,
   PeopleEmail,
   PeopleFirstName,
   PeopleHasInsurance,
@@ -33,7 +34,8 @@ export class PeopleCreateUser {
     private repository: PeopleRepository,
     private repositoryUser: UserRepository,
     private repositoryTransaction: TransactionManagerRepository,
-    private repositoryStorage: StorageRepository
+    private repositoryStorage: StorageRepository,
+    private repositoryPeopleCountry: PeopleCountryRepository
   ) {}
 
   async run(
@@ -75,27 +77,28 @@ export class PeopleCreateUser {
         new PeopleImgPath(url_img),
         new PeopleHasInsurance(has_insurance)
       );
-      const persona = await this.repository.create(people)
-
-      if (!persona) {
+      
+      const person = await this.repository.create(people)
+      //console.log(persona, 'esto trae')
+      if (!person) {
         throw CustomError.internalServer(
           "Internal server error in create UserPeople"
         );
       }
 
-      // id_people = ;
+      await this.repositoryPeopleCountry.create(person.getId, nationalities);
 
       const user = new User(
-        new UserIdPeople(+persona.getId.value),
+        new UserIdPeople(+person.getId.value),
         new UserName(user_name),
         new UserPassword(password),
-        new UserIdStatus(id_status),
+        new UserIdStatus(id_status_user),
         new UserLastAccess(last_access)
       );
 
       await this.repositoryUser.create(user);
 
-      await this.repository.createUserWithPerson(people, user);
+     await this.repository.createUserWithPerson(people, user);
     })
   }
 }

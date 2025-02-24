@@ -36,15 +36,14 @@ import { PostgresPeople } from "../../../../../shared/domain/types";
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 import { MntPeople } from "../../../../../shared/infrastructure/db/entities/MntPeople";
 import AppDataSource from "../../../../../shared/infrastructure/db/TypeOrmConfig";
-import { CtlGender } from "../../../../../shared/infrastructure/db/entities/CtlGender";
-import { CtlMaritalStatus } from "../../../../../shared/infrastructure/db/entities/CtlMaritalStatus";
-import { CtlStatusPeople } from "../../../../../shared/infrastructure/db/entities/CtlStatusPeople";
 import { PeopleCountry } from "../../../../../shared/infrastructure/db/entities/PeopleCountry";
-import { CtlCountry } from "../../../../../shared/infrastructure/db/entities/CtlCountry";
+import DateTimeService from "../../../../../shared/infrastructure/services/date-time/date.time.services";
 
 export class ImplPeopleRepository implements PeopleRepository {
+  private people: People[] = [];
   async createUserWithPerson(people: People, user: User): Promise<void> {
     try {
+      console.log("implementaion createUserWithPerson")
       if (!people) {
         throw CustomError.internalServer(
           "No se hizo el registro correctamente"
@@ -55,15 +54,12 @@ export class ImplPeopleRepository implements PeopleRepository {
           "No se hizo el registro correctamente"
         );
       }
-      this.getOneById(people.getId);
+      //this.getOneById(people.getId);
     } catch (error) {
+      console.log(error, 'error de createUser')
       throw CustomError.badRequest(`El error ${error}`);
     }
   }
-
-  private people: People[] = [];
-  private prisma = prismaClient;
-
   async create(people: People): Promise<People> {
     try {
       let nationalities: { [key: string]: number }[] = [];
@@ -94,23 +90,11 @@ export class ImplPeopleRepository implements PeopleRepository {
 
       const savedPerson = await personRepo.save(newPerson);
 
-
-
-      const peopleCountries = nationalities.map((nationality) =>
-        peopleCountryRepo.create({
-          idCountry: { id: nationality.id_country } as CtlCountry,
-          idPeople: { id: savedPerson.id } as MntPeople,
-          state: true,
-        })
-      );
-
-      await peopleCountryRepo.save(peopleCountries);
-      
       people.setId = new PeopleId(savedPerson.id!);
 
       return people;
-
     } catch (error) {
+      console.log(error, 'error en crear persona')
       throw CustomError.internalServer(
         "Internal server error in create people"
       );
@@ -118,7 +102,6 @@ export class ImplPeopleRepository implements PeopleRepository {
   }
   async getAll(): Promise<People[]> {
     try {
-
       const peopleRepo = AppDataSource.dataSource.getRepository(MntPeople);
 
       const people = await peopleRepo.find({
@@ -128,78 +111,75 @@ export class ImplPeopleRepository implements PeopleRepository {
           middleName: true,
           lastName: true,
           birthdate: true,
-          idGender: {
-            id: true,
-          },
           email: true,
-          idMaritalStatus: {
-            id: true,
-          },
           imgPath: true,
           phone: true,
           hasInsurance: true,
-          idStatus: {
-            id: true,
+        },
+        relations: {
+          peopleCountries: {
+            idCountry: true,
           },
-          peopleCountries: true
-        }
+          idGender: true,
+          idMaritalStatus: true,
+          idStatus: true,
+        },
       });
-      
 
-      console.log(people, 'esto regresa typeORM')
-      this.people = people.map((person) => this.mapToDomain({
-        id: person.id,
-        first_name: person.firstName,
-        middle_name: person?.middleName,
-        last_name: person.lastName,
-        birthdate: new Date(person.birthdate),
-        ctl_gender: person.idGender,
-        email: person.email, 
-        ctl_marital_status: person.idMaritalStatus, 
-        img_path: person?.imgPath,
-        phone: person.phone,
-        has_insurance: person.hasInsurance,
-        ctl_status_people: person.idStatus,
-        people_country: person.peopleCountries, 
-      }));
+      this.people = people.map((person) =>
+        this.mapToDomain({
+          id: person.id,
+          first_name: person.firstName,
+          middle_name: person?.middleName,
+          last_name: person.lastName,
+          birthdate: new Date(person.birthdate),
+          ctl_gender: person.idGender,
+          email: person.email,
+          ctl_marital_status: person.idMaritalStatus,
+          img_path: person?.imgPath,
+          phone: person.phone,
+          has_insurance: person.hasInsurance,
+          ctl_status_people: person.idStatus,
+          people_country: person.peopleCountries.map((peopleCountries) => ({
+            name: peopleCountries.idCountry.name,
+            abbreviation: peopleCountries.idCountry.abbreviation,
+            code: peopleCountries.idCountry.code,
+            state: peopleCountries.idCountry.state,
+            id: peopleCountries.idCountry.id,
+          })),
+        })
+      );
 
       return this.people;
     } catch (error) {
-      console.log(error, 'error')
       throw CustomError.internalServer("Internal server error in get people");
     }
   }
   async getOneById(id: PeopleId): Promise<People | null> {
     try {
-      const person = await this.prisma.mnt_people.findUnique({
+      const peopleRepo = AppDataSource.dataSource.getRepository(MntPeople);
+
+      const person = await peopleRepo.findOne({
         where: {
           id: id.value,
         },
         select: {
-          ctl_gender: true,
-          ctl_marital_status: true,
-          ctl_status_people: true,
           id: true,
-          first_name: true,
-          middle_name: true,
-          last_name: true,
+          firstName: true,
+          middleName: true,
+          lastName: true,
           birthdate: true,
           email: true,
-          img_path: true,
+          imgPath: true,
           phone: true,
-          has_insurance: true,
-          people_country: {
-            select: {
-              ctl_country: {
-                select: {
-                  id: true,
-                  name: true,
-                  code: true,
-                  abbreviation: true,
-                  state: true,
-                },
-              },
-            },
+          hasInsurance: true,
+        },
+        relations: {
+          idGender: true,
+          idStatus: true,
+          idMaritalStatus: true,
+          peopleCountries: {
+            idCountry: true,
           },
         },
       });
@@ -207,7 +187,27 @@ export class ImplPeopleRepository implements PeopleRepository {
       if (!person) {
         return null;
       }
-      return this.mapToDomain(person);
+      return this.mapToDomain({
+        id: person.id,
+        first_name: person.firstName,
+        middle_name: person.middleName,
+        last_name: person.lastName,
+        birthdate: new Date(person.birthdate),
+        ctl_gender: person.idGender,
+        email: person.email,
+        ctl_marital_status: person.idMaritalStatus,
+        img_path: person.imgPath,
+        phone: person.phone,
+        has_insurance: person.hasInsurance,
+        ctl_status_people: person.idStatus,
+        people_country: person.peopleCountries.map((nation) => ({
+          name: nation.idCountry.name,
+          abbreviation: nation.idCountry.abbreviation,
+          code: nation.idCountry.code,
+          state: nation.idCountry.state,
+          id: nation.idCountry.id,
+        })),
+      });
     } catch (error) {
       throw CustomError.internalServer(
         "Internal server error in get people by id"
@@ -215,143 +215,84 @@ export class ImplPeopleRepository implements PeopleRepository {
     }
   }
   async update(person: People): Promise<void> {
-    // try {
-    //   const personEdit = new mapperToPrismaData().mntPeopleToPrismaUpdate(
-    //     person
-    //   );
-    //   const id = person.getId.value;
-    //   await this.prisma.mnt_people.update({
-    //     where: {
-    //       id: id,
-    //     },
-    //     data: personEdit,
-    //   });
-    // } catch (error) {
-    //   throw CustomError.internalServer(
-    //     "Internal server error in update person"
-    //   );
-    // }
+    try {
+      const dt = new DateTimeService().dateTime;
+
+      const formatedBirthdate = person.birthdate.value.toISOString();
+      const peopleRepo = AppDataSource.dataSource.getRepository(MntPeople);
+
+      const peopleEdit = await peopleRepo.update(
+        {
+          id: person.getId.value,
+        },
+        {
+          firstName: person.first_name.value,
+          middleName: person.middle_name?.value,
+          lastName: person.last_name?.value,
+          birthdate: dt
+            .fromISO(formatedBirthdate)
+            .toFormat("yyyy-MM-dd HH:mm:ss"),
+          idGender: { id: person.id_gender.value },
+          email: person.email.value,
+          imgPath: person.img_path?.value,
+          idMaritalStatus: { id: person.id_marital_status.value },
+          phone: person.phone.value,
+          hasInsurance: person.has_insurance?.value,
+          idStatus: { id: person.id_status.value },
+          updatedAt: dt.now().toFormat("yyyy-MM-dd HH:mm:ss"),
+        }
+      );
+    } catch (error) {
+      throw CustomError.internalServer(
+        "Internal server error in update person"
+      );
+    }
   }
   async delete(id: PeopleId, id_status: PeopleStatusId): Promise<void> {
     try {
-      await this.prisma.mnt_people.update({
-        where: {
+      const peopleRepo = AppDataSource.dataSource.getRepository(MntPeople);
+
+      await peopleRepo.update(
+        {
           id: id.value,
         },
-        data: {
-          id_status: id_status.value,
-        },
-      });
-      //throw new Error("Method not implemented.");
+        {
+          idStatus: {
+            id: id_status.value,
+          },
+        }
+      );
     } catch (error) {
       throw CustomError.internalServer(
         "Internal server error in delete person"
       );
     }
   }
-  async updatePeopleCountry(
-    id: PeopleId,
-    countries: CountryId[]
-  ): Promise<void> {
-    try {
-      const nationalities = countries.map((nation) => +nation.value);
-      const people_country = await this.prisma.people_country.findMany({
-        where: {
-          id_people: id.value,
-        },
-        select: {
-          id: true,
-          id_country: true,
-          id_people: true,
-          state: true,
-        },
-      });
-
-      const existingIds = new Set(
-        people_country.map((person) => +person.id_country)
-      );
-      const countriesToInactivate = people_country.filter(
-        (person) => !nationalities.includes(+person.id_country)
-      );
-      const countriesToReactivate = people_country.filter(
-        (person) =>
-          nationalities.includes(+person.id_country) && person.state === false
-      );
-      const newCountries = nationalities.filter(
-        (nation) => !existingIds.has(+nation)
-      );
-
-      if (countriesToInactivate.length) {
-        await this.prisma.people_country.updateMany({
-          where: {
-            id_people: id.value,
-            id_country: {
-              in: countriesToInactivate.map((nation) => nation.id_country),
-            },
-          },
-          data: {
-            state: false,
-            update_at: new Date(Date.now()),
-          },
-        });
-      }
-
-      if (countriesToReactivate.length) {
-        await this.prisma.people_country.updateMany({
-          where: {
-            id_people: id.value,
-            id_country: {
-              in: countriesToReactivate.map((nation) => nation.id_country),
-            },
-          },
-          data: { state: true, update_at: new Date(Date.now()) },
-        });
-      }
-
-      if (newCountries.length) {
-        await this.prisma.people_country.createMany({
-          data: newCountries.map((nation) => ({
-            id_people: id.value,
-            id_country: +nation,
-            state: true,
-          })),
-        });
-      }
-    } catch (error) {
-      throw CustomError.internalServer("Internal server error");
-    }
-  }
   async findByEmail(email: PeopleEmail): Promise<People | null> {
     try {
-      const person = await this.prisma.mnt_people.findFirst({
+      const peopleRepo = AppDataSource.dataSource.getRepository(MntPeople);
+
+      const person = await peopleRepo.findOne({
         where: {
           email: email.value,
         },
         select: {
-          ctl_gender: true,
-          ctl_marital_status: true,
-          ctl_status_people: true,
           id: true,
-          first_name: true,
-          middle_name: true,
-          last_name: true,
+          firstName: true,
+          middleName: true,
+          lastName: true,
           birthdate: true,
           email: true,
-          img_path: true,
+          imgPath: true,
           phone: true,
-          has_insurance: true,
-          people_country: {
-            select: {
-              ctl_country: {
-                select: {
-                  id: true,
-                  name: true,
-                  code: true,
-                  abbreviation: true,
-                  state: true,
-                },
-              },
-            },
+          hasInsurance: true,
+        },
+        relations: {
+          idGender: true,
+          idMaritalStatus: true,
+          idStatus: true,
+          peopleCountries: {
+            idCountry: true,
           },
         },
       });
@@ -360,28 +301,42 @@ export class ImplPeopleRepository implements PeopleRepository {
         throw CustomError.notFound("Email not found");
       }
 
-      return this.mapToDomain(person);
+      return this.mapToDomain({
+        id: person.id,
+        first_name: person.firstName,
+        middle_name: person.middleName,
+        last_name: person.lastName,
+        birthdate: new Date(person.birthdate),
+        ctl_gender: person.idGender,
+        email: person.email,
+        ctl_marital_status: person.idMaritalStatus,
+        img_path: person.imgPath,
+        phone: person.phone,
+        has_insurance: person.hasInsurance,
+        ctl_status_people: person.idStatus,
+        people_country: person.peopleCountries.map((nation) => ({
+          name: nation.idCountry.name,
+          abbreviation: nation.idCountry.abbreviation,
+          code: nation.idCountry.code,
+          state: nation.idCountry.state,
+          id: nation.idCountry.id,
+        })),
+      });
     } catch (error) {
-      console.log(error, "error en find email people");
       throw CustomError.internalServer(
         "Internal server error in find by email"
       );
     }
   }
-
-  deletePeopleCoutry(id: PeopleId, countries: CountryId[]): Promise<void> {
-    throw new Error("Method not implemented.");
-  }
   private mapToDomain(people: PostgresPeople): People {
-    console.log(people.people_country, 'people_country')
     const nationalities = people.people_country.map(
       (pc) =>
         new Country(
-          new CountryName(pc.ctl_country.name),
-          new CountryAbbreviation(pc.ctl_country.abbreviation),
-          new CountryCode(pc.ctl_country.code),
-          new CountryState(pc.ctl_country.state),
-          new CountryId(pc.ctl_country.id)
+          new CountryName(pc.name),
+          new CountryAbbreviation(pc.abbreviation),
+          new CountryCode(pc.code),
+          new CountryState(pc.state),
+          new CountryId(pc.id)
         )
     );
 

@@ -2,6 +2,7 @@ import {
   CountryId,
   People,
   PeopleBirthdate,
+  PeopleCountryRepository,
   PeopleEmail,
   PeopleFirstName,
   PeopleHasInsurance,
@@ -17,12 +18,14 @@ import {
 } from "../../../../domain";
 import { MultimediaFile } from "../../../../../../shared/domain/types";
 import { StorageRepository, TransactionManagerRepository } from "../../../../../../shared/domain/domain-container/DomainContainer"
+import { CustomError } from "../../../../../../shared/domain/errors/custom.error";
 
 export class PeopleEdit {
   constructor(
     private respository: PeopleRepository,
     private respositoryTransaction: TransactionManagerRepository,
-    private respositoryStorage: StorageRepository
+    private respositoryStorage: StorageRepository,
+    private repositoryPeopleCountry: PeopleCountryRepository
   ) {}
 
   async run(
@@ -67,7 +70,11 @@ export class PeopleEdit {
 
       const personDb = await this.respository.getOneById(people.getId);
 
-      await this.respository.updatePeopleCountry(people.getId, nationalities);
+      if(!personDb){
+        throw CustomError.notFound("id people not found")
+      }
+
+      await this.repositoryPeopleCountry.update(people.getId, nationalities);
       await this.respositoryStorage.delete(personDb?.img_path?.value.split("=")[1]!);
 
       return this.respository.update(people);

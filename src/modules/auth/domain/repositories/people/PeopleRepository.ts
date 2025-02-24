@@ -7,8 +7,6 @@ export interface PeopleRepository {
   getOneById(id: PeopleId): Promise<People | null>;
   update(example: People): Promise<void>;
   delete(id: PeopleId, id_status: PeopleStatusId): Promise<void>;
-  updatePeopleCountry(id: PeopleId, countries: CountryId[]) : Promise<void>;
-  deletePeopleCoutry(id: PeopleId, countries: CountryId[]) : Promise<void>;
   findByEmail(email: PeopleEmail) : Promise<People | null>;
   createUserWithPerson(people: People, user: User): Promise<void>;
 }

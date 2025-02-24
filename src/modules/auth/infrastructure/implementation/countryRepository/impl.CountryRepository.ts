@@ -11,6 +11,9 @@ import { prismaClient } from "../../../../../shared/infrastructure/db/PrismaWrap
 import { mapperToPrismaData } from "./mapperToPrismaData";
 import { PostgresCountry } from "../../../../../shared/domain/types";
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
+import AppDataSource from "../../../../../shared/infrastructure/db/TypeOrmConfig";
+import { CtlCountry } from "../../../../../shared/infrastructure/db/entities/CtlCountry";
+import { In } from "typeorm";
 
 export class ImplCountryRepository implements CountryRepository {
   private countries: Country[] = [];
@@ -65,12 +68,17 @@ export class ImplCountryRepository implements CountryRepository {
       const data: number[] = countries.map((id) => +id.value);
 
       let dataIds: CountryId[] = [];
+      const countryRepo = AppDataSource.dataSource.getRepository(CtlCountry);
 
-      const existingCountries = await this.prisma.ctl_country.findMany({
-        where: { id: { in: data } },
-        select: { id: true },
+      const nations = await countryRepo.find({
+        where: { id: In(data) },
+        select: { id: true }
       });
-      const existingCountriesIds = existingCountries.map((country) => new CountryId(+country.id));
+      // const existingCountries = await this.prisma.ctl_country.findMany({
+      //   where: { id: { in: data } },
+      //   select: { id: true },
+      // });
+      const existingCountriesIds = nations.map((country) => new CountryId(+country.id));
       dataIds = existingCountriesIds
 
       return dataIds;

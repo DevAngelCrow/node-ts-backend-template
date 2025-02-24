@@ -36,6 +36,7 @@ export class ImplPeopleStatusRepository implements PeopleStatusRepository {
       return new PeopleStatusId(+peopleStatus.id);
 
     } catch (error) {
+      console.log(error, 'error en peopleStatus')
       throw CustomError.internalServer("Internal server error");
     }
     
