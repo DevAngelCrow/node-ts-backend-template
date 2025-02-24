@@ -64,6 +64,7 @@ export class ImplUserRepository implements UserRepository {
   }
   async create(user: User): Promise<void> {
     try {
+      console.log(user, 'usuario')
       const userRepo = AppDataSource.dataSource.getRepository(MntUser);
 
       const newUser = await userRepo.create({
@@ -73,8 +74,9 @@ export class ImplUserRepository implements UserRepository {
         idStatus: { id: user.id_status.value },
       });
 
-      const savedUser = await userRepo.save(newUser);
+      await userRepo.save(newUser);
     } catch (error) {
+      console.log(error, 'error en usuario')
       throw CustomError.internalServer("Internal server error in create user");
     }
   }

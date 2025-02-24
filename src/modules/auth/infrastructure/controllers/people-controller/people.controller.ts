@@ -27,7 +27,7 @@ export class PeopleController {
     const birthdateFormated = dt.fromISO(birthdate).toJSDate();
     const lastAccessFormated = dt.fromISO(last_access).toJSDate();
     const img_path = request.file!;
-
+    const imgPath = await ServiceContainer.storage.upload.run(img_path);
     await ServiceContainer.people.createUserWithPerson.run(
       first_name,
       middle_name,
@@ -36,7 +36,7 @@ export class PeopleController {
       id_gender,
       email,
       +id_marital_status,
-      img_path,
+      imgPath,
       phone,
       Boolean(has_insurance),
       +id_status,
@@ -70,6 +70,7 @@ export class PeopleController {
     } = request.body;
     const birthdateFormated = dt.fromISO(birthdate).toJSDate();
     const img_path = request.file!;
+    const imgPath = await ServiceContainer.storage.upload.run(img_path);
     await ServiceContainer.people.create
       .run(
         first_name,
@@ -79,7 +80,7 @@ export class PeopleController {
         id_gender,
         email,
         id_marital_status,
-        img_path,
+        imgPath,
         phone,
         Boolean(has_insurance),
         id_status,

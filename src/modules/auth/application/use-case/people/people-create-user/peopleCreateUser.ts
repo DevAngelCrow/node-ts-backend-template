@@ -1,3 +1,4 @@
+import { EntityManager, EntityTarget } from "typeorm";
 import {
   StorageRepository,
   TransactionManagerRepository,
@@ -34,7 +35,6 @@ export class PeopleCreateUser {
     private repository: PeopleRepository,
     private repositoryUser: UserRepository,
     private repositoryTransaction: TransactionManagerRepository,
-    private repositoryStorage: StorageRepository,
     private repositoryPeopleCountry: PeopleCountryRepository
   ) {}
 
@@ -47,7 +47,7 @@ export class PeopleCreateUser {
     id_gender: number,
     email: string,
     id_marital_status: number,
-    img_path: MultimediaFile,
+    img_path: string,
     phone: string,
     has_insurance: boolean,
     id_status_user: number,
@@ -59,10 +59,13 @@ export class PeopleCreateUser {
     id_status: number,
     last_access: Date
   ): Promise<void> {
-    const url_img = await this.repositoryStorage.updload(img_path);
-
     const nationalities = nationality.map((id) => new CountryId(id));
-    return await this.repositoryTransaction.runInTransaction(async () => {
+    return await this.repositoryTransaction.runInTransaction(async (manager) => {
+
+      const peopleRepo = manager.getRepository(this.repository);
+      const userRepo =  manager.getRepository(this.repositoryUser);
+      const peopleCountryRepo = manager.getRepository(this.repositoryPeopleCountry);
+
       const people = new People(
         new PeopleFirstName(firts_name),
         new PeopleBirthdate(birthdate),
@@ -74,19 +77,19 @@ export class PeopleCreateUser {
         nationalities,
         new PeopleMiddleName(middle_name),
         new PeopleLastName(last_name),
-        new PeopleImgPath(url_img),
+        new PeopleImgPath(img_path),
         new PeopleHasInsurance(has_insurance)
       );
+
+      const person = await peopleRepo.create(people);
       
-      const person = await this.repository.create(people)
-      //console.log(persona, 'esto trae')
       if (!person) {
         throw CustomError.internalServer(
           "Internal server error in create UserPeople"
         );
       }
 
-      await this.repositoryPeopleCountry.create(person.getId, nationalities);
+      
 
       const user = new User(
         new UserIdPeople(+person.getId.value),
@@ -96,9 +99,9 @@ export class PeopleCreateUser {
         new UserLastAccess(last_access)
       );
 
-      await this.repositoryUser.create(user);
-
-     await this.repository.createUserWithPerson(people, user);
-    })
+      await userRepo.create(user);
+      await peopleCountryRepo.create(person.getId, nationalities);
+      //return this.repository.createUserWithPerson(people, user);
+    });
   }
 }

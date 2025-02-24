@@ -8,8 +8,8 @@ export class ImplTransactionManagerRepository implements TransactionManagerRepos
     constructor(private readonly dataSource: DataSource){}
     async runInTransaction<T>(operation: (manager: EntityManager) => Promise<T>): Promise<T> {
         try{
-            return await this.dataSource.transaction(async (transactionManager) =>{
-               return await operation(transactionManager);
+            return await this.dataSource.transaction(async (manager) =>{
+               return await operation(manager);
             })
         }catch(error){
             throw CustomError.internalServer("Internal server error in the transaction");

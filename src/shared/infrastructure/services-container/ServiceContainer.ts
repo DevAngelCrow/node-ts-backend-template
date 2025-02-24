@@ -43,8 +43,10 @@ import { AuthenticateUser } from "../../../modules/auth/application/use-case/aut
 import { ImplUserRepository } from "../../../modules/auth/infrastructure/implementation/userRepository/impl.UserRepository";
 import { AuthPasswordHash } from "../../../modules/auth/application/services/auth/auth-password-hash/authPasswordHash";
 import AppDataSource from "../db/TypeOrmConfig"
+import { UploadFile } from "../../../modules/storage-handler/application/services/storage";
+import { EntityManager } from "typeorm";
 
-
+//const entityManager = AppDataSource.dataSource.manager;
 
 const exampleRepository = new ImplExampleRepository();
 const peopleRepository = new ImplPeopleRepository();
@@ -72,7 +74,7 @@ export const ServiceContainer = {
     getAll: new PeopleGetAll(peopleRepository),
     delete: new PeopleDelete(peopleRepository, peopleStatusRepository, transactionManagerRepository, peopleCountryRepository),
     findByEmail: new PeopleFindByEmail(peopleRepository),
-    createUserWithPerson: new PeopleCreateUser(peopleRepository, userRepository, transactionManagerRepository, storageRepository, peopleCountryRepository)
+    createUserWithPerson: new PeopleCreateUser(peopleRepository, userRepository, transactionManagerRepository, peopleCountryRepository)
   },
   country: {
     create: new CountryCreate(countryRepository),
@@ -100,5 +102,8 @@ export const ServiceContainer = {
     getAll: new UserGetAll(userRepository),
     delete: new UserDelete(userRepository),
     getOneByEmail: new UserFindByEmail(userRepository, peopleRepository)
+  },
+  storage: {
+    upload: new UploadFile(storageRepository),
   }
 };

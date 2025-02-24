@@ -22,6 +22,7 @@ import {
   TransactionManagerRepository,
 } from "../../../../../../shared/domain/domain-container/DomainContainer";
 import { CustomError } from "../../../../../../shared/domain/errors/custom.error";
+import { EntityManager } from "typeorm";
 
 export class PeopleCreate {
   constructor(
@@ -40,15 +41,15 @@ export class PeopleCreate {
     id_gender: number,
     email: string,
     id_marital_status: number,
-    img_path: MultimediaFile,
+    img_path: string,
     phone: string,
     has_insurance: boolean,
     id_status: number,
     nationality: number[]
   ): Promise<People> {
-    const url_img = await this.repositoryStorage.updload(img_path);
+    //const url_img = await this.repositoryStorage.updload(img_path);
     console.log("aca inicio el peopleCreate");
-    const id_img = url_img.split("=")[1];
+    const id_img = img_path.split("=")[1];
     //return this.repositoryTransaction
     //.runInTransaction(async () => {
 
@@ -88,7 +89,7 @@ export class PeopleCreate {
       nationalities,
       new PeopleMiddleName(middle_name),
       new PeopleLastName(last_name),
-      new PeopleImgPath(url_img),
+      new PeopleImgPath(img_path),
       new PeopleHasInsurance(has_insurance)
     );
 
