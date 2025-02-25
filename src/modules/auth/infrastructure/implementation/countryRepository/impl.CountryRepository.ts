@@ -7,35 +7,45 @@ import {
   CountryRepository,
   CountryState,
 } from "../../../domain";
-import { prismaClient } from "../../../../../shared/infrastructure/db/PrismaWrapper";
-import { mapperToPrismaData } from "./mapperToPrismaData";
 import { PostgresCountry } from "../../../../../shared/domain/types";
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 import AppDataSource from "../../../../../shared/infrastructure/db/TypeOrmConfig";
 import { CtlCountry } from "../../../../../shared/infrastructure/db/entities/CtlCountry";
-import { In } from "typeorm";
+import { EntityManager, In, DataSource } from "typeorm";
 
 export class ImplCountryRepository implements CountryRepository {
   private countries: Country[] = [];
-  private prisma = prismaClient;
-  async create(country: Country): Promise<void> {
+
+  async create(country: Country, manager: EntityManager): Promise<void> {
     try {
-      const prismaData = new mapperToPrismaData().mntPeopleToPrismaCreate(
-        country
-      );
-      await this.prisma.ctl_country.create({
-        data: prismaData,
+      const countryRepo = manager.getRepository(CtlCountry);
+
+      await countryRepo.create({
+        name: country.name.value,
+        abbreviation: country.abbreviation?.value,
+        code: country.code?.value,
+        state: country.state?.value,
       });
     } catch (error) {
-      throw CustomError.internalServer("Internal server error in create country");
+      throw CustomError.internalServer(
+        "Internal server error in create country"
+      );
     }
   }
   getAll(): Promise<Country[]> {
     throw new Error("Method not implemented.");
   }
-  async getOneById(id: CountryId): Promise<Country | null> {
+  async getOneById(
+    id: CountryId,
+    manager: EntityManager | DataSource
+  ): Promise<Country | null> {
     try {
-      const country = await this.prisma.ctl_country.findUnique({
+      if(!manager){
+        manager = AppDataSource.dataSource;
+      }
+      const countryRepo = manager.getRepository(CtlCountry);
+
+      const country = await countryRepo.findOne({
         where: {
           id: id.value,
         },
@@ -47,12 +57,20 @@ export class ImplCountryRepository implements CountryRepository {
           state: true,
         },
       });
+      
       if (!country) {
         throw CustomError.notFound("Country not found");
       }
 
-      return this.mapToDomain(country);
+      return this.mapToDomain({
+        id: country.id,
+        name: country.name,
+        abbreviation: country.abbreviation ?? null,
+        code: country.code ?? null,
+        state: country.state ?? null
+      });
     } catch (error) {
+      console.log(error)
       throw CustomError.internalServer("Internal server error");
     }
   }
@@ -63,27 +81,28 @@ export class ImplCountryRepository implements CountryRepository {
     throw new Error("Method not implemented.");
   }
 
-  async findMany(countries: CountryId[]): Promise<CountryId[] | null> {
+  async findMany(
+    countries: CountryId[],
+    manager: EntityManager
+  ): Promise<CountryId[] | null> {
     try {
       const data: number[] = countries.map((id) => +id.value);
 
       let dataIds: CountryId[] = [];
-      const countryRepo = AppDataSource.dataSource.getRepository(CtlCountry);
+      const countryRepo = manager.getRepository(CtlCountry);
 
       const nations = await countryRepo.find({
         where: { id: In(data) },
-        select: { id: true }
+        select: { id: true },
       });
-      // const existingCountries = await this.prisma.ctl_country.findMany({
-      //   where: { id: { in: data } },
-      //   select: { id: true },
-      // });
-      const existingCountriesIds = nations.map((country) => new CountryId(+country.id));
-      dataIds = existingCountriesIds
+
+      const existingCountriesIds = nations.map(
+        (country) => new CountryId(+country.id)
+      );
+      dataIds = existingCountriesIds;
 
       return dataIds;
     } catch (error) {
-
       throw CustomError.badRequest(
         "The id to the nationality no exist in the records"
       );
@@ -99,6 +118,4 @@ export class ImplCountryRepository implements CountryRepository {
       new CountryId(country.id)
     );
   }
-
-
 }

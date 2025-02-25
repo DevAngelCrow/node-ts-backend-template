@@ -12,7 +12,6 @@ export class ImplTransactionManagerRepository implements TransactionManagerRepos
         }catch(error){
             throw CustomError.internalServer(`Internal server error in the transaction because => ${error}`);
         }
-        
     }
 
 }

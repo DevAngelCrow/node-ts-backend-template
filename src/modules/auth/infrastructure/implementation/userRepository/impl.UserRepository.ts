@@ -18,33 +18,24 @@ import { EntityManager } from "typeorm";
 export class ImplUserRepository implements UserRepository <EntityManager>{
   constructor(private entityManager: EntityManager){}
   private users: User[] = [];
-  async findByEmailPeople(id: PeopleId, manager: EntityManager): Promise<User | null> {
+  async findByEmailPeople(id: PeopleId, manager: EntityManager = this.entityManager): Promise<User | null> {
     try {
-      console.log(id, "idPeople");
       const userRepo = manager.getRepository(MntUser);
-
-      const userDb = await userRepo.findOne({
-        where: {
-          idPeople: { id: id.value },
-        },
-        select: {
-          password: true,
-          lastAccess: true,
-          userName: true,
-          id: true,
-          idPeople: {
-            id: true,
-          },
-          idStatus: {
-            id: true,
-          },
-        },
-      });
+      
+      
+      const userDb = await userRepo.createQueryBuilder("mntuser")
+      .innerJoin("mntuser.idPeople", "mntPeople")
+      .innerJoin("mntuser.idStatus", "idStatus")
+      .select([
+        "mntuser.id", "mntuser.userName", "mntuser.password", "mntuser.lastAccess", "mntPeople.id","idStatus.id"
+      ])
+      .where("mntuser.idPeople = :id", {id: id.value})
+      .getOne();
 
       if (!userDb) {
         return null;
       }
-
+      console.log(userDb, 'userDB')
       const user = {
         id: userDb.id,
         id_people: userDb.idPeople.id,
@@ -59,6 +50,7 @@ export class ImplUserRepository implements UserRepository <EntityManager>{
       }
       return this.mapToDomain(user);
     } catch (error) {
+      console.log(error)
       throw CustomError.internalServer(
         "Internal server error in find email people"
       );
@@ -66,7 +58,6 @@ export class ImplUserRepository implements UserRepository <EntityManager>{
   }
   async create(user: User, manager:EntityManager): Promise<void> {
     try {
-      console.log(user, 'usuario')
       const userRepo = manager.getRepository(MntUser);
 
       const newUser = await userRepo.create({
@@ -78,7 +69,6 @@ export class ImplUserRepository implements UserRepository <EntityManager>{
 
       await userRepo.save(newUser);
     } catch (error) {
-      console.log(error, 'error en usuario')
       throw CustomError.internalServer("Internal server error in create user");
     }
   }

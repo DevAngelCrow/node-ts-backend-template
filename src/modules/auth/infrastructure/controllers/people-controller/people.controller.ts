@@ -84,7 +84,8 @@ export class PeopleController {
         phone,
         Boolean(has_insurance),
         id_status,
-        nationality
+        nationality,
+        true
       )
       .then(() =>
         response.status(201).send({ message: "People created successful" })
@@ -150,6 +151,7 @@ export class PeopleController {
       nationality,
     } = request.body;
     const birthdateFormated = dt.fromISO(birthdate).toJSDate();
+    const imgPath = await ServiceContainer.storage.upload.run(img_path);
     await ServiceContainer.people.update
       .run(
         +id,
@@ -160,7 +162,7 @@ export class PeopleController {
         +id_gender,
         email,
         +id_marital_status,
-        img_path,
+        imgPath,
         phone,
         Boolean(has_insurance),
         +id_status,
@@ -170,6 +172,7 @@ export class PeopleController {
         response.status(200).send({ message: "People updated successful" })
       )
       .catch((error) => {
+        ServiceContainer.storage.delete.run(imgPath.split("=")[1]!)
         response.status(error.statusCode).json({ message: error.message });
       });
   }

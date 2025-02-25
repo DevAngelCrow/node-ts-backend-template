@@ -43,7 +43,7 @@ import { AuthenticateUser } from "../../../modules/auth/application/use-case/aut
 import { ImplUserRepository } from "../../../modules/auth/infrastructure/implementation/userRepository/impl.UserRepository";
 import { AuthPasswordHash } from "../../../modules/auth/application/services/auth/auth-password-hash/authPasswordHash";
 import AppDataSource from "../db/TypeOrmConfig"
-import { UploadFile } from "../../../modules/storage-handler/application/services/storage";
+import { DeleteFile, UploadFile } from "../../../modules/storage-handler/application/services/storage";
 import { EntityManager } from "typeorm";
 
 const entityManager = AppDataSource.dataSource.manager;
@@ -105,5 +105,6 @@ export const ServiceContainer = {
   },
   storage: {
     upload: new UploadFile(storageRepository),
+    delete: new DeleteFile(storageRepository)
   }
 };

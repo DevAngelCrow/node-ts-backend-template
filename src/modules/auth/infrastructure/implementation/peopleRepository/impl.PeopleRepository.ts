@@ -31,7 +31,6 @@ import {
   PeopleStatusName,
   User,
 } from "../../../domain";
-import { prismaClient } from "../../../../../shared/infrastructure/db/PrismaWrapper";
 import { PostgresPeople } from "../../../../../shared/domain/types";
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 import { MntPeople } from "../../../../../shared/infrastructure/db/entities/MntPeople";
@@ -56,9 +55,7 @@ export class ImplPeopleRepository implements PeopleRepository<EntityManager> {
           "No se hizo el registro correctamente"
         );
       }
-      //this.getOneById(people.getId);
     } catch (error) {
-      console.log(error, 'error de createUser')
       throw CustomError.badRequest(`El error ${error}`);
     }
   }
@@ -157,7 +154,7 @@ export class ImplPeopleRepository implements PeopleRepository<EntityManager> {
       throw CustomError.internalServer("Internal server error in get people");
     }
   }
-  async getOneById(id: PeopleId, manager: EntityManager): Promise<People | null> {
+  async getOneById(id: PeopleId, manager: EntityManager = this.entityManager): Promise<People | null> {
     try {
       const peopleRepo = manager.getRepository(MntPeople);
 
@@ -270,7 +267,7 @@ export class ImplPeopleRepository implements PeopleRepository<EntityManager> {
       );
     }
   }
-  async findByEmail(email: PeopleEmail, manager: EntityManager): Promise<People | null> {
+  async findByEmail(email: PeopleEmail, manager: EntityManager = this.entityManager): Promise<People | null> {
     try {
       const peopleRepo = manager.getRepository(MntPeople);
 
@@ -300,7 +297,7 @@ export class ImplPeopleRepository implements PeopleRepository<EntityManager> {
       });
 
       if (!person) {
-        throw CustomError.notFound("Email not found");
+        return null;
       }
 
       return this.mapToDomain({

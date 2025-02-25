@@ -7,7 +7,7 @@ export class UserRoutes {
     const controller = new UserController();
 
     router.post("/create",  controller.createUser );
-    router.get("/", controller.findUserByEmail)
+    router.get("/email", controller.findUserByEmail);
     
 
     return router;

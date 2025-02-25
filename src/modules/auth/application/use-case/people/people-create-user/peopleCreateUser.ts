@@ -62,10 +62,6 @@ export class PeopleCreateUser <T = unknown>{
     const nationalities = nationality.map((id) => new CountryId(id));
     return await this.repositoryTransaction.runInTransaction(async (tx) => {
 
-      // const peopleRepo = manager.getRepository(this.repository);
-      // const userRepo =  manager.getRepository(this.repositoryUser);
-      // const peopleCountryRepo = manager.getRepository(this.repositoryPeopleCountry);
-
       const people = new People(
         new PeopleFirstName(firts_name),
         new PeopleBirthdate(birthdate),
@@ -101,7 +97,6 @@ export class PeopleCreateUser <T = unknown>{
 
       await this.repositoryUser.create(user, tx);
       await this.repositoryPeopleCountry.create(person.getId, nationalities, tx);
-      //return this.repository.createUserWithPerson(people, user);
     });
   }
 }

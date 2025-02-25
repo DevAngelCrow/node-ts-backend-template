@@ -1,12 +1,10 @@
 import {
-  
   PeopleStatus,
   PeopleStatusDescription,
   PeopleStatusId,
   PeopleStatusName,
   PeopleStatusRepository,
 } from "../../../domain";
-import { prismaClient } from "../../../../../shared/infrastructure/db/PrismaWrapper";
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 import { PostgresPeopleStatus } from "../../../../../shared/domain/types";
 import { EntityManager } from "typeorm";
@@ -18,10 +16,9 @@ export class ImplPeopleStatusRepository implements PeopleStatusRepository {
   getAll(): Promise<PeopleStatus[]> {
     throw new Error("Method not implemented.");
   }
-  async getOneById(status_name: PeopleStatusName): Promise<PeopleStatusId | null> {
+  async getOneById(status_name: PeopleStatusName, manager: EntityManager = this.entityManager): Promise<PeopleStatusId | null> {
     try {
-      console.log("hasta aca")
-      const peopleStatusRepo = this.entityManager.getRepository(CtlStatusPeople);
+      const peopleStatusRepo = manager.getRepository(CtlStatusPeople);
       const peopleStatus = await peopleStatusRepo.findOne({
         where: {
           name: status_name.value
@@ -32,17 +29,6 @@ export class ImplPeopleStatusRepository implements PeopleStatusRepository {
           description: true
         }
       })
-      // const peopleStatus = await this.prisma.ctl_status_people.findFirst({
-      //   where: {
-      //     name: status_name.value,
-      //   },
-      //   select: {
-      //     id: true,
-      //     name: true,
-      //     description: true,
-      //   },
-      // });
-
       if (!peopleStatus) {
          return null;
       }
