@@ -30,11 +30,11 @@ import {
   UserRepository,
 } from "../../../../domain";
 
-export class PeopleCreateUser {
+export class PeopleCreateUser <T = unknown>{
   constructor(
     private repository: PeopleRepository,
     private repositoryUser: UserRepository,
-    private repositoryTransaction: TransactionManagerRepository,
+    private repositoryTransaction: TransactionManagerRepository<T>,
     private repositoryPeopleCountry: PeopleCountryRepository
   ) {}
 
@@ -60,11 +60,11 @@ export class PeopleCreateUser {
     last_access: Date
   ): Promise<void> {
     const nationalities = nationality.map((id) => new CountryId(id));
-    return await this.repositoryTransaction.runInTransaction(async (manager) => {
+    return await this.repositoryTransaction.runInTransaction(async (tx) => {
 
-      const peopleRepo = manager.getRepository(this.repository);
-      const userRepo =  manager.getRepository(this.repositoryUser);
-      const peopleCountryRepo = manager.getRepository(this.repositoryPeopleCountry);
+      // const peopleRepo = manager.getRepository(this.repository);
+      // const userRepo =  manager.getRepository(this.repositoryUser);
+      // const peopleCountryRepo = manager.getRepository(this.repositoryPeopleCountry);
 
       const people = new People(
         new PeopleFirstName(firts_name),
@@ -81,8 +81,8 @@ export class PeopleCreateUser {
         new PeopleHasInsurance(has_insurance)
       );
 
-      const person = await peopleRepo.create(people);
-      
+      const person = await this.repository.create(people, tx);
+      console.log(person, 'person de createUser');
       if (!person) {
         throw CustomError.internalServer(
           "Internal server error in create UserPeople"
@@ -99,8 +99,8 @@ export class PeopleCreateUser {
         new UserLastAccess(last_access)
       );
 
-      await userRepo.create(user);
-      await peopleCountryRepo.create(person.getId, nationalities);
+      await this.repositoryUser.create(user, tx);
+      await this.repositoryPeopleCountry.create(person.getId, nationalities, tx);
       //return this.repository.createUserWithPerson(people, user);
     });
   }

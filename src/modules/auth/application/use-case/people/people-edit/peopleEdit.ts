@@ -20,10 +20,10 @@ import { MultimediaFile } from "../../../../../../shared/domain/types";
 import { StorageRepository, TransactionManagerRepository } from "../../../../../../shared/domain/domain-container/DomainContainer"
 import { CustomError } from "../../../../../../shared/domain/errors/custom.error";
 
-export class PeopleEdit {
+export class PeopleEdit<T = unknown> {
   constructor(
     private respository: PeopleRepository,
-    private respositoryTransaction: TransactionManagerRepository,
+    private respositoryTransaction: TransactionManagerRepository<T>,
     private respositoryStorage: StorageRepository,
     private repositoryPeopleCountry: PeopleCountryRepository
   ) {}

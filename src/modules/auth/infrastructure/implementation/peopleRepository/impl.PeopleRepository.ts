@@ -38,10 +38,12 @@ import { MntPeople } from "../../../../../shared/infrastructure/db/entities/MntP
 import AppDataSource from "../../../../../shared/infrastructure/db/TypeOrmConfig";
 import { PeopleCountry } from "../../../../../shared/infrastructure/db/entities/PeopleCountry";
 import DateTimeService from "../../../../../shared/infrastructure/services/date-time/date.time.services";
+import { EntityManager } from "typeorm";
 
-export class ImplPeopleRepository implements PeopleRepository {
+export class ImplPeopleRepository implements PeopleRepository<EntityManager> {
   private people: People[] = [];
-  async createUserWithPerson(people: People, user: User): Promise<void> {
+  constructor(private entityManager: EntityManager){}
+  async createUserWithPerson(people: People, user: User, manager: EntityManager): Promise<void> {
     try {
       console.log("implementaion createUserWithPerson")
       if (!people) {
@@ -60,7 +62,7 @@ export class ImplPeopleRepository implements PeopleRepository {
       throw CustomError.badRequest(`El error ${error}`);
     }
   }
-  async create(people: People): Promise<People> {
+  async create(people: People, manager: EntityManager): Promise<People> {
     try {
       let nationalities: { [key: string]: number }[] = [];
       people.nationality.map((nation) => {
@@ -69,10 +71,10 @@ export class ImplPeopleRepository implements PeopleRepository {
         }
       });
 
-      const personRepo = AppDataSource.dataSource.getRepository(MntPeople);
+      const personRepo = manager.getRepository(MntPeople);
 
       const peopleCountryRepo =
-        AppDataSource.dataSource.getRepository(PeopleCountry);
+        manager.getRepository(PeopleCountry);
 
       const newPerson = await personRepo.create({
         firstName: people.first_name.value,
@@ -102,7 +104,7 @@ export class ImplPeopleRepository implements PeopleRepository {
   }
   async getAll(): Promise<People[]> {
     try {
-      const peopleRepo = AppDataSource.dataSource.getRepository(MntPeople);
+      const peopleRepo = this.entityManager.getRepository(MntPeople);
 
       const people = await peopleRepo.find({
         select: {
@@ -155,9 +157,9 @@ export class ImplPeopleRepository implements PeopleRepository {
       throw CustomError.internalServer("Internal server error in get people");
     }
   }
-  async getOneById(id: PeopleId): Promise<People | null> {
+  async getOneById(id: PeopleId, manager: EntityManager): Promise<People | null> {
     try {
-      const peopleRepo = AppDataSource.dataSource.getRepository(MntPeople);
+      const peopleRepo = manager.getRepository(MntPeople);
 
       const person = await peopleRepo.findOne({
         where: {
@@ -214,12 +216,12 @@ export class ImplPeopleRepository implements PeopleRepository {
       );
     }
   }
-  async update(person: People): Promise<void> {
+  async update(person: People, manager: EntityManager): Promise<void> {
     try {
       const dt = new DateTimeService().dateTime;
 
       const formatedBirthdate = person.birthdate.value.toISOString();
-      const peopleRepo = AppDataSource.dataSource.getRepository(MntPeople);
+      const peopleRepo = manager.getRepository(MntPeople);
 
       const peopleEdit = await peopleRepo.update(
         {
@@ -248,9 +250,9 @@ export class ImplPeopleRepository implements PeopleRepository {
       );
     }
   }
-  async delete(id: PeopleId, id_status: PeopleStatusId): Promise<void> {
+  async delete(id: PeopleId, id_status: PeopleStatusId, manager: EntityManager): Promise<void> {
     try {
-      const peopleRepo = AppDataSource.dataSource.getRepository(MntPeople);
+      const peopleRepo = manager.getRepository(MntPeople);
 
       await peopleRepo.update(
         {
@@ -268,9 +270,9 @@ export class ImplPeopleRepository implements PeopleRepository {
       );
     }
   }
-  async findByEmail(email: PeopleEmail): Promise<People | null> {
+  async findByEmail(email: PeopleEmail, manager: EntityManager): Promise<People | null> {
     try {
-      const peopleRepo = AppDataSource.dataSource.getRepository(MntPeople);
+      const peopleRepo = manager.getRepository(MntPeople);
 
       const person = await peopleRepo.findOne({
         where: {

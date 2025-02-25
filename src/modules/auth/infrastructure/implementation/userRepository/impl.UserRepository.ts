@@ -13,13 +13,15 @@ import { PostgresUser } from "../../../../../shared/domain/types/postgres-types/
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 import AppDataSource from "../../../../../shared/infrastructure/db/TypeOrmConfig";
 import { MntUser } from "../../../../../shared/infrastructure/db/entities/MntUser";
+import { EntityManager } from "typeorm";
 
-export class ImplUserRepository implements UserRepository {
+export class ImplUserRepository implements UserRepository <EntityManager>{
+  constructor(private entityManager: EntityManager){}
   private users: User[] = [];
-  async findByEmailPeople(id: PeopleId): Promise<User | null> {
+  async findByEmailPeople(id: PeopleId, manager: EntityManager): Promise<User | null> {
     try {
       console.log(id, "idPeople");
-      const userRepo = AppDataSource.dataSource.getRepository(MntUser);
+      const userRepo = manager.getRepository(MntUser);
 
       const userDb = await userRepo.findOne({
         where: {
@@ -62,10 +64,10 @@ export class ImplUserRepository implements UserRepository {
       );
     }
   }
-  async create(user: User): Promise<void> {
+  async create(user: User, manager:EntityManager): Promise<void> {
     try {
       console.log(user, 'usuario')
-      const userRepo = AppDataSource.dataSource.getRepository(MntUser);
+      const userRepo = manager.getRepository(MntUser);
 
       const newUser = await userRepo.create({
         userName: user.user_name.value,

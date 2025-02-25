@@ -9,30 +9,31 @@ import {
 import { CustomError } from "../../../../../../shared/domain/errors/custom.error";
 import { TransactionManagerRepository } from "../../../../../../shared/domain/domain-container/DomainContainer";
 
-export class PeopleDelete {
+export class PeopleDelete <T = unknown> {
   constructor(
     private repository: PeopleRepository,
     private repositoryPeopleStatus: PeopleStatusRepository,
-    private repositoryTransaction: TransactionManagerRepository,
+    private repositoryTransaction: TransactionManagerRepository<T>,
     private repositoryPeopleCountry: PeopleCountryRepository
   ) {}
 
   async run(id: number): Promise<void> {
-    return this.repositoryTransaction.runInTransaction(async () => {
+    return await this.repositoryTransaction.runInTransaction(async (tx) => {
       const idPeople = new PeopleId(id);
-      await this.repository.getOneById(idPeople);
+      
+      await this.repository.getOneById(idPeople, tx);
       const id_status = await this.repositoryPeopleStatus.getOneById(
         new PeopleStatusName("inactive")
-      );
+      )
       if (!id_status) {
         throw CustomError.notFound("Status not found");
       }
 
-      const prueba : CountryId [] = [];
+      const countries : CountryId [] = [];
 
-      await this.repositoryPeopleCountry.update(idPeople, prueba);
+      await this.repositoryPeopleCountry.update(idPeople, countries, tx);
 
-      return this.repository.delete(new PeopleId(id), id_status);
+      return this.repository.delete(new PeopleId(id), id_status, tx);
     }).catch((error) => console.log(error, 'error de la transaccion'))
   }
 }

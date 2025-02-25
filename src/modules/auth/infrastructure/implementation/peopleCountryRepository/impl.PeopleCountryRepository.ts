@@ -13,12 +13,13 @@ import { CtlCountry } from "../../../../../shared/infrastructure/db/entities/Ctl
 import { MntPeople } from "../../../../../shared/infrastructure/db/entities/MntPeople";
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 import { PeopleCountry as PeopleCountryDomain } from "../../../domain/entities/people-country/People.country.entity";
-import { In, Not } from "typeorm";
-export class ImplPeopleCountryRepository implements PeopleCountryRepository {
-  async findMany(id_people: PeopleId): Promise<PeopleCountryDomain[]> {
+import { EntityManager, In, Not } from "typeorm";
+export class ImplPeopleCountryRepository implements PeopleCountryRepository<EntityManager>{
+  constructor(private entityManager: EntityManager){}
+  async findMany(id_people: PeopleId, manager: EntityManager): Promise<PeopleCountryDomain[]> {
     try {
       const peopleCountryRepo =
-      AppDataSource.dataSource.getRepository(PeopleCountryEntity);
+      manager.getRepository(PeopleCountryEntity);
 
     const peopleCoutries = await peopleCountryRepo.find({
       where: {
@@ -56,11 +57,11 @@ export class ImplPeopleCountryRepository implements PeopleCountryRepository {
       throw CustomError.internalServer("Error interno")
     }
   }
-  async create(id_people: PeopleId, id_countries: CountryId[]): Promise<void> {
+  async create(id_people: PeopleId, id_countries: CountryId[], manager: EntityManager): Promise<void> {
     try {
       console.log("aca llegue al create de peoplecountry")
       const peopleCountryRepo =
-        AppDataSource.dataSource.getRepository(PeopleCountryEntity);
+        manager.getRepository(PeopleCountryEntity);
 
       const peopleCountries = id_countries.map((nationality) =>
         peopleCountryRepo.create({
@@ -78,11 +79,11 @@ export class ImplPeopleCountryRepository implements PeopleCountryRepository {
       );
     }
   }
-  async update(id_people: PeopleId, id_countries: CountryId[]): Promise<void> {
+  async update(id_people: PeopleId, id_countries: CountryId[], manager: EntityManager): Promise<void> {
     try {
       const peopleCountryRepo =
-        AppDataSource.dataSource.getRepository(PeopleCountryEntity);
-      const peopleCountryDB = await this.findMany(id_people);
+        manager.getRepository(PeopleCountryEntity);
+      const peopleCountryDB = await this.findMany(id_people, manager);
       const nationalities = id_countries.map((nation) => +nation.value);
 
       const existingIds = new Set(

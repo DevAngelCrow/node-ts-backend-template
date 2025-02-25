@@ -24,11 +24,11 @@ import {
 import { CustomError } from "../../../../../../shared/domain/errors/custom.error";
 import { EntityManager } from "typeorm";
 
-export class PeopleCreate {
+export class PeopleCreate <T = unknown>{
   constructor(
     private repository: PeopleRepository,
     private repositoryCountry: CountryRepository,
-    private repositoryTransaction: TransactionManagerRepository,
+    private repositoryTransaction: TransactionManagerRepository<T>,
     private repositoryStorage: StorageRepository,
     private repositoryPeopleCountry: PeopleCountryRepository
   ) {}
@@ -47,9 +47,6 @@ export class PeopleCreate {
     id_status: number,
     nationality: number[]
   ): Promise<People> {
-    //const url_img = await this.repositoryStorage.updload(img_path);
-    console.log("aca inicio el peopleCreate");
-    const id_img = img_path.split("=")[1];
     //return this.repositoryTransaction
     //.runInTransaction(async () => {
 
@@ -57,7 +54,7 @@ export class PeopleCreate {
     const foundNationalities = await this.repositoryCountry.findMany(
       nationalities
     );
-    console.log(foundNationalities, "nationalities");
+
     if (!foundNationalities) {
       throw CustomError.badRequest(
         "The id to the nationality no exist in the records"

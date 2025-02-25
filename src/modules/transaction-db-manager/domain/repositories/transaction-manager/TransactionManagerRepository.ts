@@ -1,3 +1,3 @@
-export interface TransactionManagerRepository {
-    runInTransaction<T>(operation: (manager: any) => Promise<T>) : Promise<T>;
+export interface TransactionManagerRepository<T>{
+    runInTransaction<U>(operation: (client: T) => Promise<U>) : Promise<U>;
 }

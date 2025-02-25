@@ -46,18 +46,18 @@ import AppDataSource from "../db/TypeOrmConfig"
 import { UploadFile } from "../../../modules/storage-handler/application/services/storage";
 import { EntityManager } from "typeorm";
 
-//const entityManager = AppDataSource.dataSource.manager;
+const entityManager = AppDataSource.dataSource.manager;
 
 const exampleRepository = new ImplExampleRepository();
-const peopleRepository = new ImplPeopleRepository();
+const peopleRepository = new ImplPeopleRepository(entityManager);
 const countryRepository = new ImplCountryRepository();
-const transactionManagerRepository = new ImplTransactionManagerRepository(AppDataSource.dataSource);
+const transactionManagerRepository = new ImplTransactionManagerRepository(entityManager);
 const storageRepository = new ImplStorageRepository();
-const peopleStatusRepository = new ImplPeopleStatusRepository();
+const peopleStatusRepository = new ImplPeopleStatusRepository(entityManager);
 const httpClientRepository = new ImplHttpClientRepository(envs.HTTP_CLIENT_ADAPTER);
-const userRepository = new ImplUserRepository();
+const userRepository = new ImplUserRepository(entityManager);
 const authServiceRepository = new ImplAuthServiceRepository(userRepository, peopleRepository);
-const peopleCountryRepository = new ImplPeopleCountryRepository();
+const peopleCountryRepository = new ImplPeopleCountryRepository(entityManager);
 
 export const ServiceContainer = {
   example: {
