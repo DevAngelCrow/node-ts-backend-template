@@ -70,7 +70,6 @@ export class ImplCountryRepository implements CountryRepository {
         state: country.state ?? null
       });
     } catch (error) {
-      console.log(error)
       throw CustomError.internalServer("Internal server error");
     }
   }

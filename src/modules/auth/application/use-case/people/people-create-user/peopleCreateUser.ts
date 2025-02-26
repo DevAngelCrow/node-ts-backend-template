@@ -78,7 +78,6 @@ export class PeopleCreateUser <T = unknown>{
       );
 
       const person = await this.repository.create(people, tx);
-      console.log(person, 'person de createUser');
       if (!person) {
         throw CustomError.internalServer(
           "Internal server error in create UserPeople"

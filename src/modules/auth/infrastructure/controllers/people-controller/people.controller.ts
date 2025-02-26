@@ -185,7 +185,6 @@ export class PeopleController {
         response.status(200).send({ message: "Person inactivated successful" })
       )
       .catch((error) => {
-        console.log(error, 'error')
         response.status(error.statusCode).json({ message: error.message });
       });
   }

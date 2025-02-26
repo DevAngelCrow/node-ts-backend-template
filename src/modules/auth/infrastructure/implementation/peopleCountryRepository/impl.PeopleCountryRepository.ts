@@ -53,13 +53,11 @@ export class ImplPeopleCountryRepository implements PeopleCountryRepository<Enti
 
     return peopleCountriesFormated; 
     } catch (error) {
-      console.log(error, 'error en crear peoplecountry')
-      throw CustomError.internalServer("Error interno")
+      throw CustomError.internalServer("Internal server error in findManyPeople")
     }
   }
   async create(id_people: PeopleId, id_countries: CountryId[], manager: EntityManager): Promise<void> {
     try {
-      console.log("aca llegue al create de peoplecountry")
       const peopleCountryRepo =
         manager.getRepository(PeopleCountryEntity);
 
@@ -73,7 +71,6 @@ export class ImplPeopleCountryRepository implements PeopleCountryRepository<Enti
 
       await peopleCountryRepo.save(peopleCountries);
     } catch (error) {
-      console.log(error, 'error en crear peoplecountry')
       throw CustomError.internalServer(
         "Internal server error in peopleCountryCreate"
       );
@@ -162,7 +159,6 @@ export class ImplPeopleCountryRepository implements PeopleCountryRepository<Enti
       }
 
     } catch (error) {
-      console.log("error en update PeopleCountry")
       throw CustomError.internalServer("Error in update peopleCountry.");
     }
   }

@@ -73,7 +73,6 @@ export class ImplAuthServiceRepository implements AuthServiceRepository {
 
       return { user, token };
     } catch (error) {
-      console.log(error, "error autenticacion authenticateUser");
       throw CustomError.unauthorized("Invalid credentials");
     }
   }

@@ -44,19 +44,18 @@ export class ImplPeopleRepository implements PeopleRepository<EntityManager> {
   constructor(private entityManager: EntityManager){}
   async createUserWithPerson(people: People, user: User, manager: EntityManager): Promise<void> {
     try {
-      console.log("implementaion createUserWithPerson")
       if (!people) {
         throw CustomError.internalServer(
-          "No se hizo el registro correctamente"
+          "Internal server error"
         );
       }
       if (!user) {
         throw CustomError.internalServer(
-          "No se hizo el registro correctamente"
+          "Internal server error"
         );
       }
     } catch (error) {
-      throw CustomError.badRequest(`El error ${error}`);
+      throw CustomError.internalServer(`Internal server error`);
     }
   }
   async create(people: People, manager: EntityManager): Promise<People> {
@@ -93,7 +92,6 @@ export class ImplPeopleRepository implements PeopleRepository<EntityManager> {
 
       return people;
     } catch (error) {
-      console.log(error, 'error en crear persona')
       throw CustomError.internalServer(
         "Internal server error in create people"
       );

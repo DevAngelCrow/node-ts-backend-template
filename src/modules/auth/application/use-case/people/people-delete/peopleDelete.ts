@@ -34,6 +34,6 @@ export class PeopleDelete <T = unknown> {
       await this.repositoryPeopleCountry.update(idPeople, countries, tx);
 
       return this.repository.delete(new PeopleId(id), id_status, tx);
-    }).catch((error) => console.log(error, 'error de la transaccion'))
+    })
   }
 }

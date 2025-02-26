@@ -98,8 +98,7 @@ export class PeopleCreate <T = unknown>{
           nationalities,
           tx
         );
-    
-        console.log(createPerson, 'CREATE PERSON')
+  
         return createPerson;
         })
       }else{

@@ -35,7 +35,6 @@ export class ImplUserRepository implements UserRepository <EntityManager>{
       if (!userDb) {
         return null;
       }
-      console.log(userDb, 'userDB')
       const user = {
         id: userDb.id,
         id_people: userDb.idPeople.id,
@@ -50,7 +49,6 @@ export class ImplUserRepository implements UserRepository <EntityManager>{
       }
       return this.mapToDomain(user);
     } catch (error) {
-      console.log(error)
       throw CustomError.internalServer(
         "Internal server error in find email people"
       );
