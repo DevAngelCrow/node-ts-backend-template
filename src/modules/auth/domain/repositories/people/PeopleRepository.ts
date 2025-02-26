@@ -9,4 +9,5 @@ export interface PeopleRepository<T = unknown>{
   delete(id: PeopleId, id_status: PeopleStatusId, transactionClient?: T): Promise<void>;
   findByEmail(email: PeopleEmail, transactionClient?: T) : Promise<People | null>;
   createUserWithPerson(people: People, user: User, transactionClient?: T): Promise<void>;
+  findEmailExist(email: PeopleEmail, transactionClient?: T) : Promise<boolean>
 }

@@ -28,7 +28,7 @@ export class ImplAuthServiceRepository implements AuthServiceRepository {
       };
       return jwt.sign(payload, this.secretKey as string, options);
     } catch (error) {
-      throw new Error("Method not implemented");
+      throw CustomError.unauthorized("Internal server error to generate Token")
     }
   }
   verifyToken(token: string): unknown {
@@ -38,7 +38,7 @@ export class ImplAuthServiceRepository implements AuthServiceRepository {
     try {
       return bycrypt.compareSync(plain, hashed);
     } catch (error) {
-      throw new Error("Error in the comparation password");
+      throw CustomError.unauthorized("Error in the comparation password");
     }
   }
   async authenticateUser(
@@ -76,12 +76,18 @@ export class ImplAuthServiceRepository implements AuthServiceRepository {
       throw CustomError.unauthorized("Invalid credentials");
     }
   }
+
   async hashPassword(password: UserPassword): Promise<UserPassword> {
-    const saltRounds = 10;
-    const hashedPassword = await bycrypt.hash(password.value, saltRounds);
+    try {
+      const saltRounds : number = 10;
+    const hashedPassword : string = await bycrypt.hash(password.value, saltRounds);
 
-    const passwordFormated = new UserPassword(hashedPassword);
-
+    const passwordFormated : UserPassword = new UserPassword(hashedPassword);
+    
     return passwordFormated;
+    } catch (error) {
+      throw CustomError.unauthorized("Error in hash password")
+    }
+    
   }
 }

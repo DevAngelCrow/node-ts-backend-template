@@ -27,7 +27,6 @@ export class Server {
 
         //Enpoint of the routes api
         this.app.use('/api', this.routes);
-
         this.app.get(/^\/(?!api).*/, (request, response)=>{
             const indexPath = path.join(__dirname + `../../../${this.publicPath}/index.html`);
             response.sendFile(indexPath)

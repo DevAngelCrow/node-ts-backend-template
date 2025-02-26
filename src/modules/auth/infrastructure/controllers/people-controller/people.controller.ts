@@ -3,8 +3,6 @@ import DateTimeService from "../../../../../shared/infrastructure/services/date-
 import { ServiceContainer } from "../../../../../shared/infrastructure/services-container/ServiceContainer";
 
 export class PeopleController {
-
-  
   async createPeopleUser(request: Request, response: Response) {
     const dt = new DateTimeService().dateTime;
     const {
@@ -22,36 +20,40 @@ export class PeopleController {
       user_name,
       password,
       id_status_user,
-      last_access
+      last_access,
     } = request.body;
-    const birthdateFormated = dt.fromISO(birthdate).toJSDate();
-    const lastAccessFormated = dt.fromISO(last_access).toJSDate();
+    //const birthdateFormated = dt.fromISO(birthdate).toJSDate();
+    //const lastAccessFormated = dt.fromISO(last_access).toJSDate();
     const img_path = request.file!;
     const imgPath = await ServiceContainer.storage.upload.run(img_path);
-    await ServiceContainer.people.createUserWithPerson.run(
-      first_name,
-      middle_name,
-      last_name,
-      birthdate,
-      id_gender,
-      email,
-      +id_marital_status,
-      imgPath,
-      phone,
-      Boolean(has_insurance),
-      +id_status,
-      nationality,
-      user_name,
-      password,
-      +id_status_user,
-      last_access
-    ).then(() =>
-      response.status(201).send({ message: "Register created successful" })
-    )
-    .catch((error) => {
-      response.status(error.statusCode).json({ message: error.message });
-    });
-
+    const formatedNationalities = Array.isArray(nationality) ? nationality : nationality.split(",");
+    
+    await ServiceContainer.people.createUserWithPerson
+      .run(
+        first_name,
+        middle_name,
+        last_name,
+        birthdate,
+        id_gender,
+        email,
+        +id_marital_status,
+        imgPath,
+        phone,
+        Boolean(has_insurance),
+        +id_status,
+        formatedNationalities,
+        user_name,
+        password,
+        +id_status_user,
+        last_access
+      )
+      .then(() =>
+        response.status(201).send({ message: "Register created successful" })
+      )
+      .catch((error) => {
+        ServiceContainer.storage.delete.run(imgPath.split("=")[1]!);
+        response.status(error.statusCode).json({ message: error.message });
+      });
   }
   async createPeople(request: Request, response: Response) {
     const dt = new DateTimeService().dateTime;
@@ -68,7 +70,7 @@ export class PeopleController {
       id_status,
       nationality,
     } = request.body;
-    const birthdateFormated = dt.fromISO(birthdate).toJSDate();
+    //const birthdateFormated = dt.fromISO(birthdate).toJSDate();
     const img_path = request.file!;
     const imgPath = await ServiceContainer.storage.upload.run(img_path);
     await ServiceContainer.people.create
@@ -91,6 +93,7 @@ export class PeopleController {
         response.status(201).send({ message: "People created successful" })
       )
       .catch((error) => {
+        ServiceContainer.storage.delete.run(imgPath.split("=")[1]!);
         response.status(error.statusCode).json({ message: error.message });
       });
   }
@@ -109,7 +112,6 @@ export class PeopleController {
   }
 
   async getPeopleById(request: Request, response: Response) {
-    
     const { id } = request.params;
     await ServiceContainer.people.getOneById
       .run(+id)
@@ -172,7 +174,7 @@ export class PeopleController {
         response.status(200).send({ message: "People updated successful" })
       )
       .catch((error) => {
-        ServiceContainer.storage.delete.run(imgPath.split("=")[1]!)
+        ServiceContainer.storage.delete.run(imgPath.split("=")[1]!);
         response.status(error.statusCode).json({ message: error.message });
       });
   }

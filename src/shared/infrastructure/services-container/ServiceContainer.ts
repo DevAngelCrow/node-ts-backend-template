@@ -74,7 +74,7 @@ export const ServiceContainer = {
     getAll: new PeopleGetAll(peopleRepository),
     delete: new PeopleDelete(peopleRepository, peopleStatusRepository, transactionManagerRepository, peopleCountryRepository),
     findByEmail: new PeopleFindByEmail(peopleRepository),
-    createUserWithPerson: new PeopleCreateUser(peopleRepository, userRepository, transactionManagerRepository, peopleCountryRepository)
+    createUserWithPerson: new PeopleCreateUser(peopleRepository, userRepository, transactionManagerRepository, peopleCountryRepository, authServiceRepository)
   },
   country: {
     create: new CountryCreate(countryRepository),
@@ -96,7 +96,7 @@ export const ServiceContainer = {
     hashPassword: new AuthPasswordHash(authServiceRepository),
   },
   user: {
-    create: new UserCreate(userRepository),
+    create: new UserCreate(userRepository, authServiceRepository),
     update: new UserUpdate(userRepository),
     getOneById: new UserGetById(userRepository),
     getAll: new UserGetAll(userRepository),

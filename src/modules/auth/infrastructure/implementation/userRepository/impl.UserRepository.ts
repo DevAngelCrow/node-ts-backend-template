@@ -57,7 +57,6 @@ export class ImplUserRepository implements UserRepository <EntityManager>{
   async create(user: User, manager:EntityManager): Promise<void> {
     try {
       const userRepo = manager.getRepository(MntUser);
-
       const newUser = await userRepo.create({
         userName: user.user_name.value,
         password: user.password.value,

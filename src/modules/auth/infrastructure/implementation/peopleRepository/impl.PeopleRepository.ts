@@ -42,6 +42,7 @@ import { EntityManager } from "typeorm";
 export class ImplPeopleRepository implements PeopleRepository<EntityManager> {
   private people: People[] = [];
   constructor(private entityManager: EntityManager){}
+  
   async createUserWithPerson(people: People, user: User, manager: EntityManager): Promise<void> {
     try {
       if (!people) {
@@ -55,6 +56,7 @@ export class ImplPeopleRepository implements PeopleRepository<EntityManager> {
         );
       }
     } catch (error) {
+      console.log("error", error)
       throw CustomError.internalServer(`Internal server error`);
     }
   }
@@ -150,6 +152,22 @@ export class ImplPeopleRepository implements PeopleRepository<EntityManager> {
       return this.people;
     } catch (error) {
       throw CustomError.internalServer("Internal server error in get people");
+    }
+  }
+  async findEmailExist(email: PeopleEmail, manager: EntityManager): Promise<boolean> {
+    try {
+      const peopleRepo = manager.getRepository(MntPeople);
+
+      const emailPeople = await peopleRepo.existsBy({email: email.value})
+
+      if(emailPeople){
+        throw CustomError.badRequest("Email already in use")
+      }
+
+      return emailPeople;
+
+    } catch (error) {
+      throw error
     }
   }
   async getOneById(id: PeopleId, manager: EntityManager = this.entityManager): Promise<People | null> {

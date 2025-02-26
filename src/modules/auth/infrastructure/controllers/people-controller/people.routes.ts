@@ -13,6 +13,30 @@ export class PeopleRoutes {
     router.get("/:id", controller.getPeopleById);
     router.put("/:id", upload.single("img_path"), controller.updatePerson );
     router.delete("/:id", controller.deletePerson );
+
+    /**
+     * Post track
+     * @openapi
+     * /api/people/sign-up:
+     *   post:
+     *    tags:
+     *      - user with people
+     *    summary: Create user with people
+     *    description: This enpoint is to sign up
+     *    operationId: userWithPeople
+     *    requestBody:
+     *        content:
+     *          multipart/form-data:
+     *            schema:
+     *              $ref: "#/components/schemas/people user"
+     *    responses:
+     *      '200':
+     *        description: Retorna mensaje
+     *      '404':
+     *        description: Hola   
+     * 
+     */
+
     router.post('/sign-up', upload.single("img_path"), controller.createPeopleUser)
 
     return router;

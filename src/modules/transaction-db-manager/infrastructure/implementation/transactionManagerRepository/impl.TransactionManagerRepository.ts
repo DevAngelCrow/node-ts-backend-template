@@ -1,6 +1,5 @@
 import { TransactionManagerRepository } from "../../../domain/repositories/transaction-manager/TransactionManagerRepository";
-import { CustomError } from "../../../../../shared/domain/errors/custom.error";
-import { DataSource, EntityManager } from "typeorm";
+import { EntityManager } from "typeorm";
 
 export class ImplTransactionManagerRepository implements TransactionManagerRepository<EntityManager>{
     constructor(private readonly manager: EntityManager){}
@@ -10,7 +9,7 @@ export class ImplTransactionManagerRepository implements TransactionManagerRepos
                return operation(transactionalManager);
             })
         }catch(error){
-            throw CustomError.internalServer(`Internal server error in the transaction because => ${error}`);
+            throw error;
         }
     }
 

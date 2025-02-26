@@ -6,6 +6,7 @@ import {
 import { CustomError } from "../../../../../../shared/domain/errors/custom.error";
 import { MultimediaFile } from "../../../../../../shared/domain/types";
 import {
+  AuthServiceRepository,
   CountryId,
   People,
   PeopleBirthdate,
@@ -30,12 +31,13 @@ import {
   UserRepository,
 } from "../../../../domain";
 
-export class PeopleCreateUser <T = unknown>{
+export class PeopleCreateUser<T = unknown> {
   constructor(
     private repository: PeopleRepository,
     private repositoryUser: UserRepository,
     private repositoryTransaction: TransactionManagerRepository<T>,
-    private repositoryPeopleCountry: PeopleCountryRepository
+    private repositoryPeopleCountry: PeopleCountryRepository,
+    private repositoryAuth: AuthServiceRepository
   ) {}
 
   async run(
@@ -59,14 +61,19 @@ export class PeopleCreateUser <T = unknown>{
     id_status: number,
     last_access: Date
   ): Promise<void> {
+
+    console.log(nationality, 'nationality')
     const nationalities = nationality.map((id) => new CountryId(id));
     return await this.repositoryTransaction.runInTransaction(async (tx) => {
-
+      const emailPeople = new PeopleEmail(email);
+      if(await this.repository.findEmailExist(emailPeople, tx)){
+        throw CustomError.badRequest("The email provided is already in use")
+      }
       const people = new People(
         new PeopleFirstName(firts_name),
         new PeopleBirthdate(birthdate),
         new PeopleIdGender(+id_gender),
-        new PeopleEmail(email),
+        emailPeople,
         new PeopleIdMaritalStatus(+id_marital_status),
         new PeoplePhone(phone),
         new PeopleIdStatus(+id_status),
@@ -84,18 +91,20 @@ export class PeopleCreateUser <T = unknown>{
         );
       }
 
-      
-
       const user = new User(
         new UserIdPeople(+person.getId.value),
         new UserName(user_name),
-        new UserPassword(password),
+        await this.repositoryAuth.hashPassword(new UserPassword(password)),
         new UserIdStatus(id_status_user),
         new UserLastAccess(last_access)
       );
 
       await this.repositoryUser.create(user, tx);
-      await this.repositoryPeopleCountry.create(person.getId, nationalities, tx);
+      await this.repositoryPeopleCountry.create(
+        person.getId,
+        nationalities,
+        tx
+      );
     });
   }
 }

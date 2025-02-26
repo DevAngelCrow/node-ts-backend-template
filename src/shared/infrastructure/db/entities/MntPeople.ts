@@ -17,6 +17,7 @@ import { MntUser } from "./MntUser";
 import { PeopleCountry } from "./PeopleCountry";
 
 @Index("mnt_people_pk", ["id"], { unique: true })
+@Index("mnt_people_email_idx", ["email"], {unique: true})
 @Entity("mnt_people", { schema: "public" })
 export class MntPeople {
   @PrimaryGeneratedColumn({ type: "integer", name: "id" })

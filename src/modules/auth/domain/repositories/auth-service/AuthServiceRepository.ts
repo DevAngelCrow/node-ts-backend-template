@@ -7,5 +7,4 @@ export interface AuthServiceRepository {
     comparePassword(plain: string, hashed: string) : boolean;
     authenticateUser(email: PeopleEmail, password: UserPassword) : Promise<{user: User; token: string}>;
     hashPassword(password: UserPassword) : Promise<UserPassword>;
-
 }
