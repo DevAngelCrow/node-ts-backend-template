@@ -50,7 +50,7 @@ const entityManager = AppDataSource.dataSource.manager;
 
 const exampleRepository = new ImplExampleRepository();
 const peopleRepository = new ImplPeopleRepository(entityManager);
-const countryRepository = new ImplCountryRepository();
+const countryRepository = new ImplCountryRepository(entityManager);
 const transactionManagerRepository = new ImplTransactionManagerRepository(entityManager);
 const storageRepository = new ImplStorageRepository();
 const peopleStatusRepository = new ImplPeopleStatusRepository(entityManager);

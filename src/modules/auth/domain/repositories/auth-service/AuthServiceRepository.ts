@@ -1,9 +1,9 @@
 import { User } from "../../entities";
 import { PeopleEmail, UserPassword } from "../../value-object";
 
-export interface AuthServiceRepository {
+export interface AuthServiceRepository{
     generateToken(user: User) : string;
-    verifyToken(token: string) : unknown;
+    verifyToken<T>(token: string) : Promise<T | null>;
     comparePassword(plain: string, hashed: string) : boolean;
     authenticateUser(email: PeopleEmail, password: UserPassword) : Promise<{user: User; token: string}>;
     hashPassword(password: UserPassword) : Promise<UserPassword>;

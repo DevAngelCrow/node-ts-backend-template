@@ -31,8 +31,8 @@ export class ImplAuthServiceRepository implements AuthServiceRepository {
       throw CustomError.unauthorized("Internal server error to generate Token")
     }
   }
-  verifyToken(token: string): unknown {
-    return jwt.verify(token, this.secretKey);
+    async verifyToken<T>(token: string): Promise<T | null> {
+    return  jwt.verify(token, this.secretKey) as T;
   }
   comparePassword(plain: string, hashed: string): boolean {
     try {

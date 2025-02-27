@@ -15,8 +15,8 @@ import { EntityManager, In, DataSource } from "typeorm";
 
 export class ImplCountryRepository implements CountryRepository {
   private countries: Country[] = [];
-
-  async create(country: Country, manager: EntityManager): Promise<void> {
+  constructor(private entityManager: EntityManager){}
+  async create(country: Country, manager: EntityManager = this.entityManager): Promise<void> {
     try {
       const countryRepo = manager.getRepository(CtlCountry);
 
@@ -59,7 +59,7 @@ export class ImplCountryRepository implements CountryRepository {
       });
       
       if (!country) {
-        throw CustomError.notFound("Country not found");
+        return null;
       }
 
       return this.mapToDomain({

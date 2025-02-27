@@ -73,6 +73,7 @@ export class PeopleController {
     //const birthdateFormated = dt.fromISO(birthdate).toJSDate();
     const img_path = request.file!;
     const imgPath = await ServiceContainer.storage.upload.run(img_path);
+    const formatedNationalities = Array.isArray(nationality) ? nationality : nationality.split(",");
     await ServiceContainer.people.create
       .run(
         first_name,
@@ -86,7 +87,7 @@ export class PeopleController {
         phone,
         Boolean(has_insurance),
         id_status,
-        nationality,
+        formatedNationalities,
         true
       )
       .then(() =>
@@ -124,7 +125,7 @@ export class PeopleController {
   }
 
   async getPeopleByEmail(request: Request, response: Response) {
-    const { email } = request.body;
+    const { email } = request.params;
     await ServiceContainer.people.findByEmail
       .run(email)
       .then((res) => {

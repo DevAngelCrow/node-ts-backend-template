@@ -102,9 +102,10 @@ export class PeopleCreate <T = unknown>{
         return createPerson;
         })
       }else{
+        return await this.repositoryTransaction.runInTransaction(async (tx) => {
           const nationalities = nationality.map((id) => new CountryId(id));
           const foundNationalities = await this.repositoryCountry.findMany(
-            nationalities,
+            nationalities, tx
           );
       
           if (!foundNationalities) {
@@ -142,11 +143,12 @@ export class PeopleCreate <T = unknown>{
             new PeopleHasInsurance(has_insurance)
           );
       
-          const createPerson = await this.repository.create(people);
+          const createPerson = await this.repository.create(people, tx);
           
     
           return createPerson;
-          // })
+        });
+          
         }
       }
     }

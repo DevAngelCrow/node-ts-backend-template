@@ -60,7 +60,7 @@ export class ImplPeopleRepository implements PeopleRepository<EntityManager> {
       throw CustomError.internalServer(`Internal server error`);
     }
   }
-  async create(people: People, manager: EntityManager): Promise<People> {
+  async create(people: People, manager: EntityManager = this.entityManager): Promise<People> {
     try {
       let nationalities: { [key: string]: number }[] = [];
       people.nationality.map((nation) => {
@@ -94,6 +94,7 @@ export class ImplPeopleRepository implements PeopleRepository<EntityManager> {
 
       return people;
     } catch (error) {
+      console.log(error, 'error')
       throw CustomError.internalServer(
         "Internal server error in create people"
       );

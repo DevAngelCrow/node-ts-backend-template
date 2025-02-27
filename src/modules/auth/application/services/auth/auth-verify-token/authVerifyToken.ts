@@ -1,9 +1,9 @@
 import { AuthServiceRepository } from "../../../../domain/repositories/auth-service/AuthServiceRepository";
 
-export class AuthVerifyToken {
+export class AuthVerifyToken<T>{
     constructor(private repository: AuthServiceRepository){}
     
-    run(token: string) : unknown{
-        return this.repository.verifyToken(token);
+    async run<T>(token: string) : Promise<T | null> {
+        return this.repository.verifyToken<T>(token);
     }
 }
