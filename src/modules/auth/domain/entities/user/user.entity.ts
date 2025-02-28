@@ -1,4 +1,4 @@
-import { UserId, UserIdPeople, UserIdStatus, UserLastAccess, UserName, UserPassword } from "../../value-object";
+import { StatusUserName, UserId, UserIdPeople, UserIdStatus, UserLastAccess, UserName, UserPassword } from "../../value-object";
 
 export class User{
     constructor(
@@ -7,14 +7,15 @@ export class User{
         readonly password: UserPassword,
         readonly id_status: UserIdStatus,
         readonly last_access: UserLastAccess,
-        readonly id?: UserId 
+        readonly id?: UserId,
+        readonly status?: StatusUserName
     ){}
 
     public mapToPrimitivesLogin(){
         return {
             user_name: this.user_name.value,
             last_access: this.last_access.value,
-            id_status: this.id_status.value,
+            status: this.status?.value,
         }
     }
 }

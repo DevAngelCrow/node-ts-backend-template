@@ -92,7 +92,7 @@ export const ServiceContainer = {
   authService: {
     generateToken: new AuthGenerateToken(authServiceRepository),
     verifyToken: new AuthVerifyToken(authServiceRepository),
-    authenticateUser: new AuthenticateUser(authServiceRepository),
+    authenticateUser: new AuthenticateUser(authServiceRepository, userRepository),
     hashPassword: new AuthPasswordHash(authServiceRepository),
   },
   user: {

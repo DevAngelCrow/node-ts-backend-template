@@ -1,5 +1,6 @@
 import {
   PeopleId,
+  StatusUserName,
   User,
   UserId,
   UserIdPeople,
@@ -14,24 +15,35 @@ import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 import AppDataSource from "../../../../../shared/infrastructure/db/TypeOrmConfig";
 import { MntUser } from "../../../../../shared/infrastructure/db/entities/MntUser";
 import { EntityManager } from "typeorm";
+import DateTimeService from "../../../../../shared/infrastructure/services/date-time/date.time.services";
 
-export class ImplUserRepository implements UserRepository <EntityManager>{
-  constructor(private entityManager: EntityManager){}
+export class ImplUserRepository implements UserRepository<EntityManager> {
+  constructor(private entityManager: EntityManager) {}
+
   private users: User[] = [];
-  async findByEmailPeople(id: PeopleId, manager: EntityManager = this.entityManager): Promise<User | null> {
+  async findByEmailPeople(
+    id: PeopleId,
+    manager: EntityManager = this.entityManager
+  ): Promise<User | null> {
     try {
-      const userRepo = manager.getRepository(MntUser);
-      
-      
-      const userDb = await userRepo.createQueryBuilder("mntuser")
-      .innerJoin("mntuser.idPeople", "mntPeople")
-      .innerJoin("mntuser.idStatus", "idStatus")
-      .select([
-        "mntuser.id", "mntuser.userName", "mntuser.password", "mntuser.lastAccess", "mntPeople.id","idStatus.id"
-      ])
-      .where("mntuser.idPeople = :id", {id: id.value})
-      .getOne();
+      const dt = new DateTimeService().dateTime;
 
+      const userRepo = manager.getRepository(MntUser);
+      const userDb = await userRepo
+        .createQueryBuilder("mntuser")
+        .innerJoin("mntuser.idPeople", "mntPeople")
+        .innerJoin("mntuser.idStatus", "nameStatus")
+        .select([
+          "mntuser.id",
+          "mntuser.userName",
+          "mntuser.password",
+          "mntuser.lastAccess",
+          "mntPeople.id",
+          "nameStatus.name",
+          "nameStatus.id",
+        ])
+        .where("mntuser.idPeople = :id", { id: id.value })
+        .getOne();
       if (!userDb) {
         return null;
       }
@@ -40,10 +52,11 @@ export class ImplUserRepository implements UserRepository <EntityManager>{
         id_people: userDb.idPeople.id,
         user_name: userDb.userName,
         password: userDb.password,
-        id_status: userDb.idStatus.id,
-        last_access: userDb.lastAccess,
+        status: { id_status: userDb.idStatus.id, name: userDb.idStatus.name },
+        last_access: dt.now().toJSDate(),
       };
 
+      //console.log(userDb, 'userDb')
       if (!user) {
         return null;
       }
@@ -54,7 +67,10 @@ export class ImplUserRepository implements UserRepository <EntityManager>{
       );
     }
   }
-  async create(user: User, manager:EntityManager): Promise<void> {
+  async create(
+    user: User,
+    manager: EntityManager = this.entityManager
+  ): Promise<void> {
     try {
       const userRepo = manager.getRepository(MntUser);
       const newUser = await userRepo.create({
@@ -82,14 +98,33 @@ export class ImplUserRepository implements UserRepository <EntityManager>{
     throw new Error("Method not implemented.");
   }
 
+  async updateDateAccess(
+    id: UserId,
+    lastAccess: UserLastAccess,
+    manager: EntityManager = this.entityManager
+  ): Promise<void> {
+    try {
+      //const dt = new DateTimeService().dateTime;
+      const userRepo = manager.getRepository(MntUser);
+      await userRepo.update(
+        { id: id.value },
+        {
+          lastAccess: lastAccess.value,
+        }
+      );
+    } catch (error) {
+      throw CustomError.internalServer("Internal server error")
+    }
+  }
   private mapToDomain(user: PostgresUser): User {
     return new User(
       new UserIdPeople(user.id_people),
       new UserName(user.user_name),
       new UserPassword(user.password),
-      new UserIdStatus(user.id_status),
+      new UserIdStatus(user.status.id_status),
       new UserLastAccess(user.last_access),
-      new UserId(user.id)
+      new UserId(user.id),
+      new StatusUserName(user.status.name)
     );
   }
 }

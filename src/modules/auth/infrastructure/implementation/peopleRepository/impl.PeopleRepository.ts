@@ -56,7 +56,6 @@ export class ImplPeopleRepository implements PeopleRepository<EntityManager> {
         );
       }
     } catch (error) {
-      console.log("error", error)
       throw CustomError.internalServer(`Internal server error`);
     }
   }
@@ -94,7 +93,6 @@ export class ImplPeopleRepository implements PeopleRepository<EntityManager> {
 
       return people;
     } catch (error) {
-      console.log(error, 'error')
       throw CustomError.internalServer(
         "Internal server error in create people"
       );

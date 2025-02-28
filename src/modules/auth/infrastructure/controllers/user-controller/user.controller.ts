@@ -28,7 +28,7 @@ export class UserController {
   }
 
   async findUserByEmail(request: Request, response: Response) {
-    const { email } = request.body;
+    const { email } = request.params;
 
     await ServiceContainer.user.getOneByEmail
       .run(email)

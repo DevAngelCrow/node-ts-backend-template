@@ -29,11 +29,13 @@ export class PeopleRoutes {
      *        description: Retorna mensaje
      *      '404':
      *        description: Hola
+     *    security:
+     *      - bearerAuth: []
      *
      */
 
 
-    router.post("/create", upload.single("img_path"), controller.createPeople);
+    router.post("/create", authMiddleware, upload.single("img_path"), controller.createPeople);
 
         /**
      * Post track
@@ -55,6 +57,8 @@ export class PeopleRoutes {
      *        description: Register created successful
      *      '404':
      *        description: Hola
+     *    security:
+     *      - bearerAuth: []
      *
      */
 
@@ -80,9 +84,11 @@ export class PeopleRoutes {
      *                $ref: "#/components/schemas/People get"
      *      '404':
      *        description: "Person not found"
+     *    security:
+     *      - bearerAuth: []
      */
 
-    router.get("/", controller.getAllPeople);
+    router.get("/", authMiddleware, controller.getAllPeople);
 
     /**
      * @openapi
@@ -138,9 +144,11 @@ export class PeopleRoutes {
      *
      *      '404':
      *        description: "Person not found"
+     *    security:
+     *      - bearerAuth: []
      */
 
-    router.get("/:id", controller.getPeopleById);
+    router.get("/:id", authMiddleware, controller.getPeopleById);
 
     /**
      * @openapi
@@ -169,9 +177,11 @@ export class PeopleRoutes {
      *         description: Retorna mensaje
      *       '404':
      *         description: Hola
+     *     security:
+     *      - bearerAuth: []
      */
 
-    router.put("/:id", upload.single("img_path"), controller.updatePerson);
+    router.put("/:id", authMiddleware, upload.single("img_path"), controller.updatePerson);
 
     /**
      * @openapi
@@ -197,9 +207,11 @@ export class PeopleRoutes {
      *        description: Invalid id supplied
      *      '404':
      *        description: Person not found
+     *    security:
+     *      - bearerAuth: []
      */
 
-    router.delete("/:id", controller.deletePerson);
+    router.delete("/:id", authMiddleware, controller.deletePerson);
 
     return router;
   }

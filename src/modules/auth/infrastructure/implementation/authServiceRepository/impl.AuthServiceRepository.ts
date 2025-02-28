@@ -28,23 +28,26 @@ export class ImplAuthServiceRepository implements AuthServiceRepository {
       };
       return jwt.sign(payload, this.secretKey as string, options);
     } catch (error) {
-      throw CustomError.unauthorized("Internal server error to generate Token")
+      throw CustomError.unauthorized("Internal server error to generate Token");
     }
   }
-    async verifyToken<T>(token: string): Promise<T | null> {
-
+  async verifyToken<T>(token: string): Promise<T | null> {
+    try {
       const decode = jwt.verify(token, this.secretKey);
 
-      if(!decode){
+      if (!decode) {
         return null;
       }
-    return decode as T;
+      return decode as T;
+    } catch (error) {
+      throw CustomError.unauthorized("Invalid credentials");
+    }
   }
   comparePassword(plain: string, hashed: string): boolean {
     try {
       return bycrypt.compareSync(plain, hashed);
     } catch (error) {
-      throw CustomError.unauthorized("Error in the comparation password");
+      throw CustomError.unauthorized("Invalid credentials");
     }
   }
   async authenticateUser(
@@ -85,15 +88,17 @@ export class ImplAuthServiceRepository implements AuthServiceRepository {
 
   async hashPassword(password: UserPassword): Promise<UserPassword> {
     try {
-      const saltRounds : number = 10;
-    const hashedPassword : string = await bycrypt.hash(password.value, saltRounds);
+      const saltRounds: number = 10;
+      const hashedPassword: string = await bycrypt.hash(
+        password.value,
+        saltRounds
+      );
 
-    const passwordFormated : UserPassword = new UserPassword(hashedPassword);
-    
-    return passwordFormated;
+      const passwordFormated: UserPassword = new UserPassword(hashedPassword);
+
+      return passwordFormated;
     } catch (error) {
-      throw CustomError.unauthorized("Error in hash password")
+      throw CustomError.unauthorized("Error in hash password");
     }
-    
   }
 }

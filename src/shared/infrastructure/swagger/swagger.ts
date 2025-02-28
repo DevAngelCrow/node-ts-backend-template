@@ -26,7 +26,8 @@ const swaggerDefinition: OAS3Definition = {
       "People update": schemas.peopleUpdate,
       "People user": schemas.peopleUserSchema,
       "People get": schemas.peopleGet,
-      "Country": schemas.country
+      "Country": schemas.country,
+      "User": schemas.user
     },
   },
 };

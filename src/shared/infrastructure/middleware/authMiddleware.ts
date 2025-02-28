@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { ServiceContainer } from "../services-container/ServiceContainer";
-import { JwtPayload } from "jsonwebtoken";
+import {  JwtPayload, TokenExpiredError } from "jsonwebtoken";
 
 export class AuthMiddleware {
     static validateJWT = async (request: Request, response: Response, next: NextFunction) : Promise<void> => {
@@ -13,9 +13,11 @@ export class AuthMiddleware {
         try {
             const payload = await ServiceContainer.authService.verifyToken.run<JwtPayload>(token);
             if(!payload){ response.status(401).json({error: 'Invalid token - user'}); return ;}
-
             next();
         } catch (error) {
+            if(error instanceof TokenExpiredError){
+                response.status(401).json({error: "No autorized"});
+            }
             response.status(500).json({error: 'Internal server error'});
             return;
         }

@@ -3,11 +3,13 @@ import peopleUpdate from "./peopleUpdateSchema";
 import { people } from "./peopleSchema";
 import peopleGet from "./peopleGetSchema";
 import { country } from "./countrySchema";
+import { user } from "./userSchema";
 
 export default {
     peopleUserSchema,
     peopleUpdate,
     peopleGet,
     people,
-    country
+    country,
+    user
 }

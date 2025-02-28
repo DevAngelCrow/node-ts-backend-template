@@ -1,11 +1,12 @@
 import { Router } from "express";
 import { CountryController } from "./country.controller";
+import { AuthMiddleware } from "../../../../../shared/infrastructure/middleware/authMiddleware";
 
 export class CountryRoutes {
   static get routes(): Router {
     const router = Router();
     const controller = new CountryController();
-
+    const authMiddleware = AuthMiddleware.validateJWT;
     /**
  * @openapi
  * /api/country/{id}:
@@ -32,10 +33,12 @@ export class CountryRoutes {
  *               $ref: "#/components/schemas/Country"
  *       '404':
  *         description: "Country not found"
+ *     security:
+ *     - bearerAuth: []
  */
 
  
-    router.get("/:id", controller.getById);
+    router.get("/:id", authMiddleware, controller.getById);
 
     return router;
   }

@@ -62,7 +62,6 @@ export class PeopleCreateUser<T = unknown> {
     last_access: Date
   ): Promise<void> {
 
-    console.log(nationality, 'nationality')
     const nationalities = nationality.map((id) => new CountryId(id));
     return await this.repositoryTransaction.runInTransaction(async (tx) => {
       const emailPeople = new PeopleEmail(email);
