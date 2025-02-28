@@ -11,6 +11,8 @@ import {
 import jwt, { SignOptions } from "jsonwebtoken";
 import bycrypt from "bcryptjs";
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
+import { Subject } from "typeorm/persistence/Subject";
+import { SendMailOptions } from "../../../../email/domain/interfaces";
 export class ImplAuthServiceRepository implements AuthServiceRepository {
   private secretKey = envs.JWT_SECRET;
   private expirationJWT: number = envs.JWT_EXPIRATION;
@@ -18,6 +20,37 @@ export class ImplAuthServiceRepository implements AuthServiceRepository {
     private repositoryUser: UserRepository,
     private repositoryPeople: PeopleRepository
   ) {}
+  sendEmailValidationLink(token: string): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  async validateEmail( user: User, email: PeopleEmail): Promise<SendMailOptions> {
+    try {
+      const token = await this.generateToken(user);
+
+      if(!token){
+        throw CustomError.internalServer("Internal server error")
+      }
+
+      const link = `${envs.WEBSERVICE_URL}/auth/validate-email/${token}`;
+
+      const htlm = `
+      <h1>Validate your email</h1>
+      <p>Click on the following link to validate your email</p>
+      <a href="${link}">Validate your email: ${email.value}</a>
+      `;
+
+      const optionsEmail = {
+        to: email.value,
+        subject: "Validate your email",
+        htmlBody: htlm
+      }
+
+      return optionsEmail;
+    } catch (error) {
+      console.log(error)
+      throw new Error("Method not implemented.");
+    }
+  }
 
   generateToken(user: User): string {
     try {

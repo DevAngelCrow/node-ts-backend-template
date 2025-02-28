@@ -8,9 +8,9 @@ export const envs = {
     POSTGRES_PASSWORD: get('POSTGRES_PASSWORD').required().asString(),
     POSTGRES_DB_PORT: get('POSTGRES_DB_PORT').required().asPortNumber(),
     POSTGRES_DB_HOST: get('POSTGRES_DB_HOST').required().asString(),
-    MAILER_EMAIL: get('MAILER_EMAIL').asString(),
-    MAILER_SECRET_KEY: get('MAILER_SECRET_KEY').asString(),
-    MAILER_SERVICE: get('MAILER_SERVICE').asString(),
+    MAILER_EMAIL: get('MAILER_EMAIL').required().asString(),
+    MAILER_SECRET_KEY: get('MAILER_SECRET_KEY').required().asString(),
+    MAILER_SERVICE: get('MAILER_SERVICE').required().asString(),
     GOOGLE_CLIENT_ID: get('GOOGLE_CLIENT_ID').required().asString(),
     GOOGLE_CLIENT_SECRET: get('GOOGLE_CLIENT_SECRET').required().asString(),
     GOOGLE_REFRESH_TOKEN: get('GOOGLE_REFRESH_TOKEN').required().asString(),
@@ -18,5 +18,6 @@ export const envs = {
     FOLDER_ID: get('FOLDER_ID').required().asString(),
     HTTP_CLIENT_ADAPTER: get('HTTP_CLIENT_ADAPTER').required().asString(),
     JWT_SECRET: get('JWT_SECRET').required().asString(),
-    JWT_EXPIRATION: get('JWT_EXPIRATION').required().asPortNumber()
+    JWT_EXPIRATION: get('JWT_EXPIRATION').required().asPortNumber(),
+    WEBSERVICE_URL: get('WEBSERVICE_URL').required().asString()
 }

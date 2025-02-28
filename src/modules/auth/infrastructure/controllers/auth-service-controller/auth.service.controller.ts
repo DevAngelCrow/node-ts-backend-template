@@ -14,4 +14,9 @@ export class AuthServiceController {
         response.status(error.statusCode).json({ message: error.message });
       });
   }
+
+  async validateEmail(request: Request, response: Response){
+    const { token } = request.params;
+    await ServiceContainer.authService.validateEmail.run(token);
+  }
 }

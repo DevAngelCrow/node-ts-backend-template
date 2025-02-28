@@ -5,7 +5,6 @@ export class AuthServiceRoutes {
   static get routes(): Router {
     const router = Router();
     const controller = new AuthServiceController();
-
     /**
  * @openapi
  * /api/auth/login:
@@ -38,6 +37,8 @@ export class AuthServiceRoutes {
 
     router.post("/login", controller.login);
 
+
+    router.get("/validate-email/:token", controller.validateEmail)
     return router;
   }
 }

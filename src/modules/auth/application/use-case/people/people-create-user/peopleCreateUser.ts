@@ -8,6 +8,7 @@ import { MultimediaFile } from "../../../../../../shared/domain/types";
 import {
   AuthServiceRepository,
   CountryId,
+  EmailRepository,
   People,
   PeopleBirthdate,
   PeopleCountryRepository,
@@ -37,7 +38,8 @@ export class PeopleCreateUser<T = unknown> {
     private repositoryUser: UserRepository,
     private repositoryTransaction: TransactionManagerRepository<T>,
     private repositoryPeopleCountry: PeopleCountryRepository,
-    private repositoryAuth: AuthServiceRepository
+    private repositoryAuth: AuthServiceRepository,
+    private repositoryEmail: EmailRepository
   ) {}
 
   async run(
@@ -104,6 +106,13 @@ export class PeopleCreateUser<T = unknown> {
         nationalities,
         tx
       );
+
+      //const authentication = await this.repositoryAuth.authenticateUser(person.email, user.password);
+
+      const emailOptions = await this.repositoryAuth.validateEmail(user, person.email);
+
+      await this.repositoryEmail.sendEmail(emailOptions);
+
     });
   }
 }

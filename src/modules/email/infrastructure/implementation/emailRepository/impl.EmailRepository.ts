@@ -2,14 +2,12 @@ import nodemailer from "nodemailer";
 import { envs } from "../../../../../shared/infrastructure/config/envs";
 import { Attachement, SendMailOptions } from "../../../domain/interfaces/index";
 import { EmailRepository } from "../../../../auth/domain";
-export class EmailService implements EmailRepository {
-  private transport = nodemailer.createTransport({
-    service: envs.MAILER_SERVICE,
-    auth: {
-      user: envs.MAILER_EMAIL,
-      pass: envs.MAILER_SECRET_KEY,
-    },
-  });
+//import { TransportAuthOptions } from "../../../domain/interfaces/TransportAuthOptionInterface";
+import { TransportOptionsRepo } from "../../../domain/interfaces/TransportOptionsInterface";
+export class ImplEmailService implements EmailRepository {
+  constructor(private transportOptions : TransportOptionsRepo){
+  }
+  private transport = nodemailer.createTransport(this.transportOptions);
 
   async sendEmail(options: SendMailOptions): Promise<boolean> {
     try {

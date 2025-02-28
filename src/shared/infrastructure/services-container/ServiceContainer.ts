@@ -38,15 +38,25 @@ import { ImplHttpClientRepository } from "../../../modules/http-client/infrastru
 import { ImplStorageRepository } from "../../../modules/storage-handler/infrastructure/implementation/storageRepository/impl.StorageRepository";
 import { ImplTransactionManagerRepository } from "../../../modules/transaction-db-manager/infrastructure/implementation/transactionManagerRepository/impl.TransactionManagerRepository";
 import { ImplAuthServiceRepository } from "../../../modules/auth/infrastructure/implementation/authServiceRepository/impl.AuthServiceRepository";
-import { AuthGenerateToken, AuthVerifyToken } from "../../../modules/auth/application/services/auth";
+import { AuthEmailValidationLink, AuthGenerateToken, AuthVerifyToken } from "../../../modules/auth/application/services/auth";
 import { AuthenticateUser } from "../../../modules/auth/application/use-case/auth/auth-authenticate-user/authAuthenticateUser";
 import { ImplUserRepository } from "../../../modules/auth/infrastructure/implementation/userRepository/impl.UserRepository";
 import { AuthPasswordHash } from "../../../modules/auth/application/services/auth/auth-password-hash/authPasswordHash";
 import AppDataSource from "../db/TypeOrmConfig"
 import { DeleteFile, UploadFile } from "../../../modules/storage-handler/application/services/storage";
 import { EntityManager } from "typeorm";
+import { EmailSend, EmailSendWithFile } from "../../../modules/email/application/services";
+import { ImplEmailService } from "../../../modules/email/infrastructure/implementation/emailRepository/impl.EmailRepository";
+
 
 const entityManager = AppDataSource.dataSource.manager;
+const optionsEmail  = {
+  service: envs.MAILER_SERVICE,
+  auth: {
+    user: envs.MAILER_EMAIL,
+    pass: envs.MAILER_SECRET_KEY
+  }
+}
 
 const exampleRepository = new ImplExampleRepository();
 const peopleRepository = new ImplPeopleRepository(entityManager);
@@ -58,6 +68,7 @@ const httpClientRepository = new ImplHttpClientRepository(envs.HTTP_CLIENT_ADAPT
 const userRepository = new ImplUserRepository(entityManager);
 const authServiceRepository = new ImplAuthServiceRepository(userRepository, peopleRepository);
 const peopleCountryRepository = new ImplPeopleCountryRepository(entityManager);
+const emailService = new ImplEmailService(optionsEmail);
 
 export const ServiceContainer = {
   example: {
@@ -74,7 +85,7 @@ export const ServiceContainer = {
     getAll: new PeopleGetAll(peopleRepository),
     delete: new PeopleDelete(peopleRepository, peopleStatusRepository, transactionManagerRepository, peopleCountryRepository),
     findByEmail: new PeopleFindByEmail(peopleRepository),
-    createUserWithPerson: new PeopleCreateUser(peopleRepository, userRepository, transactionManagerRepository, peopleCountryRepository, authServiceRepository)
+    createUserWithPerson: new PeopleCreateUser(peopleRepository, userRepository, transactionManagerRepository, peopleCountryRepository, authServiceRepository, emailService)
   },
   country: {
     create: new CountryCreate(countryRepository),
@@ -94,6 +105,7 @@ export const ServiceContainer = {
     verifyToken: new AuthVerifyToken(authServiceRepository),
     authenticateUser: new AuthenticateUser(authServiceRepository, userRepository),
     hashPassword: new AuthPasswordHash(authServiceRepository),
+    validateEmail: new AuthEmailValidationLink(authServiceRepository),
   },
   user: {
     create: new UserCreate(userRepository, authServiceRepository),
@@ -106,5 +118,10 @@ export const ServiceContainer = {
   storage: {
     upload: new UploadFile(storageRepository),
     delete: new DeleteFile(storageRepository)
+  },
+
+  emailService: {
+    sendEmail: new EmailSend(emailService),
+    sendEmailWithFile: new EmailSendWithFile(emailService),
   }
 };
