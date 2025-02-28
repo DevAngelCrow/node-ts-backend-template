@@ -32,7 +32,13 @@ export class ImplAuthServiceRepository implements AuthServiceRepository {
     }
   }
     async verifyToken<T>(token: string): Promise<T | null> {
-    return  jwt.verify(token, this.secretKey) as T;
+
+      const decode = jwt.verify(token, this.secretKey);
+
+      if(!decode){
+        return null;
+      }
+    return decode as T;
   }
   comparePassword(plain: string, hashed: string): boolean {
     try {

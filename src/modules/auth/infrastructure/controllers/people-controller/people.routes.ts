@@ -7,7 +7,7 @@ export class PeopleRoutes {
   static get routes(): Router {
     const router = Router();
     const controller = new PeopleController();
-
+    const authMiddleware = AuthMiddleware.validateJWT;
     
     /**
      * Post track
@@ -110,7 +110,7 @@ export class PeopleRoutes {
      *      - bearerAuth: []
      */
     
-    router.get("/email/:email", AuthMiddleware.validateJWT, controller.getPeopleByEmail);
+    router.get("/email/:email", authMiddleware, controller.getPeopleByEmail);
     /**
      * @openapi
      * /api/people/{id}:
