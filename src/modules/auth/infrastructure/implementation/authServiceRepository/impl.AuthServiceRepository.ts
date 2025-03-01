@@ -47,7 +47,6 @@ export class ImplAuthServiceRepository implements AuthServiceRepository {
 
       return optionsEmail;
     } catch (error) {
-      console.log(error)
       throw new Error("Method not implemented.");
     }
   }

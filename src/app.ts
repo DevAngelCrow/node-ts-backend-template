@@ -15,9 +15,9 @@ async function main(){
     });
      AppDataSource.dataSource.initialize()
     .then(()=>{
-        console.log("Connection to the database established")
+        console.log("Database connection successfully established.")
     })
-    .catch((error) => console.log("Database connection error ", error));
+    .catch((error) => console.log("Failed to connect to the database: ", error));
 
     server.start();
 }
