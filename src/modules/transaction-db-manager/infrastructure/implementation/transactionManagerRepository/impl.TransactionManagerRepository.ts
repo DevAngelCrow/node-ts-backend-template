@@ -1,16 +1,16 @@
 import { TransactionManagerRepository } from "../../../domain/repositories/transaction-manager/TransactionManagerRepository";
-import { prismaClient } from "../../../../../shared/infrastructure/db/PrismaWrapper";
-import { CustomError } from "../../../../../shared/domain/errors/custom.error";
+import { EntityManager } from "typeorm";
 
-export class ImplTransactionManagerRepository implements TransactionManagerRepository{
-    private prisma = prismaClient;
-    runInTransaction<T>(work: () => Promise<T>): Promise<T> {
+export class ImplTransactionManagerRepository implements TransactionManagerRepository<EntityManager>{
+    constructor(private readonly manager: EntityManager){}
+    async runInTransaction<U>(operation: (client: EntityManager) => Promise<U>): Promise<U> {
         try{
-            return this.prisma.$transaction(work);
+            return await this.manager.transaction(async (transactionalManager) => {
+               return operation(transactionalManager);
+            })
         }catch(error){
-            throw CustomError.internalServer("Internal server error in the transaction");
+            throw error;
         }
-        
     }
 
 }

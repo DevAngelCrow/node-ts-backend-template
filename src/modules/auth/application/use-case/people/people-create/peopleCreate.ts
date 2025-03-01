@@ -3,6 +3,7 @@ import {
   CountryRepository,
   People,
   PeopleBirthdate,
+  PeopleCountryRepository,
   PeopleEmail,
   PeopleFirstName,
   PeopleHasInsurance,
@@ -16,15 +17,19 @@ import {
   PeopleRepository,
 } from "../../../../domain";
 import { MultimediaFile } from "../../../../../../shared/domain/types";
-import { StorageRepository, TransactionManagerRepository } from "../../../../../../shared/domain/domain-container/DomainContainer";
+import {
+  StorageRepository,
+  TransactionManagerRepository,
+} from "../../../../../../shared/domain/domain-container/DomainContainer";
 import { CustomError } from "../../../../../../shared/domain/errors/custom.error";
 
-export class PeopleCreate {
+export class PeopleCreate <T = unknown>{ 
   constructor(
     private repository: PeopleRepository,
     private repositoryCountry: CountryRepository,
-    private repositoryTransaction: TransactionManagerRepository,
-    private repositoryStorage: StorageRepository
+    private repositoryTransaction: TransactionManagerRepository<T>,
+    private repositoryStorage: StorageRepository,
+    private repositoryPeopleCountry: PeopleCountryRepository,
   ) {}
 
   async run(
@@ -35,56 +40,115 @@ export class PeopleCreate {
     id_gender: number,
     email: string,
     id_marital_status: number,
-    img_path: MultimediaFile,
+    img_path: string,
     phone: string,
     has_insurance: boolean,
     id_status: number,
-    nationality: number[]
+    nationality: number[],
+    onlyCreatePeople: boolean
   ): Promise<People> {
-    const url_img = await this.repositoryStorage.updload(img_path);
-    const id_img = url_img.split("=")[1];
-    return this.repositoryTransaction.runInTransaction(async () => {
-      const nationalities = nationality.map((id) => new CountryId(id));
-      const foundNationalities = await this.repositoryCountry.findMany(
-        nationalities
-      );
-      if (!foundNationalities) {
-        throw CustomError.badRequest("The id to the nationality no exist in the records"); 
-      }
 
-      const existingCountriesIds: number[] = foundNationalities.map(
-        (country) => country.value
-      );
+    if(onlyCreatePeople){
+      return await this.repositoryTransaction.runInTransaction(async (tx) => {
 
-      const nonExistingCountry = nationality.filter(
-        (id) => !existingCountriesIds.includes(+id)
-      );
-
-      if (nonExistingCountry.length) {
-        throw CustomError.badRequest(
-          "The following nationality ids do not exist " + nonExistingCountry
+        const nationalities = nationality.map((id) => new CountryId(id));
+        const foundNationalities = await this.repositoryCountry.findMany(
+          nationalities,
+          tx
         );
+    
+        if (!foundNationalities) {
+          throw CustomError.badRequest(
+            "The id to the nationality no exist in the records"
+          );
+        }
+    
+        const existingCountriesIds: number[] = foundNationalities.map(
+          (country) => country.value
+        );
+    
+        const nonExistingCountry = nationality.filter(
+          (id) => !existingCountriesIds.includes(+id)
+        );
+    
+        if (nonExistingCountry.length) {
+          throw CustomError.badRequest(
+            "The following nationality ids do not exist " + nonExistingCountry
+          );
+        }
+    
+        const people = new People(
+          new PeopleFirstName(firts_name),
+          new PeopleBirthdate(birthdate),
+          new PeopleIdGender(+id_gender),
+          new PeopleEmail(email),
+          new PeopleIdMaritalStatus(+id_marital_status),
+          new PeoplePhone(phone),
+          new PeopleIdStatus(+id_status),
+          nationalities,
+          new PeopleMiddleName(middle_name),
+          new PeopleLastName(last_name),
+          new PeopleImgPath(img_path),
+          new PeopleHasInsurance(has_insurance)
+        );
+    
+        const createPerson = await this.repository.create(people);
+        await this.repositoryPeopleCountry.create(
+          createPerson.getId,
+          nationalities,
+          tx
+        );
+  
+        return createPerson;
+        })
+      }else{
+        return await this.repositoryTransaction.runInTransaction(async (tx) => {
+          const nationalities = nationality.map((id) => new CountryId(id));
+          const foundNationalities = await this.repositoryCountry.findMany(
+            nationalities, tx
+          );
+      
+          if (!foundNationalities) {
+            throw CustomError.badRequest(
+              "The id to the nationality no exist in the records"
+            );
+          }
+      
+          const existingCountriesIds: number[] = foundNationalities.map(
+            (country) => country.value
+          );
+      
+          const nonExistingCountry = nationality.filter(
+            (id) => !existingCountriesIds.includes(+id)
+          );
+      
+          if (nonExistingCountry.length) {
+            throw CustomError.badRequest(
+              "The following nationality ids do not exist " + nonExistingCountry
+            );
+          }
+      
+          const people = new People(
+            new PeopleFirstName(firts_name),
+            new PeopleBirthdate(birthdate),
+            new PeopleIdGender(+id_gender),
+            new PeopleEmail(email),
+            new PeopleIdMaritalStatus(+id_marital_status),
+            new PeoplePhone(phone),
+            new PeopleIdStatus(+id_status),
+            nationalities,
+            new PeopleMiddleName(middle_name),
+            new PeopleLastName(last_name),
+            new PeopleImgPath(img_path),
+            new PeopleHasInsurance(has_insurance)
+          );
+      
+          const createPerson = await this.repository.create(people, tx);
+          
+    
+          return createPerson;
+        });
+          
+        }
       }
-
-      const people = new People(
-        new PeopleFirstName(firts_name),
-        new PeopleBirthdate(birthdate),
-        new PeopleIdGender(+id_gender),
-        new PeopleEmail(email),
-        new PeopleIdMaritalStatus(+id_marital_status),
-        new PeoplePhone(phone),
-        new PeopleIdStatus(+id_status),
-        nationalities,
-        new PeopleMiddleName(middle_name),
-        new PeopleLastName(last_name),
-        new PeopleImgPath(url_img),
-        new PeopleHasInsurance(has_insurance),
-      );
-
-      return this.repository.create(people);
-    }).catch(async (error)=>{
-      await this.repositoryStorage.delete(id_img);
-      throw error;
-    });
-  }
-}
+    }

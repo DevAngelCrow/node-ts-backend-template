@@ -5,3 +5,4 @@ export * from './country/CountryRepository';
 export * from './people-status/PeopleStatusRepository';
 export * from './user/UserRepository'
 export * from './auth-service/AuthServiceRepository';
+export * from './people-country/PeopleCountryRepository';

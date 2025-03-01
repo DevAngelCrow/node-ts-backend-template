@@ -11,6 +11,8 @@ import {
 import jwt, { SignOptions } from "jsonwebtoken";
 import bycrypt from "bcryptjs";
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
+import { Subject } from "typeorm/persistence/Subject";
+import { SendMailOptions } from "../../../../email/domain/interfaces";
 export class ImplAuthServiceRepository implements AuthServiceRepository {
   private secretKey = envs.JWT_SECRET;
   private expirationJWT: number = envs.JWT_EXPIRATION;
@@ -18,6 +20,36 @@ export class ImplAuthServiceRepository implements AuthServiceRepository {
     private repositoryUser: UserRepository,
     private repositoryPeople: PeopleRepository
   ) {}
+  sendEmailValidationLink(token: string): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  async validateEmail( user: User, email: PeopleEmail): Promise<SendMailOptions> {
+    try {
+      const token = await this.generateToken(user);
+
+      if(!token){
+        throw CustomError.internalServer("Internal server error")
+      }
+
+      const link = `${envs.WEBSERVICE_URL}/auth/validate-email/${token}`;
+
+      const htlm = `
+      <h1>Validate your email</h1>
+      <p>Click on the following link to validate your email</p>
+      <a href="${link}">Validate your email: ${email.value}</a>
+      `;
+
+      const optionsEmail = {
+        to: email.value,
+        subject: "Validate your email",
+        htmlBody: htlm
+      }
+
+      return optionsEmail;
+    } catch (error) {
+      throw new Error("Method not implemented.");
+    }
+  }
 
   generateToken(user: User): string {
     try {
@@ -28,17 +60,26 @@ export class ImplAuthServiceRepository implements AuthServiceRepository {
       };
       return jwt.sign(payload, this.secretKey as string, options);
     } catch (error) {
-      throw new Error("Method not implemented");
+      throw CustomError.unauthorized("Internal server error to generate Token");
     }
   }
-  verifyToken(token: string): unknown {
-    return jwt.verify(token, this.secretKey);
+  async verifyToken<T>(token: string): Promise<T | null> {
+    try {
+      const decode = jwt.verify(token, this.secretKey);
+
+      if (!decode) {
+        return null;
+      }
+      return decode as T;
+    } catch (error) {
+      throw CustomError.unauthorized("Invalid credentials");
+    }
   }
   comparePassword(plain: string, hashed: string): boolean {
     try {
       return bycrypt.compareSync(plain, hashed);
     } catch (error) {
-      throw new Error("Error in the comparation password");
+      throw CustomError.unauthorized("Invalid credentials");
     }
   }
   async authenticateUser(
@@ -73,16 +114,23 @@ export class ImplAuthServiceRepository implements AuthServiceRepository {
 
       return { user, token };
     } catch (error) {
-      console.log(error, "error autenticacion authenticateUser");
       throw CustomError.unauthorized("Invalid credentials");
     }
   }
+
   async hashPassword(password: UserPassword): Promise<UserPassword> {
-    const saltRounds = 10;
-    const hashedPassword = await bycrypt.hash(password.value, saltRounds);
+    try {
+      const saltRounds: number = 10;
+      const hashedPassword: string = await bycrypt.hash(
+        password.value,
+        saltRounds
+      );
 
-    const passwordFormated = new UserPassword(hashedPassword);
+      const passwordFormated: UserPassword = new UserPassword(hashedPassword);
 
-    return passwordFormated;
+      return passwordFormated;
+    } catch (error) {
+      throw CustomError.unauthorized("Error in hash password");
+    }
   }
 }

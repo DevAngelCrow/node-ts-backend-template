@@ -48,7 +48,7 @@ export class ImplStorageRepository implements StorageRepository {
             return url_path_img;
 
         }catch(error){
-          console.log(error)
+          console.log(error, 'Error in request google drive')
             throw CustomError.internalServer("Error in request from google drive")
         }
 

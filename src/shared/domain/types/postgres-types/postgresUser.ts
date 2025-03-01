@@ -3,6 +3,6 @@ export type PostgresUser = {
     id_people: number,
     user_name: string,
     password: string,
-    id_status: number,
+    status: { id_status: number, name: string},
     last_access: Date
 }

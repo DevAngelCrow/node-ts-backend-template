@@ -1,14 +1,13 @@
 import { People, User } from "../../entities";
-import { CountryId, PeopleEmail, PeopleId, PeopleStatusId } from "../../value-object";
+import { PeopleEmail, PeopleId, PeopleStatusId } from "../../value-object";
 
-export interface PeopleRepository {
-  create(people: People): Promise<People>;
+export interface PeopleRepository<T = unknown>{
+  create(people: People, transactionClient?: T): Promise<People>;
   getAll(): Promise<People[]>;
-  getOneById(id: PeopleId): Promise<People | null>;
-  update(example: People): Promise<void>;
-  delete(id: PeopleId, id_status: PeopleStatusId): Promise<void>;
-  updatePeopleCountry(id: PeopleId, countries: CountryId[]) : Promise<void>;
-  deletePeopleCoutry(id: PeopleId, countries: CountryId[]) : Promise<void>;
-  findByEmail(email: PeopleEmail) : Promise<People | null>;
-  createUserWithPerson(people: People, user: User): Promise<void>;
+  getOneById(id: PeopleId, transactionClient?: T): Promise<People | null>;
+  update(example: People, transactionClient?: T): Promise<void>;
+  delete(id: PeopleId, id_status: PeopleStatusId, transactionClient?: T): Promise<void>;
+  findByEmail(email: PeopleEmail, transactionClient?: T) : Promise<People | null>;
+  createUserWithPerson(people: People, user: User, transactionClient?: T): Promise<void>;
+  findEmailExist(email: PeopleEmail, transactionClient?: T) : Promise<boolean>
 }

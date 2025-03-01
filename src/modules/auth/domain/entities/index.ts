@@ -17,3 +17,4 @@ export * from './department/department.entity';
 export * from './marital-status/Marital.Status.Entity';
 export * from './gender/gender.entity'
 export * from './people-status/people.status.entity';
+export * from './people-country/People.country.entity';

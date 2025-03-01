@@ -1,3 +1,4 @@
+import { EntityManager, EntityTarget } from "typeorm";
 import {
   StorageRepository,
   TransactionManagerRepository,
@@ -5,9 +6,12 @@ import {
 import { CustomError } from "../../../../../../shared/domain/errors/custom.error";
 import { MultimediaFile } from "../../../../../../shared/domain/types";
 import {
+  AuthServiceRepository,
   CountryId,
+  EmailRepository,
   People,
   PeopleBirthdate,
+  PeopleCountryRepository,
   PeopleEmail,
   PeopleFirstName,
   PeopleHasInsurance,
@@ -28,12 +32,14 @@ import {
   UserRepository,
 } from "../../../../domain";
 
-export class PeopleCreateUser {
+export class PeopleCreateUser<T = unknown> {
   constructor(
     private repository: PeopleRepository,
     private repositoryUser: UserRepository,
-    private repositoryTransaction: TransactionManagerRepository,
-    private repositoryStorage: StorageRepository
+    private repositoryTransaction: TransactionManagerRepository<T>,
+    private repositoryPeopleCountry: PeopleCountryRepository,
+    private repositoryAuth: AuthServiceRepository,
+    private repositoryEmail: EmailRepository
   ) {}
 
   async run(
@@ -45,7 +51,7 @@ export class PeopleCreateUser {
     id_gender: number,
     email: string,
     id_marital_status: number,
-    img_path: MultimediaFile,
+    img_path: string,
     phone: string,
     has_insurance: boolean,
     id_status_user: number,
@@ -57,45 +63,56 @@ export class PeopleCreateUser {
     id_status: number,
     last_access: Date
   ): Promise<void> {
-    const url_img = await this.repositoryStorage.updload(img_path);
 
     const nationalities = nationality.map((id) => new CountryId(id));
-    return await this.repositoryTransaction.runInTransaction(async () => {
+    return await this.repositoryTransaction.runInTransaction(async (tx) => {
+      const emailPeople = new PeopleEmail(email);
+      if(await this.repository.findEmailExist(emailPeople, tx)){
+        throw CustomError.badRequest("The email provided is already in use")
+      }
       const people = new People(
         new PeopleFirstName(firts_name),
         new PeopleBirthdate(birthdate),
         new PeopleIdGender(+id_gender),
-        new PeopleEmail(email),
+        emailPeople,
         new PeopleIdMaritalStatus(+id_marital_status),
         new PeoplePhone(phone),
         new PeopleIdStatus(+id_status),
         nationalities,
         new PeopleMiddleName(middle_name),
         new PeopleLastName(last_name),
-        new PeopleImgPath(url_img),
+        new PeopleImgPath(img_path),
         new PeopleHasInsurance(has_insurance)
       );
-      const persona = await this.repository.create(people)
 
-      if (!persona) {
+      const person = await this.repository.create(people, tx);
+      if (!person) {
         throw CustomError.internalServer(
           "Internal server error in create UserPeople"
         );
       }
 
-      // id_people = ;
-
       const user = new User(
-        new UserIdPeople(+persona.getId.value),
+        new UserIdPeople(+person.getId.value),
         new UserName(user_name),
-        new UserPassword(password),
-        new UserIdStatus(id_status),
+        await this.repositoryAuth.hashPassword(new UserPassword(password)),
+        new UserIdStatus(id_status_user),
         new UserLastAccess(last_access)
       );
 
-      await this.repositoryUser.create(user);
+      await this.repositoryUser.create(user, tx);
+      await this.repositoryPeopleCountry.create(
+        person.getId,
+        nationalities,
+        tx
+      );
 
-      await this.repository.createUserWithPerson(people, user);
-    })
+      //const authentication = await this.repositoryAuth.authenticateUser(person.email, user.password);
+
+      const emailOptions = await this.repositoryAuth.validateEmail(user, person.email);
+
+      await this.repositoryEmail.sendEmail(emailOptions);
+
+    });
   }
 }

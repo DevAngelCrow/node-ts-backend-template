@@ -2,6 +2,7 @@ import {
   CountryId,
   People,
   PeopleBirthdate,
+  PeopleCountryRepository,
   PeopleEmail,
   PeopleFirstName,
   PeopleHasInsurance,
@@ -15,14 +16,15 @@ import {
   PeoplePhone,
   PeopleRepository,
 } from "../../../../domain";
-import { MultimediaFile } from "../../../../../../shared/domain/types";
 import { StorageRepository, TransactionManagerRepository } from "../../../../../../shared/domain/domain-container/DomainContainer"
+import { CustomError } from "../../../../../../shared/domain/errors/custom.error";
 
-export class PeopleEdit {
+export class PeopleEdit<T = unknown> {
   constructor(
     private respository: PeopleRepository,
-    private respositoryTransaction: TransactionManagerRepository,
-    private respositoryStorage: StorageRepository
+    private respositoryTransaction: TransactionManagerRepository<T>,
+    private respositoryStorage: StorageRepository,
+    private repositoryPeopleCountry: PeopleCountryRepository
   ) {}
 
   async run(
@@ -34,17 +36,14 @@ export class PeopleEdit {
     id_gender: number,
     email: string,
     id_marital_status: number,
-    img_path: MultimediaFile,
+    img_path: string,
     phone: string,
     has_insurance: boolean,
     id_status: number,
     nationality: number[]
   ): Promise<void> {
-    let img_path_edit : string = "";
-    if(img_path){
-      img_path_edit = await this.respositoryStorage.updload(img_path);
-    }
-    return this.respositoryTransaction.runInTransaction(async () => {
+    
+    return this.respositoryTransaction.runInTransaction(async (tx) => {
       const nationalities = nationality.map((id) => new CountryId(id));
       const people = new People(
         new PeopleFirstName(first_name),
@@ -57,7 +56,7 @@ export class PeopleEdit {
         nationalities,
         new PeopleMiddleName(middle_name),
         new PeopleLastName(last_name),
-        new PeopleImgPath(img_path_edit),
+        new PeopleImgPath(img_path),
         new PeopleHasInsurance(has_insurance),
         undefined,
         undefined,
@@ -65,14 +64,17 @@ export class PeopleEdit {
         new PeopleId(id)
       );
 
-      const personDb = await this.respository.getOneById(people.getId);
+      const personDb = await this.respository.getOneById(people.getId, tx);
 
-      await this.respository.updatePeopleCountry(people.getId, nationalities);
+      if(!personDb){
+        throw CustomError.notFound("id people not found")
+      }
+
+      await this.repositoryPeopleCountry.update(people.getId, nationalities, tx);
       await this.respositoryStorage.delete(personDb?.img_path?.value.split("=")[1]!);
 
-      return this.respository.update(people);
+      return this.respository.update(people, tx);
     }).catch(async (error)=>{
-      await this.respositoryStorage.delete(img_path_edit.split("=")[1]!);
       throw error;
     })
   }

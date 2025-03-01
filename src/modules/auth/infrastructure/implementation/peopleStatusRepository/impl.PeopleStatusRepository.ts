@@ -1,34 +1,34 @@
 import {
-  
   PeopleStatus,
   PeopleStatusDescription,
   PeopleStatusId,
   PeopleStatusName,
   PeopleStatusRepository,
 } from "../../../domain";
-import { prismaClient } from "../../../../../shared/infrastructure/db/PrismaWrapper";
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 import { PostgresPeopleStatus } from "../../../../../shared/domain/types";
+import { EntityManager } from "typeorm";
+import { CtlStatusPeople } from "../../../../../shared/infrastructure/db/entities/CtlStatusPeople";
 
 export class ImplPeopleStatusRepository implements PeopleStatusRepository {
   private people_status: PeopleStatus[] = [];
-  private prisma = prismaClient;
+  constructor(private entityManager: EntityManager){}
   getAll(): Promise<PeopleStatus[]> {
     throw new Error("Method not implemented.");
   }
-  async getOneById(status_name: PeopleStatusName): Promise<PeopleStatusId | null> {
+  async getOneById(status_name: PeopleStatusName, manager: EntityManager = this.entityManager): Promise<PeopleStatusId | null> {
     try {
-      const peopleStatus = await this.prisma.ctl_status_people.findFirst({
+      const peopleStatusRepo = manager.getRepository(CtlStatusPeople);
+      const peopleStatus = await peopleStatusRepo.findOne({
         where: {
-          name: status_name.value,
+          name: status_name.value
         },
         select: {
           id: true,
           name: true,
-          description: true,
-        },
-      });
-
+          description: true
+        }
+      })
       if (!peopleStatus) {
          return null;
       }
