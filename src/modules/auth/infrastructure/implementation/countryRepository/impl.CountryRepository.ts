@@ -12,35 +12,70 @@ import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 import AppDataSource from "../../../../../shared/infrastructure/db/TypeOrmConfig";
 import { CtlCountry } from "../../../../../shared/infrastructure/db/entities/CtlCountry";
 import { EntityManager, In, DataSource } from "typeorm";
+import DateTimeService from "../../../../../shared/infrastructure/services/date-time/date.time.services";
 
 export class ImplCountryRepository implements CountryRepository {
   private countries: Country[] = [];
-  constructor(private entityManager: EntityManager){}
-  async create(country: Country, manager: EntityManager = this.entityManager): Promise<void> {
+  private dt = new DateTimeService().dateTime;
+  constructor(private entityManager: EntityManager) {}
+  async create(
+    country: Country,
+    manager: EntityManager = this.entityManager
+  ): Promise<void> {
     try {
       const countryRepo = manager.getRepository(CtlCountry);
 
-      await countryRepo.create({
+      const newCountry = await countryRepo.create({
         name: country.name.value,
         abbreviation: country.abbreviation?.value,
         code: country.code?.value,
         state: country.state?.value,
       });
+      await countryRepo.save(newCountry);
+      
     } catch (error) {
       throw CustomError.internalServer(
         "Internal server error in create country"
       );
     }
   }
-  getAll(): Promise<Country[]> {
-    throw new Error("Method not implemented.");
+  async getAll(): Promise<Country[]> {
+    try {
+      const countryRepo = this.entityManager.getRepository(CtlCountry);
+
+      const countries = await countryRepo.find({
+        select: {
+          id: true,
+          name: true,
+          abbreviation: true,
+          code: true,
+          state: true,
+        },
+      });
+      this.countries = countries.map((country) => 
+        this.mapToDomain({
+          id: country.id,
+          abbreviation: country.abbreviation ?? null,
+          name: country.name,
+          code: country.code ?? null,
+          state: country.state ?? false
+        })
+      );
+
+      return this.countries;
+
+    } catch (error) {
+      throw CustomError.internalServer(
+        "Internal server error in get countries"
+      );
+    }
   }
   async getOneById(
     id: CountryId,
     manager: EntityManager | DataSource
   ): Promise<Country | null> {
     try {
-      if(!manager){
+      if (!manager) {
         manager = AppDataSource.dataSource;
       }
       const countryRepo = manager.getRepository(CtlCountry);
@@ -57,7 +92,7 @@ export class ImplCountryRepository implements CountryRepository {
           state: true,
         },
       });
-      
+
       if (!country) {
         return null;
       }
@@ -67,17 +102,45 @@ export class ImplCountryRepository implements CountryRepository {
         name: country.name,
         abbreviation: country.abbreviation ?? null,
         code: country.code ?? null,
-        state: country.state ?? null
+        state: country.state ?? null,
       });
     } catch (error) {
       throw CustomError.internalServer("Internal server error");
     }
   }
-  update(example: Country): Promise<void> {
-    throw new Error("Method not implemented.");
+  async update(country: Country): Promise<void> {
+    try {
+      const countryRepo = this.entityManager.getRepository(CtlCountry);
+      await countryRepo.update(
+        { id: country.id?.value },
+        {
+          name: country.name.value,
+          abbreviation: country.abbreviation?.value,
+          code: country.code?.value,
+          state: country.state?.value,
+          updatedAt: this.dt.now(),
+        }
+      );
+    } catch (error) {
+      throw CustomError.internalServer(
+        "Internal server error in update country"
+      );
+    }
   }
-  delete(id: CountryId): Promise<void> {
-    throw new Error("Method not implemented.");
+  async delete(id: CountryId): Promise<void> {
+    try {
+      const countryRepo = this.entityManager.getTreeRepository(CtlCountry);
+      await countryRepo.update({
+        id: id.value
+      },
+      {
+        state: false,
+        deletedAt: this.dt.now()
+      }
+    )
+    } catch (error) {
+      throw CustomError.internalServer("Internal server error")
+    }
   }
 
   async findMany(

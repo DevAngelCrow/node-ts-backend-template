@@ -6,7 +6,7 @@ export class CountryState {
   }
 
   private required() {
-    if (!this.value) {
+    if (this.value === null || this.value === undefined) {
       throw CustomError.badRequest("The field state is required");
     }
   }

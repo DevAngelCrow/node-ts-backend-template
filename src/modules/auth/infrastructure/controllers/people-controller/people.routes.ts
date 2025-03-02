@@ -10,7 +10,6 @@ export class PeopleRoutes {
     const authMiddleware = AuthMiddleware.validateJWT;
     
     /**
-     * Post track
      * @openapi
      * /api/people/create:
      *   post:
@@ -84,8 +83,6 @@ export class PeopleRoutes {
      *                $ref: "#/components/schemas/People get"
      *      '404':
      *        description: "Person not found"
-     *    security:
-     *      - bearerAuth: []
      */
 
     router.get("/", authMiddleware, controller.getAllPeople);

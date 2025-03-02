@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 
 export default class DateTimeService {
-    dateTime;
+    public dateTime: typeof DateTime = DateTime;
     constructor(){
         this.dateTime = DateTime;
     }

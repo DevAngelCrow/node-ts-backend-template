@@ -6,3 +6,4 @@ export * from './people-status/PeopleStatusRepository';
 export * from './user/UserRepository'
 export * from './auth-service/AuthServiceRepository';
 export * from './people-country/PeopleCountryRepository';
+export * from './address/AddressRepository';
