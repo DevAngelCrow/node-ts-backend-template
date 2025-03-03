@@ -1,5 +1,5 @@
 import { User } from "../../entities";
-import { PeopleEmail, UserId, UserPassword } from "../../value-object";
+import { PeopleEmail, UserPassword } from "../../value-object";
 import { SendMailOptions } from "../../../../email/domain/interfaces";
 export interface AuthServiceRepository{
     generateToken(user: User) : string;

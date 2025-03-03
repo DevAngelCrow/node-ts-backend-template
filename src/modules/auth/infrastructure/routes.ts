@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { AuthServiceRoutes, CountryRoutes, ExampleRoutes, PeopleRoutes, UserRoutes } from "./controllers";
+import { AuthServiceRoutes, ExampleRoutes, UserRoutes } from "./controllers";
 
 
 export class AuthRoutes {
@@ -8,8 +8,8 @@ export class AuthRoutes {
         
     
         router.use('/example', ExampleRoutes.routes);
-        router.use('/people', PeopleRoutes.routes);
-        router.use('/country', CountryRoutes.routes);
+        //router.use('/people', PeopleRoutes.routes);
+        //router.use('/country', CountryRoutes.routes);
         router.use('/auth', AuthServiceRoutes.routes );
         router.use('/user', UserRoutes.routes);
 
