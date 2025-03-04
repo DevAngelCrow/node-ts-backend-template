@@ -3,15 +3,14 @@ import {
   AuthServiceRepository,
   PeopleEmail,
   PeopleId,
-  PeopleRepository,
   User,
   UserPassword,
   UserRepository,
 } from "../../../domain";
+import { PeopleRepository } from "../../../../../shared/domain/domain-container/DomainContainer";
 import jwt, { SignOptions } from "jsonwebtoken";
 import bycrypt from "bcryptjs";
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
-import { Subject } from "typeorm/persistence/Subject";
 import { SendMailOptions } from "../../../../email/domain/interfaces";
 export class ImplAuthServiceRepository implements AuthServiceRepository {
   private secretKey = envs.JWT_SECRET;

@@ -29,10 +29,9 @@ import { envs } from "../config/envs";
 import {
   ImplCountryRepository,
   ImplExampleRepository,
-  ImplPeopleCountryRepository,
-  ImplPeopleRepository,
-  ImplPeopleStatusRepository,
 } from "../../../modules/auth/infrastructure/implementation/index";
+
+import { ImplPeopleCountryRepository, ImplPeopleRepository, ImplPeopleStatusRepository } from "../../../modules/profile/infrastructure/index";
 
 import { ImplHttpClientRepository } from "../../../modules/http-client/infrastructure/implementation/httpClientRepository/impl.HttpClientRepository";
 import { ImplStorageRepository } from "../../../modules/storage-handler/infrastructure/implementation/storageRepository/impl.StorageRepository";

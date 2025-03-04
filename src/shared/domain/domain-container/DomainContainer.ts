@@ -20,3 +20,6 @@ export * from "../../../modules/documents/domain/index";
 
 //Insurance domain
 export * from "../../../modules/insurance/domain/index";
+
+//Country domain
+export * from "../../../modules/location/domain/index";

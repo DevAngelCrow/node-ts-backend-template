@@ -1,12 +1,11 @@
 import {
-  Country,
   CountryAbbreviation,
   CountryCode,
   CountryId,
   CountryName,
-  CountryRepository,
   CountryState,
 } from "../../../../auth/domain";
+import { Country, CountryRepository } from "../../../../../shared/domain/domain-container/DomainContainer";
 import { PostgresCountry } from "../../../../../shared/domain/types";
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 import AppDataSource from "../../../../../shared/infrastructure/db/TypeOrmConfig";
