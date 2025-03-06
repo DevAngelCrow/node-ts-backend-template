@@ -1,11 +1,5 @@
-import { EntityManager, EntityTarget } from "typeorm";
 import {
-  StorageRepository,
   TransactionManagerRepository,
-} from "../../../../../../shared/domain/domain-container/DomainContainer";
-import { CustomError } from "../../../../../../shared/domain/errors/custom.error";
-import { MultimediaFile } from "../../../../../../shared/domain/types";
-import {
   AuthServiceRepository,
   CountryId,
   EmailRepository,
@@ -30,7 +24,8 @@ import {
   UserName,
   UserPassword,
   UserRepository,
-} from "../../../../../auth/domain";
+} from "../../../../../../shared/domain/domain-container/DomainContainer";
+import { CustomError } from "../../../../../../shared/domain/errors/custom.error";
 
 export class PeopleCreateUser<T = unknown> {
   constructor(
@@ -63,12 +58,11 @@ export class PeopleCreateUser<T = unknown> {
     id_status: number,
     last_access: Date
   ): Promise<void> {
-
     const nationalities = nationality.map((id) => new CountryId(id));
     return await this.repositoryTransaction.runInTransaction(async (tx) => {
       const emailPeople = new PeopleEmail(email);
-      if(await this.repository.findEmailExist(emailPeople, tx)){
-        throw CustomError.badRequest("The email provided is already in use")
+      if (await this.repository.findEmailExist(emailPeople, tx)) {
+        throw CustomError.badRequest("The email provided is already in use");
       }
       const people = new People(
         new PeopleFirstName(firts_name),
@@ -109,10 +103,12 @@ export class PeopleCreateUser<T = unknown> {
 
       //const authentication = await this.repositoryAuth.authenticateUser(person.email, user.password);
 
-      const emailOptions = await this.repositoryAuth.validateEmail(user, person.email);
+      const emailOptions = await this.repositoryAuth.validateEmail(
+        user,
+        person.email
+      );
 
       await this.repositoryEmail.sendEmail(emailOptions);
-
     });
   }
 }

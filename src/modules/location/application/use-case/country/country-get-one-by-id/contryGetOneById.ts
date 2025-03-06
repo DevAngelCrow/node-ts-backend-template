@@ -1,5 +1,5 @@
 import { CustomError } from "../../../../../../shared/domain/errors/custom.error";
-import { CountryRepository, Country, CountryId } from "../../../../../auth/domain";
+import { CountryRepository, Country, CountryId } from "../../../../../../shared/domain/domain-container/DomainContainer";
 
 export class CountryGetOneById{
     constructor(private respository: CountryRepository){}

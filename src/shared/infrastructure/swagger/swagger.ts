@@ -28,6 +28,7 @@ const swaggerDefinition: OAS3Definition = {
       "People get": schemas.peopleGet,
       "Country": schemas.country.country,
       "User": schemas.user,
+      "User get": schemas.userGetSchema,
       "Country update": schemas.country.contryUpdate,
       "Country create" : schemas.country.countryCreate
     },
@@ -38,8 +39,8 @@ const swaggerOptions: OAS3Options = {
   swaggerDefinition,
   apis: [
     "./src/modules/auth/infrastructure/controllers/auth-service-controller/auth.service.routes.ts",
-    "./src/modules/auth/infrastructure/controllers/country-controller/country.routes.ts",
-    "./src/modules/auth/infrastructure/controllers/people-controller/people.routes.ts",
+    "./src/modules/location/infrastructure/controllers/country-controller/country.routes.ts",
+    "./src/modules/profile/infrastructure/controllers/people-controller/people.routes.ts",
     "./src/modules/auth/infrastructure/controllers/user-controller/user.routes.ts",
   ],
 };

@@ -1,4 +1,3 @@
-import { SendMailOptions } from "../../../../../email/domain/interfaces";
 import { AuthServiceRepository } from "../../../../domain";
 
 export class AuthEmailValidationLink{

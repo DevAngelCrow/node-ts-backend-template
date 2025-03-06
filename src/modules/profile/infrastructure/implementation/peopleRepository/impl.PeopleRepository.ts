@@ -30,11 +30,10 @@ import {
   PeopleStatusId,
   PeopleStatusName,
   User,
-} from "../../../../auth/domain";
+} from "../../../../../shared/domain/domain-container/DomainContainer";
 import { PostgresPeople } from "../../../../../shared/domain/types";
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 import { MntPeople } from "../../../../../shared/infrastructure/db/entities/MntPeople";
-import AppDataSource from "../../../../../shared/infrastructure/db/TypeOrmConfig";
 import { PeopleCountry } from "../../../../../shared/infrastructure/db/entities/PeopleCountry";
 import DateTimeService from "../../../../../shared/infrastructure/services/date-time/date.time.services";
 import { EntityManager } from "typeorm";
@@ -43,7 +42,7 @@ export class ImplPeopleRepository implements PeopleRepository<EntityManager> {
   private people: People[] = [];
   constructor(private entityManager: EntityManager){}
   
-  async createUserWithPerson(people: People, user: User, manager: EntityManager): Promise<void> {
+  async createUserWithPerson(people: People, user: User, manager: EntityManager = this.entityManager): Promise<void> {
     try {
       if (!people) {
         throw CustomError.internalServer(
@@ -153,7 +152,7 @@ export class ImplPeopleRepository implements PeopleRepository<EntityManager> {
       throw CustomError.internalServer("Internal server error in get people");
     }
   }
-  async findEmailExist(email: PeopleEmail, manager: EntityManager): Promise<boolean> {
+  async findEmailExist(email: PeopleEmail, manager: EntityManager = this.entityManager): Promise<boolean> {
     try {
       const peopleRepo = manager.getRepository(MntPeople);
 
@@ -228,7 +227,7 @@ export class ImplPeopleRepository implements PeopleRepository<EntityManager> {
       );
     }
   }
-  async update(person: People, manager: EntityManager): Promise<void> {
+  async update(person: People, manager: EntityManager = this.entityManager): Promise<void> {
     try {
       const dt = new DateTimeService().dateTime;
 
@@ -262,7 +261,7 @@ export class ImplPeopleRepository implements PeopleRepository<EntityManager> {
       );
     }
   }
-  async delete(id: PeopleId, id_status: PeopleStatusId, manager: EntityManager): Promise<void> {
+  async delete(id: PeopleId, id_status: PeopleStatusId, manager: EntityManager = this.entityManager): Promise<void> {
     try {
       const peopleRepo = manager.getRepository(MntPeople);
 

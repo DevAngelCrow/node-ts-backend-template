@@ -1,5 +1,4 @@
-import { CountryId, CountryRepository } from "../../../../../auth/domain";
-import { TransactionManagerRepository } from "../../../../../../shared/domain/domain-container/DomainContainer";
+import { TransactionManagerRepository, CountryId, CountryRepository } from "../../../../../../shared/domain/domain-container/DomainContainer";
 
 export class CountryFindMany {
     constructor(private respository: CountryRepository){}

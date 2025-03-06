@@ -1,5 +1,5 @@
 import { CustomError } from "../../../../../../shared/domain/errors/custom.error";
-import { People, PeopleEmail, PeopleRepository } from "../../../../../auth/domain";
+import { People, PeopleEmail, PeopleRepository } from "../../../../../../shared/domain/domain-container/DomainContainer";
 
 export class PeopleFindByEmail { 
     constructor(private repository: PeopleRepository){}

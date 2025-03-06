@@ -1,4 +1,4 @@
-import { People, PeopleId, PeopleRepository } from "../../../../../auth/domain";
+import { People, PeopleId, PeopleRepository } from "../../../../../../shared/domain/domain-container/DomainContainer";
 import { CustomError } from "../../../../../../shared/domain/errors/custom.error";
 export class PeopleGetOneById{
     constructor(private respository: PeopleRepository){}

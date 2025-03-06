@@ -1,4 +1,4 @@
-import { People, PeopleRepository } from "../../../../../auth/domain";
+import { People, PeopleRepository } from "../../../../../../shared/domain/domain-container/DomainContainer";
 
 export class PeopleGetAll {
     constructor(private respository: PeopleRepository){}

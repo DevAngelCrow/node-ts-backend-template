@@ -1,4 +1,4 @@
-import { Country, CountryAbbreviation, CountryCode, CountryName, CountryRepository, CountryState } from "../../../../../auth/domain";
+import { Country, CountryAbbreviation, CountryCode, CountryName, CountryRepository, CountryState } from "../../../../../../shared/domain/domain-container/DomainContainer";
 
 export class CountryCreate {
     constructor(private repository: CountryRepository){}

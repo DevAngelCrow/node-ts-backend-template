@@ -1,4 +1,4 @@
-import {  CountryId, CountryRepository } from "../../../../../auth/domain";
+import {  CountryId, CountryRepository } from "../../../../../../shared/domain/domain-container/DomainContainer";
 
 export class CountryDelete{
     constructor(private repository: CountryRepository){}

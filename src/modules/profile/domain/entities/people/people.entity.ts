@@ -1,5 +1,4 @@
 import {
-  CountryId,
   PeopleBirthdate,
   PeopleEmail,
   PeopleFirstName,
@@ -13,7 +12,8 @@ import {
   PeopleMiddleName,
   PeoplePhone,
 } from "../../value-object/index";
-import { Country, Gender, MaritalStatus, PeopleStatus } from "../index";
+import {CountryId, Country } from "../../../../../shared/domain/domain-container/DomainContainer";
+import { Gender, MaritalStatus, PeopleStatus } from "../index";
 
 export class People {
   

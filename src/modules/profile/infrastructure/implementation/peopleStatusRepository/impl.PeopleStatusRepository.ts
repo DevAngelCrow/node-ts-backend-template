@@ -4,7 +4,7 @@ import {
   PeopleStatusId,
   PeopleStatusName,
   PeopleStatusRepository,
-} from "../../../../auth/domain";
+} from "../../../../../shared/domain/domain-container/DomainContainer";
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 import { PostgresPeopleStatus } from "../../../../../shared/domain/types";
 import { EntityManager } from "typeorm";

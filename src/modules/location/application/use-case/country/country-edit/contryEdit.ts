@@ -6,7 +6,7 @@ import {
   CountryName,
   CountryRepository,
   CountryState,
-} from "../../../../../auth/domain";
+} from "../../../../../../shared/domain/domain-container/DomainContainer";
 
 export class CountryEdit {
   constructor(private respository: CountryRepository) {}

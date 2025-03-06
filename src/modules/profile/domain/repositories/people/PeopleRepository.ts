@@ -1,4 +1,5 @@
-import { People, User } from "../../../../auth/domain/entities";
+import {  User } from "../../../../../shared/domain/domain-container/DomainContainer";
+import { People } from "../../entities";
 import { PeopleEmail, PeopleId, PeopleStatusId } from "../../../../auth/domain/value-object";
 
 export interface PeopleRepository<T = unknown>{

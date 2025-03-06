@@ -1,5 +1,6 @@
 import { PeopleCountry } from "../../entities";
-import { CountryId, PeopleCountryId, PeopleId } from "../../value-object";
+import { PeopleId } from "../../value-object";
+import { CountryId } from "../../../../../shared/domain/domain-container/DomainContainer";
 
 export interface PeopleCountryRepository<T = unknown> {
     create(id_people: PeopleId, id_countries: CountryId[], transactionClient?: T): Promise<void>;

@@ -6,8 +6,7 @@ import {
   PeopleCountryRepository,
   PeopleCountryStatus,
   PeopleId,
-} from "../../../../auth/domain";
-import AppDataSource from "../../../../../shared/infrastructure/db/TypeOrmConfig";
+} from "../../../../../shared/domain/domain-container/DomainContainer";
 import { PeopleCountry as PeopleCountryEntity } from "../../../../../shared/infrastructure/db/entities/PeopleCountry";
 import { CtlCountry } from "../../../../../shared/infrastructure/db/entities/CtlCountry";
 import { MntPeople } from "../../../../../shared/infrastructure/db/entities/MntPeople";
@@ -16,7 +15,7 @@ import { PeopleCountry as PeopleCountryDomain } from "../../../domain/entities/p
 import { EntityManager, In, Not } from "typeorm";
 export class ImplPeopleCountryRepository implements PeopleCountryRepository<EntityManager>{
   constructor(private entityManager: EntityManager){}
-  async findMany(id_people: PeopleId, manager: EntityManager): Promise<PeopleCountryDomain[]> {
+  async findMany(id_people: PeopleId, manager: EntityManager = this.entityManager): Promise<PeopleCountryDomain[]> {
     try {
       const peopleCountryRepo =
       manager.getRepository(PeopleCountryEntity);
@@ -56,7 +55,7 @@ export class ImplPeopleCountryRepository implements PeopleCountryRepository<Enti
       throw CustomError.internalServer("Internal server error in findManyPeople")
     }
   }
-  async create(id_people: PeopleId, id_countries: CountryId[], manager: EntityManager): Promise<void> {
+  async create(id_people: PeopleId, id_countries: CountryId[], manager: EntityManager = this.entityManager): Promise<void> {
     try {
       const peopleCountryRepo =
         manager.getRepository(PeopleCountryEntity);
@@ -76,7 +75,7 @@ export class ImplPeopleCountryRepository implements PeopleCountryRepository<Enti
       );
     }
   }
-  async update(id_people: PeopleId, id_countries: CountryId[], manager: EntityManager): Promise<void> {
+  async update(id_people: PeopleId, id_countries: CountryId[], manager: EntityManager = this.entityManager): Promise<void> {
     try {
       const peopleCountryRepo =
         manager.getRepository(PeopleCountryEntity);
