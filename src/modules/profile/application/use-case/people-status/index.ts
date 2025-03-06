@@ -1,0 +1,1 @@
+export * from "./people-status-get-by-id/PeopleStatusGetById";
