@@ -39,7 +39,7 @@ export class PeopleRoutes {
         /**
      * Post track
      * @openapi
-     * /api/people/sign-up:
+     * /api/profile/people/sign-up:
      *   post:
      *    tags:
      *      - People

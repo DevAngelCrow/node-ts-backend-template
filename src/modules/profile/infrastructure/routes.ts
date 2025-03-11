@@ -7,7 +7,6 @@ export class ProfileRoutes {
         const router = Router();
         
         router.use('/people', PeopleRoutes.routes);
-        //router.use('/country', CountryRoutes.routes);
     
         return router;
     }

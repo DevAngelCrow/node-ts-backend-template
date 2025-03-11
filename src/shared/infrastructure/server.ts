@@ -1,6 +1,7 @@
 import express, { Router } from 'express';
 import path from 'path';
 import { ServerOptions } from './interfaces/ServerOptionsInterface';
+import fs from 'fs';
 
 export class Server {
     public readonly app = express();
@@ -24,6 +25,13 @@ export class Server {
 
         //public folder
         this.app.use(express.static(this.publicPath));
+
+        //local storage for pdf files
+        
+        const localStorePDF = path.join('storage','images');
+        if(!fs.existsSync(localStorePDF)){
+            fs.mkdirSync(localStorePDF, { recursive: true})
+        }
 
         //Enpoint of the routes api
         this.app.use('/api', this.routes);

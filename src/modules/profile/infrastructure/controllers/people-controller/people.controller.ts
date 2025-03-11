@@ -51,7 +51,8 @@ export class PeopleController {
         response.status(201).send({ message: "Register created successful" })
       )
       .catch((error) => {
-        ServiceContainer.storage.delete.run(imgPath.split("=")[1]!);
+        const path = imgPath.split("=")[1]! ? imgPath.split("=")[1]! : imgPath;
+        ServiceContainer.storage.delete.run(path);
         response.status(error.statusCode).json({ message: error.message });
       });
   }
