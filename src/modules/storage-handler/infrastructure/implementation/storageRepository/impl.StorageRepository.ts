@@ -10,60 +10,65 @@ import fs from "fs";
 import path from "path";
 
 export class ImplStorageRepository implements StorageRepository {
-  constructor(private readonly folder_id: string | undefined) {}
+  constructor(private readonly storage_service: string | undefined) {}
   async updload(multimedia: MultimediaFile): Promise<string> {
     try {
-      if (this.folder_id) {
-        const { buffer, originalname, mimetype } = multimedia;
+      const storageService = this.storage_service
+        ? this.storage_service.toLocaleLowerCase()
+        : "";
+      switch (storageService) {
+        case "google":
+          const { buffer, originalname, mimetype } = multimedia;
 
-        const folderId = [];
-        folderId.push(envs.FOLDER_ID!);
-        const authenticate = await googleAuth.getAuthClient();
-        const stream = Readable.from(buffer);
-        const serviceGoogleDrive = google.drive({
-          version: "v3",
-          auth: authenticate,
-        });
+          const folderId = [];
+          folderId.push(envs.FOLDER_ID!);
+          const authenticate = await googleAuth.getAuthClient();
+          const stream = Readable.from(buffer);
+          const serviceGoogleDrive = google.drive({
+            version: "v3",
+            auth: authenticate,
+          });
 
-        const requestBody = {
-          name: originalname,
-          parents: folderId,
-        };
+          const requestBody = {
+            name: originalname,
+            parents: folderId,
+          };
 
-        const media = {
-          mimetype: mimetype,
-          body: stream,
-        };
+          const media = {
+            mimetype: mimetype,
+            body: stream,
+          };
 
-        const url_img = await serviceGoogleDrive.files.create({
-          requestBody: requestBody,
-          media,
-          fields: "id",
-        });
+          const url_img = await serviceGoogleDrive.files.create({
+            requestBody: requestBody,
+            media,
+            fields: "id",
+          });
 
-        const fileId = await url_img.data.id;
-        await serviceGoogleDrive.permissions.create({
-          fileId: fileId!,
-          requestBody: {
-            role: "reader",
-            type: "anyone",
-          },
-        });
+          const fileId = await url_img.data.id;
+          await serviceGoogleDrive.permissions.create({
+            fileId: fileId!,
+            requestBody: {
+              role: "reader",
+              type: "anyone",
+            },
+          });
 
-        const url_path_img = `https://drive.google.com/uc?id=${fileId}`;
-        return url_path_img;
-      } else {
-        const filePath = path.join("storage/images", multimedia.originalname);
-        fs.writeFile(filePath, multimedia.buffer, (error) => {
-          if (error) {
-            console.log(error)
-            throw CustomError.internalServer("Error saving image file");
-          } else {
-            return filePath.toString();
-          }
-        });
+          const url_path_img = `https://drive.google.com/uc?id=${fileId}`;
+          return url_path_img;
 
-        return filePath;
+        default:
+          const filePath = path.join("storage/images", multimedia.originalname);
+          fs.writeFile(filePath, multimedia.buffer, (error) => {
+            if (error) {
+              console.log(error);
+              throw CustomError.internalServer("Error saving image file");
+            } else {
+              return filePath.toString();
+            }
+          });
+
+          return filePath;
       }
     } catch (error) {
       console.log(error, "Error in request google drive");
@@ -75,31 +80,36 @@ export class ImplStorageRepository implements StorageRepository {
   }
   async delete(id: string): Promise<void> {
     try {
-      if (this.folder_id) {
-        const authenticate = await googleAuth.getAuthClient();
-        const serviceGoogleDrive = google.drive({
-          version: "v3",
-          auth: authenticate,
-        });
+      const storageService = this.storage_service
+        ? this.storage_service.toLocaleLowerCase()
+        : "";
+      switch (storageService) {
+        case "google":
+          const authenticate = await googleAuth.getAuthClient();
+          const serviceGoogleDrive = google.drive({
+            version: "v3",
+            auth: authenticate,
+          });
 
-        const response = await serviceGoogleDrive.files.delete({
-          fileId: id,
-        });
-      } else {
-        console.log(id, 'id que viene')
-        fs.access(id, fs.constants.F_OK, (error) => {
-          if (error) {
-            throw CustomError.internalServer("Error deleting image file");
-          }
-          fs.unlink(id, (unlinkError) => {
-            if(unlinkError){
+          const response = await serviceGoogleDrive.files.delete({
+            fileId: id,
+          });
+          break;
+        default:
+          fs.access(id, fs.constants.F_OK, (error) => {
+            if (error) {
               throw CustomError.internalServer("Error deleting image file");
             }
-          })
-        });
+            fs.unlink(id, (unlinkError) => {
+              if (unlinkError) {
+                throw CustomError.internalServer("Error deleting image file");
+              }
+            });
+          });
+          break;
       }
     } catch (error) {
-      console.log(error, 'error')
+      console.log(error, "error");
       throw CustomError.internalServer("Error in request from google drive");
     }
     //throw new Error("Method not implemented.");
@@ -107,32 +117,31 @@ export class ImplStorageRepository implements StorageRepository {
   async get(id: string): Promise<Buffer> {
     try {
       //if (this.folder_id) {
-        const authenticate = await googleAuth.getAuthClient();
-        const serviceGoogleDrive = google.drive({
-          version: "v3",
-          auth: authenticate,
-        });
-        const index: number = id.toString().indexOf("id=");
-        let param: string = id;
-        if (index !== -1) {
-          param = id.substring(index + 3, id.toString().length);
-        }
-        const imgFile = await serviceGoogleDrive.files.get(
-          { fileId: param, alt: "media" },
-          { responseType: "stream" }
-        );
-        const streamValue: Buffer = await this.readStream(imgFile.data);
-        return streamValue;
+      const authenticate = await googleAuth.getAuthClient();
+      const serviceGoogleDrive = google.drive({
+        version: "v3",
+        auth: authenticate,
+      });
+      const index: number = id.toString().indexOf("id=");
+      let param: string = id;
+      if (index !== -1) {
+        param = id.substring(index + 3, id.toString().length);
+      }
+      const imgFile = await serviceGoogleDrive.files.get(
+        { fileId: param, alt: "media" },
+        { responseType: "stream" }
+      );
+      const streamValue: Buffer = await this.readStream(imgFile.data);
+      return streamValue;
       //}else{
-        // const archivoPdf = fs.access(id, fs.constants.F_OK, (error)=>{
-        //   if(error){
-        //     throw CustomError.internalServer("Error getting image");
-        //   }
-        // });
+      // const archivoPdf = fs.access(id, fs.constants.F_OK, (error)=>{
+      //   if(error){
+      //     throw CustomError.internalServer("Error getting image");
+      //   }
+      // });
       //}
-
     } catch (error) {
-      console.log(error, 'error')
+      console.log(error, "error");
       throw CustomError.internalServer("Error in request from google drive");
     }
   }

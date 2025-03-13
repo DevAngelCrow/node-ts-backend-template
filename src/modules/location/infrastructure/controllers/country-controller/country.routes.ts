@@ -10,7 +10,7 @@ export class CountryRoutes {
 
     /**
      * @openapi
-     * /api/country/create:
+     * /api/location/country/create:
      *   post:
      *     tags:
      *       - Country
@@ -35,7 +35,7 @@ export class CountryRoutes {
 
     /**
      * @openapi
-     * /api/country/{id}:
+     * /api/location/country/{id}:
      *   get:
      *     tags:
      *       - Country
@@ -66,7 +66,7 @@ export class CountryRoutes {
     router.get("/:id", authMiddleware, controller.getById);
     /**
      * @openapi
-     * /api/country/:
+     * /api/location/country/:
      *   get:
      *     tags:
      *       - Country
@@ -91,7 +91,7 @@ export class CountryRoutes {
     router.get("/", authMiddleware, controller.getAll);
     /**
      * @openapi
-     * /api/country/{id}:
+     * /api/location/country/{id}:
      *   put:
      *     tags:
      *       - Country
@@ -124,7 +124,7 @@ export class CountryRoutes {
 
     /**
      * @openapi
-     * /api/country/{id}:
+     * /api/location/country/{id}:
      *   delete:
      *     tags:
      *       - Country

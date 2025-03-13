@@ -11,7 +11,7 @@ export class PeopleRoutes {
     
     /**
      * @openapi
-     * /api/people/create:
+     * /api/profile/people/create:
      *   post:
      *    tags:
      *      - People
@@ -65,7 +65,7 @@ export class PeopleRoutes {
 
     /**
      * @openapi
-     * /api/people/:
+     * /api/profile/people/:
      *  get:
      *    tags:
      *      - People
@@ -89,7 +89,7 @@ export class PeopleRoutes {
 
     /**
      * @openapi
-     * /api/people/email/{email}:
+     * /api/profile/people/email/{email}:
      *  get:
      *    tags:
      *      - People
@@ -116,7 +116,7 @@ export class PeopleRoutes {
     router.get("/email/:email", authMiddleware, controller.getPeopleByEmail);
     /**
      * @openapi
-     * /api/people/{id}:
+     * /api/profile/people/{id}:
      *  get:
      *    tags:
      *      - People
@@ -149,7 +149,7 @@ export class PeopleRoutes {
 
     /**
      * @openapi
-     * /api/people/{id}:
+     * /api/profile/people/{id}:
      *   put:
      *     tags:
      *       - People
@@ -182,7 +182,7 @@ export class PeopleRoutes {
 
     /**
      * @openapi
-     * /api/people/{id}:
+     * /api/profile/people/{id}:
      *  delete:
      *    tags:
      *      - People

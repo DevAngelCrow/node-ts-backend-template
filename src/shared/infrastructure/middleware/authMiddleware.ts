@@ -29,6 +29,7 @@ export class AuthMiddleware {
       }
       next();
     } catch (error) {
+      console.log(error, 'error')
       if (error instanceof TokenExpiredError) {
         response.status(401).json({ error: "No autorized" });
       }

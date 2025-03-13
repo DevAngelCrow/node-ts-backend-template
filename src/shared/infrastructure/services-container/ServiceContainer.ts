@@ -84,7 +84,7 @@ const countryRepository = new ImplCountryRepository(entityManager);
 const transactionManagerRepository = new ImplTransactionManagerRepository(
   entityManager
 );
-const storageRepository = new ImplStorageRepository(envs.FOLDER_ID);
+const storageRepository = new ImplStorageRepository(envs.STORAGE_WEB_SERVICE);
 const peopleStatusRepository = new ImplPeopleStatusRepository(entityManager);
 const httpClientRepository = new ImplHttpClientRepository(
   envs.HTTP_CLIENT_ADAPTER
