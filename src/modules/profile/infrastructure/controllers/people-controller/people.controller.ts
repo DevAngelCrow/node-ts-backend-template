@@ -114,6 +114,7 @@ export class PeopleController {
   }
 
   async getPeopleById(request: Request, response: Response) {
+    
     const { id } = request.params;
     await ServiceContainer.people.getOneById
       .run(+id)

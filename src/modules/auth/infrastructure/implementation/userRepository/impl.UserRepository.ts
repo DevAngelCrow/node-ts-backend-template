@@ -55,8 +55,6 @@ export class ImplUserRepository implements UserRepository<EntityManager> {
         status: { id_status: userDb.idStatus.id, name: userDb.idStatus.name },
         last_access: dt.now().toJSDate(),
       };
-
-      //console.log(userDb, 'userDb')
       if (!user) {
         return null;
       }

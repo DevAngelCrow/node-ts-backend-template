@@ -40,6 +40,7 @@ import {
 } from "../../../modules/auth/infrastructure/implementation/index";
 
 import {
+  ImplAddressRepository,
   ImplPeopleCountryRepository,
   ImplPeopleRepository,
   ImplPeopleStatusRepository,
@@ -68,6 +69,7 @@ import {
   EmailSendWithFile,
 } from "../../../modules/email/application/services";
 import { ImplEmailService } from "../../../modules/email/infrastructure/implementation/emailRepository/impl.EmailRepository";
+import { AddressGetOneById } from "../../../modules/profile/application/use-case/address/address-get-one-by-id/addressGetOneById";
 
 const entityManager = AppDataSource.dataSource.manager;
 const optionsEmail = {
@@ -96,6 +98,7 @@ const authServiceRepository = new ImplAuthServiceRepository(
 );
 const peopleCountryRepository = new ImplPeopleCountryRepository(entityManager);
 const emailService = new ImplEmailService(optionsEmail);
+const addressRepository = new ImplAddressRepository(entityManager);
 
 export const ServiceContainer = {
   example: {
@@ -177,4 +180,7 @@ export const ServiceContainer = {
     sendEmail: new EmailSend(emailService),
     sendEmailWithFile: new EmailSendWithFile(emailService),
   },
+  address: {
+    getOneById: new AddressGetOneById(addressRepository)
+  }
 };

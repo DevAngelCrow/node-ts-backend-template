@@ -1,7 +1,7 @@
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 
-export class AddressHouseNumber {
-  constructor(readonly value: number) {
+export class AddressDescription {
+  constructor(readonly value: string) {
     this.required()
   }
 

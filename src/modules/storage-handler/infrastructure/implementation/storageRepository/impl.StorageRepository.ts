@@ -61,7 +61,6 @@ export class ImplStorageRepository implements StorageRepository {
           const filePath = path.join("storage/images", multimedia.originalname);
           fs.writeFile(filePath, multimedia.buffer, (error) => {
             if (error) {
-              console.log(error);
               throw CustomError.internalServer("Error saving image file");
             } else {
               return filePath.toString();
@@ -109,7 +108,6 @@ export class ImplStorageRepository implements StorageRepository {
           break;
       }
     } catch (error) {
-      console.log(error, "error");
       throw CustomError.internalServer("Error in request from google drive");
     }
     //throw new Error("Method not implemented.");
