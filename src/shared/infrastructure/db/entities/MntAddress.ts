@@ -50,7 +50,8 @@ export class MntAddress {
 
   @Column("boolean", { name: "current", nullable: true })
   current?: boolean | null;
-
+  @Column("boolean", {name: "active", default: true})
+  active!: boolean;
   @ManyToOne(() => CtlDistrict, (ctlDistrict) => ctlDistrict.mntAddresses, {
     onDelete: "CASCADE",
     onUpdate: "CASCADE",

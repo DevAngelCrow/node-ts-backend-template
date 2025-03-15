@@ -1,5 +1,4 @@
-import { Country, Department, District, Municipality } from "../../../../../shared/domain/domain-container/DomainContainer"
-import { AddressCurrent, AddressDescription, AddressBlock, AddressHouseNumber, AddressIdDistrict, AddressIdPeople, AddressNeighborhood, AddressPathWay, AddressStreet, AddressStreetNumber, AddressId } from "../../../../profile/domain";
+import { AddressCurrent, AddressDescription, AddressBlock, AddressHouseNumber, AddressIdDistrict, AddressIdPeople, AddressNeighborhood, AddressPathWay, AddressStreet, AddressStreetNumber, AddressId, AddressActive } from "../../../../profile/domain";
 
 export class Address{
     constructor(
@@ -12,16 +11,17 @@ export class Address{
         readonly block: AddressBlock,
         readonly pathway: AddressPathWay,
         readonly current: AddressCurrent,
-        readonly id?: AddressId,
+        readonly active: AddressActive,
         readonly description?: AddressDescription,
+        readonly id?: AddressId,
         readonly ctl_district?: {[key:string]: any },
+        readonly mnt_people?: {[key:string]: any },
     ){}
 
     public mapToPrimitives(){
         return {
          id: this.id?.value,
          description: this.description?.value,
-         id_people: this.id_people.value,
          street: this.street.value,
          street_number: this.street_number.value,
          neighborhood: this.neighborhood.value,
@@ -29,7 +29,9 @@ export class Address{
          block: this.block.value,
          pathway: this.pathway.value,
          current: this.current.value,
+         active: this.active.value,
          location: this.ctl_district,
+         person: this.mnt_people
         }
     }
 

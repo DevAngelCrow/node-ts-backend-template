@@ -69,7 +69,14 @@ import {
   EmailSendWithFile,
 } from "../../../modules/email/application/services";
 import { ImplEmailService } from "../../../modules/email/infrastructure/implementation/emailRepository/impl.EmailRepository";
-import { AddressGetOneById } from "../../../modules/profile/application/use-case/address/address-get-one-by-id/addressGetOneById";
+import {
+  AddressGetOneById,
+  AddresGetAll,
+  AddressCreate,
+  AddressUpdate,
+  AddressDelete,
+} from "../../../modules/profile/application/use-case/address";
+import { AddressChangePlaceResidence } from "../../../modules/profile/application/use-case/address/address-change-place-residence/addressChangePlaceResidence";
 
 const entityManager = AppDataSource.dataSource.manager;
 const optionsEmail = {
@@ -181,6 +188,11 @@ export const ServiceContainer = {
     sendEmailWithFile: new EmailSendWithFile(emailService),
   },
   address: {
-    getOneById: new AddressGetOneById(addressRepository)
-  }
+    create: new AddressCreate(addressRepository, transactionManagerRepository),
+    update: new AddressUpdate(addressRepository, transactionManagerRepository),
+    getOneById: new AddressGetOneById(addressRepository),
+    getAll: new AddresGetAll(addressRepository),
+    delete: new AddressDelete(addressRepository),
+    changePlaceResidence: new AddressChangePlaceResidence(addressRepository)
+  },
 };

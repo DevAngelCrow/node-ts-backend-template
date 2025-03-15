@@ -1,5 +1,6 @@
-import { EntityManager } from "typeorm";
+import { EntityManager, QueryFailedError } from "typeorm";
 import {
+  AddressActive,
   AddressBlock,
   AddressCurrent,
   AddressDescription,
@@ -12,23 +13,25 @@ import {
   AddressRepository,
   AddressStreet,
   AddressStreetNumber,
+  PeopleId,
 } from "../../../domain";
 import { Address } from "../../../../profile/domain/entities/address/address.entity";
 import { MntAddress } from "../../../../../shared/infrastructure/db/entities/MntAddress";
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 import { PostgresAddress } from "../../../../../shared/domain/types/postgres-types/postgresAddress";
-import { District } from "../../../../location/domain";
+import DateTimeService from "../../../../../shared/infrastructure/services/date-time/date.time.services";
 
 export class ImplAddressRepository implements AddressRepository<EntityManager> {
-  private address: Address[] = [];
+  private addresses: Address[] = [];
   constructor(private entityManager: EntityManager) {}
+  
   async create(
     address: Address,
     manager: EntityManager = this.entityManager
   ): Promise<void> {
     try {
       const addressRepo = manager.getRepository(MntAddress);
-      const newAddress = await addressRepo.create({
+      const newAddress = addressRepo.create({
         idPeople: { id: address.id_people.value },
         street: address.street.value,
         streetNumber: address.street_number.value,
@@ -40,8 +43,21 @@ export class ImplAddressRepository implements AddressRepository<EntityManager> {
         description: address.description?.value,
         current: address.current.value,
       });
-      await addressRepo.save(newAddress);
+      await addressRepo.insert(newAddress);
     } catch (error) {
+      if(error instanceof QueryFailedError){
+        //console.log(error.driverError.detail);
+        const regex = /\(\s*([^()]*)\s*\)/g
+        const respuestaError = error.driverError.detail.match(regex)
+        let stringErrorDetail : string = ""
+        respuestaError.forEach((element: string, index: number) => {
+          stringErrorDetail = `${stringErrorDetail}${element.substring(1, element.length - 1)} ${index === respuestaError.length - 1 ? '' : '=> '}` 
+        });
+        
+        throw CustomError.badRequest(`${stringErrorDetail} not found`)
+      
+      }
+      
       throw CustomError.internalServer(
         "Internal server error in create address"
       );
@@ -68,6 +84,7 @@ export class ImplAddressRepository implements AddressRepository<EntityManager> {
           pathway: address.pathway.value,
           description: address.description?.value,
           current: address.current.value,
+          active: address.active.value,
         }
       );
     } catch (error) {
@@ -76,8 +93,84 @@ export class ImplAddressRepository implements AddressRepository<EntityManager> {
       );
     }
   }
-  getAll(): Promise<Address[]> {
-    throw new Error("Method not implemented.");
+  async getAll(): Promise<Address[]> {
+    try {
+      const addressRepo = this.entityManager.getRepository(MntAddress);
+      const addresses = await addressRepo
+        .createQueryBuilder("address")
+        .innerJoin("address.idPeople", "mntPeople")
+        .innerJoin("address.idDistrict", "ctlDistrict")
+        .innerJoin("ctlDistrict.idMunicipality", "ctlMunicipality")
+        .innerJoin("ctlMunicipality.idDepartament", "ctlDepartment")
+        .innerJoin("ctlDepartment.idCountry", "ctlCountry")
+        .select([
+          "address.id",
+          "address.street",
+          "address.streetNumber",
+          "address.neighborhood",
+          "address.houseNumber",
+          "address.block",
+          "address.pathway",
+          "address.description",
+          "address.current",
+          "mntPeople.firstName",
+          "mntPeople.middleName",
+          "mntPeople.lastName",
+          "mntPeople.email",
+          "mntPeople.id",
+          "ctlDistrict.id",
+          "ctlDistrict.name",
+          "ctlMunicipality.id",
+          "ctlMunicipality.name",
+          "ctlDepartment.id",
+          "ctlDepartment.name",
+          "ctlCountry.id",
+          "ctlCountry.name",
+        ])
+        .getMany();
+
+      this.addresses = addresses.map((address) => {
+        return this.mapToDomain({
+          id: address.id,
+          street: address.street ?? "-",
+          street_number: address.streetNumber ?? "-",
+          neighborhood: address.neighborhood ?? "-",
+          id_district: address.idDistrict.id,
+          house_number: address.houseNumber,
+          block: address.block ?? "-",
+          pathway: address.pathway ?? "-",
+          description: address.description ?? "-",
+          current: address.current ?? false,
+          active: address.active,
+          person: {
+            id: address.idPeople.id,
+            first_name: address.idPeople.firstName,
+            middle_name: address.idPeople.middleName ?? "",
+            last_name: address.idPeople.lastName ?? "",
+            email: address.idPeople.email,
+          },
+          ctl_district: {
+            id: address.idDistrict.id,
+            name: address.idDistrict.name,
+          },
+          ctl_municipality: {
+            id: address.idDistrict.idMunicipality.id,
+            name: address.idDistrict.idMunicipality.name,
+          },
+          ctl_department: {
+            id: address.idDistrict.idMunicipality.idDepartament.id,
+            name: address.idDistrict.idMunicipality.idDepartament.name,
+          },
+          ctl_country: {
+            id: address.idDistrict.idMunicipality.idDepartament.idCountry.id,
+            name: address.idDistrict.idMunicipality.idDepartament.idCountry
+              .name,
+          },
+        });
+      });
+      return this.addresses;
+    } catch (error) {}
+    throw CustomError.internalServer("Internal server error in get Address");
   }
   async getOneById(id: AddressId): Promise<Address | null> {
     try {
@@ -115,13 +208,14 @@ export class ImplAddressRepository implements AddressRepository<EntityManager> {
         ])
         .where("address.id = :id", { id: id.value })
         .getOne();
+
+        console.log(addressFind, 'address find')
       if (!addressFind) {
         return null;
       }
-      
+
       return this.mapToDomain({
         id: addressFind.id,
-        id_people: addressFind.idPeople.id,
         street: addressFind.street ?? "-",
         street_number: addressFind.streetNumber ?? "-",
         neighborhood: addressFind.neighborhood ?? "-",
@@ -131,6 +225,14 @@ export class ImplAddressRepository implements AddressRepository<EntityManager> {
         pathway: addressFind.pathway ?? "-",
         description: addressFind.description ?? "-",
         current: addressFind.current ?? false,
+        active: addressFind.active,
+        person: {
+          id: addressFind.idPeople.id,
+          first_name: addressFind.idPeople.firstName,
+          middle_name: addressFind.idPeople.middleName ?? "",
+          last_name: addressFind.idPeople.lastName ?? "",
+          email: addressFind.idPeople.email,
+        },
         ctl_district: {
           id: addressFind.idDistrict.id,
           name: addressFind.idDistrict.name,
@@ -153,13 +255,39 @@ export class ImplAddressRepository implements AddressRepository<EntityManager> {
       console.log(error);
       throw CustomError.internalServer("Internal server error");
     }
-    //throw new Error("Method not implemented.");
   }
-  delete(
+  async delete(
     id: AddressId,
-    transaction?: EntityManager | undefined
+    manager: EntityManager = this.entityManager
   ): Promise<void> {
-    throw new Error("Method not implemented.");
+    try {
+      const dt = new DateTimeService().dateTime;
+      const addressRepo = manager.getRepository(MntAddress);
+      await addressRepo.update(
+        { id: id.value },
+        { deletedAt: dt.now().toFormat("yyyy-MM-dd HH:mm:ss"), active: false, current: false }
+      );
+    } catch (error) {
+      console.log(error, 'error delete')
+      throw CustomError.internalServer("Internal server error");
+    }
+  }
+  async changePlaceResidence(id: AddressIdPeople, manager: EntityManager = this.entityManager): Promise<void> {
+    try {
+      console.log(id, 'id que viene')
+      const dt = new DateTimeService().dateTime;
+      const addressRepo = manager.getRepository(MntAddress);
+      await addressRepo.update(
+        {idPeople: {id: id.value}, current: true},
+        { current: false,
+          updatedAt: dt.now().toFormat("yyyy-MM-dd HH:mm:ss")
+         }
+      );
+    } catch (error) {
+      console.log(error, 'error')
+      throw CustomError.internalServer("Internal server error");
+    }
+    
   }
 
   private mapToDomain(address: PostgresAddress) {
@@ -170,7 +298,7 @@ export class ImplAddressRepository implements AddressRepository<EntityManager> {
       country: address.ctl_country,
     };
     return new Address(
-      new AddressIdPeople(address.id_people),
+      new AddressIdPeople(address.person.id),
       new AddressStreet(address.street),
       new AddressStreetNumber(address.street),
       new AddressNeighborhood(address.neighborhood),
@@ -179,9 +307,11 @@ export class ImplAddressRepository implements AddressRepository<EntityManager> {
       new AddressBlock(address.block),
       new AddressPathWay(address.pathway),
       new AddressCurrent(address.current),
-      new AddressId(address.id),
+      new AddressActive(address.active),
       new AddressDescription(address.description),
-      location
+      new AddressId(address.id),
+      location,
+      address.person
     );
   }
 }

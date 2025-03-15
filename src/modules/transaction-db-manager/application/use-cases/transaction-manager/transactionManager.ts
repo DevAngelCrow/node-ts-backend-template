@@ -1,7 +1,7 @@
-import { TransactionManagerRepository } from "../../../domain/repositories/transaction-manager/TransactionManagerRepository";
+import { TransactionManagerRepository } from "../../../../../shared/domain/domain-container/DomainContainer";
 
-export class TransactionManager {
-    constructor(private repository: TransactionManagerRepository){}
+export class TransactionManager <U>{
+    constructor(private repository: TransactionManagerRepository<U>){}
 
     async run<T>(operation: () => Promise<T>) : Promise<T>{
         return this.repository.runInTransaction(operation);

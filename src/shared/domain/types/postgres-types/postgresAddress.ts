@@ -2,10 +2,17 @@ interface ctlObject {
     id: number;
     name: string;
 }
+interface personObject {
+    id: number;
+    first_name: string;
+    middle_name: string;
+    last_name: string;
+    email: string;
+}
 
 export type PostgresAddress = {
     id: number;
-    id_people: number;
+    person: personObject;
     street: string;
     street_number: string;
     neighborhood: string;
@@ -15,6 +22,7 @@ export type PostgresAddress = {
     pathway: string;
     description: string;
     current: boolean;
+    active: boolean;
     ctl_district: ctlObject;
     ctl_municipality: ctlObject;
     ctl_department: ctlObject;

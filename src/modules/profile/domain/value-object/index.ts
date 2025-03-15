@@ -12,6 +12,7 @@ export * from "./address-value-object/address.street.number.value.object";
 export * from "./address-value-object/address.street.value.object";
 export * from "./address-value-object/address.description.value.object";
 export * from "./address-value-object/address.current.value.object";
+export * from "./address-value-object/address.active.value.object";
 
 //Document people value object
 export * from "./document-people-value-object/document.people.id.document.value.object";
