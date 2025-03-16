@@ -88,6 +88,7 @@ export class ImplAddressRepository implements AddressRepository<EntityManager> {
         }
       );
     } catch (error) {
+      console.log(error, "error")
       throw CustomError.internalServer(
         "Internal server error updating address"
       );
@@ -192,6 +193,7 @@ export class ImplAddressRepository implements AddressRepository<EntityManager> {
           "address.pathway",
           "address.description",
           "address.current",
+          "address.active",
           "mntPeople.firstName",
           "mntPeople.middleName",
           "mntPeople.lastName",

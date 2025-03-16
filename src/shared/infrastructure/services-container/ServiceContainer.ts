@@ -25,6 +25,11 @@ import {
   PeopleGetOneById,
   PeopleCreateUser,
   PeopleFindByEmail,
+  GenderCreate,
+  GenderUpdate,
+  GenderGetOneById,
+  GenderGetAll,
+  GenderDelete,
 } from "../../../modules/profile/application";
 import {
   CountryCreate,
@@ -77,6 +82,7 @@ import {
   AddressDelete,
 } from "../../../modules/profile/application/use-case/address";
 import { AddressChangePlaceResidence } from "../../../modules/profile/application/use-case/address/address-change-place-residence/addressChangePlaceResidence";
+import { ImplGenderRepository } from "../../../modules/profile/infrastructure/implementation/genderRepository/impl.GenderRepository";
 
 const entityManager = AppDataSource.dataSource.manager;
 const optionsEmail = {
@@ -106,6 +112,7 @@ const authServiceRepository = new ImplAuthServiceRepository(
 const peopleCountryRepository = new ImplPeopleCountryRepository(entityManager);
 const emailService = new ImplEmailService(optionsEmail);
 const addressRepository = new ImplAddressRepository(entityManager);
+const genderRepository = new ImplGenderRepository(entityManager);
 
 export const ServiceContainer = {
   example: {
@@ -195,4 +202,11 @@ export const ServiceContainer = {
     delete: new AddressDelete(addressRepository),
     changePlaceResidence: new AddressChangePlaceResidence(addressRepository)
   },
+  gender: {
+    create: new GenderCreate(genderRepository),
+    update: new GenderUpdate(genderRepository),
+    getOneById: new GenderGetOneById(genderRepository),
+    getAll: new GenderGetAll(genderRepository),
+    delete: new GenderDelete(genderRepository),
+  }
 };

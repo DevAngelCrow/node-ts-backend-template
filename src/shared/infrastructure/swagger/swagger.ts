@@ -31,7 +31,9 @@ const swaggerDefinition: OAS3Definition = {
       "User get": schemas.userGetSchema,
       "Country update": schemas.country.contryUpdate,
       "Country create" : schemas.country.countryCreate,
-      "Address create": schemas.address
+      "Address create": schemas.address,
+      "Address update" : schemas.addressUpdateSchema,
+      "Address get": schemas.addressGetSchema
     },
   },
 };

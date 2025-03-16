@@ -6,6 +6,8 @@ import country  from "./countrySchema";
 import { user } from "./userSchema";
 import { userGetSchema } from "./userGetSchema";
 import address from "./addressSchema";
+import addressUpdateSchema from "./addressUpdateSchema";
+import addressGetSchema from "./addressGetSchema";
 
 export default {
     peopleUserSchema,
@@ -15,5 +17,7 @@ export default {
     country,
     user,
     userGetSchema,
-    address
+    address,
+    addressUpdateSchema,
+    addressGetSchema
 }

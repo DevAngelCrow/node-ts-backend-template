@@ -139,7 +139,6 @@ export class ImplStorageRepository implements StorageRepository {
       // });
       //}
     } catch (error) {
-      console.log(error, "error");
       throw CustomError.internalServer("Error in request from google drive");
     }
   }
