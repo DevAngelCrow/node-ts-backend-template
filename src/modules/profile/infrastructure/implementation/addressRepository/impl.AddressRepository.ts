@@ -68,6 +68,7 @@ export class ImplAddressRepository implements AddressRepository<EntityManager> {
     manager: EntityManager = this.entityManager
   ): Promise<void> {
     try {
+      const dt = new DateTimeService().dateTime;
       const addressRepo = manager.getRepository(MntAddress);
       await addressRepo.update(
         {
@@ -85,6 +86,7 @@ export class ImplAddressRepository implements AddressRepository<EntityManager> {
           description: address.description?.value,
           current: address.current.value,
           active: address.active.value,
+          updatedAt: dt.now().toFormat("yyyy-MM-dd HH:mm:ss")
         }
       );
     } catch (error) {

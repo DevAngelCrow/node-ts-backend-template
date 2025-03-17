@@ -9,7 +9,7 @@ export class GenderRoutes {
         const authMiddleware = AuthMiddleware.validateJWT;
 
         router.post("/create", /*authMiddleware, */controller.createGender);
-
+        router.get("/:id", controller.getOneByIdGender);
         return router;
     }
 }
