@@ -8,6 +8,8 @@ import { userGetSchema } from "./userGetSchema";
 import address from "./addressSchema";
 import addressUpdateSchema from "./addressUpdateSchema";
 import addressGetSchema from "./addressGetSchema";
+import {gender} from "./genderSchema";
+import { genderGetSchema } from "./genderGetSchema";
 
 export default {
     peopleUserSchema,
@@ -19,5 +21,7 @@ export default {
     userGetSchema,
     address,
     addressUpdateSchema,
-    addressGetSchema
+    addressGetSchema,
+    gender,
+    genderGetSchema
 }

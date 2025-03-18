@@ -33,7 +33,9 @@ const swaggerDefinition: OAS3Definition = {
       "Country create" : schemas.country.countryCreate,
       "Address create": schemas.address,
       "Address update" : schemas.addressUpdateSchema,
-      "Address get": schemas.addressGetSchema
+      "Address get": schemas.addressGetSchema,
+      "Gender create": schemas.gender,
+      "Gender get" : schemas.genderGetSchema
     },
   },
 };
@@ -45,7 +47,8 @@ const swaggerOptions: OAS3Options = {
     "./src/modules/location/infrastructure/controllers/country-controller/country.routes.ts",
     "./src/modules/profile/infrastructure/controllers/people-controller/people.routes.ts",
     "./src/modules/auth/infrastructure/controllers/user-controller/user.routes.ts",
-    "./src/modules/profile/infrastructure/controllers/address-controller/address.routes.ts"
+    "./src/modules/profile/infrastructure/controllers/address-controller/address.routes.ts",
+    "./src/modules/profile/infrastructure/controllers/gender-controller/gender.routes.ts"
   ],
 };
 

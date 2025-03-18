@@ -25,4 +25,10 @@ export class GenderController{
         .then((gender) => response.status(200).json(gender?.mapToPrimitives()))
         .catch((error)=> response.status(error.statusCode).json({message: error.message}))
     }
+
+    async getGenders(request: Request, response: Response){
+        await ServiceContainer.gender.getAll.run()
+        .then((genders) => response.status(200).json(genders.map((gender)=> gender.mapToPrimitives())))
+        .catch((error)=> response.status(error.statusCode).json({message: error.message}))
+    }
 }
