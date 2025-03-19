@@ -6,4 +6,12 @@ export class PeopleStatus {
         readonly description?: PeopleStatusDescription,
         readonly id?: PeopleStatusId
     ){}
+
+    public mapToPrimitives(){
+        return {
+            id: this.id?.value,
+            name: this.name.value,
+            description: this.description?.value
+        }
+    }
 }

@@ -30,6 +30,14 @@ import {
   GenderGetOneById,
   GenderGetAll,
   GenderDelete,
+  MaritalStatusCreate,
+  MaritalStatusUpdate,
+  MaritalStatusGetOneById,
+  MaritalStatusGetAll,
+  PeopleStatusCreate,
+  PeopleStatusUpdate,
+  PeopleStatusGetAll,
+  PeopleStatusGetById,
 } from "../../../modules/profile/application";
 import {
   CountryCreate,
@@ -83,6 +91,7 @@ import {
 } from "../../../modules/profile/application/use-case/address";
 import { AddressChangePlaceResidence } from "../../../modules/profile/application/use-case/address/address-change-place-residence/addressChangePlaceResidence";
 import { ImplGenderRepository } from "../../../modules/profile/infrastructure/implementation/genderRepository/impl.GenderRepository";
+import { ImplMaritalStatusRepository } from "../../../modules/profile/infrastructure/implementation/maritalStatusRepository/impl.MaritalStatusRepository";
 
 const entityManager = AppDataSource.dataSource.manager;
 const optionsEmail = {
@@ -113,6 +122,7 @@ const peopleCountryRepository = new ImplPeopleCountryRepository(entityManager);
 const emailService = new ImplEmailService(optionsEmail);
 const addressRepository = new ImplAddressRepository(entityManager);
 const genderRepository = new ImplGenderRepository(entityManager);
+const maritalStatusRepository = new ImplMaritalStatusRepository(entityManager);
 
 export const ServiceContainer = {
   example: {
@@ -208,5 +218,17 @@ export const ServiceContainer = {
     getOneById: new GenderGetOneById(genderRepository),
     getAll: new GenderGetAll(genderRepository),
     delete: new GenderDelete(genderRepository),
+  },
+  maritalStatus: {
+    create: new MaritalStatusCreate(maritalStatusRepository),
+    update: new MaritalStatusUpdate(maritalStatusRepository),
+    getOneById: new MaritalStatusGetOneById(maritalStatusRepository),
+    getAll: new MaritalStatusGetAll(maritalStatusRepository)
+  },
+  peopleStatus: {
+    create: new PeopleStatusCreate(peopleStatusRepository),
+    update: new PeopleStatusUpdate(peopleStatusRepository),
+    getAll: new PeopleStatusGetAll(peopleStatusRepository),
+    getOneById: new PeopleStatusGetById(peopleStatusRepository)
   }
 };

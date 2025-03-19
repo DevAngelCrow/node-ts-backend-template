@@ -22,7 +22,7 @@ export class PeopleDelete<T = unknown> {
       const idPeople = new PeopleId(id);
 
       await this.repository.getOneById(idPeople, tx);
-      const id_status = await this.repositoryPeopleStatus.getOneById(
+      const id_status = await this.repositoryPeopleStatus.getOneByName(
         new PeopleStatusName("inactive")
       );
       if (!id_status) {

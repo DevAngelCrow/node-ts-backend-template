@@ -5,4 +5,11 @@ export class MaritalStatus{
         readonly name: MaritalStatusName,
         readonly id?: MaritalStatusId,
     ){}
+
+    public mapToPrimitives(){
+        return {
+            id: this.id?.value,
+            name: this.name.value
+        }
+    }
 }

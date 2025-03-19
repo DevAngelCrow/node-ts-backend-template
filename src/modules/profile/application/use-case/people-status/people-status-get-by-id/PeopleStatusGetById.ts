@@ -1,14 +1,20 @@
-import {  PeopleStatusId, PeopleStatusName, PeopleStatusRepository } from "../../../../domain";
-import { CustomError } from "../../../../../../shared/domain/errors/custom.error"; 
+import { CustomError } from "../../../../../../shared/domain/errors/custom.error";
+import {
+  PeopleStatus,
+  PeopleStatusId,
+  PeopleStatusRepository,
+} from "../../../../domain";
+
 export class PeopleStatusGetById {
-    constructor(private repository: PeopleStatusRepository){}
+  constructor(private repository: PeopleStatusRepository) {}
 
-    async run(name: string) : Promise<PeopleStatusId | null>{
-        const peopleStatus =  await this.repository.getOneById(new PeopleStatusName(name));
-        if(!peopleStatus){
-            throw CustomError.notFound("Status not found")
-        }
-
-        return peopleStatus;
+  async run(id: number): Promise<PeopleStatus | null> {
+    const peopleStatus = await this.repository.getOneById(
+      new PeopleStatusId(id)
+    );
+    if (!peopleStatus) {
+      throw CustomError.notFound("Id people status not found");
     }
+    return peopleStatus;
+  }
 }
