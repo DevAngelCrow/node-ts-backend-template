@@ -74,8 +74,8 @@ export class MaritalStatusRoutes {
      *    tags:
      *      - Marital Status
      *    summary: Get Marital Status
-     *    description: This enpoint is for get the data all genders
-     *    operationId: getGenders
+     *    description: This enpoint is for get the data all marital status
+     *    operationId: getMaritalStatus
      *    responses:
      *      '200':
      *        description: "Data obtained"
@@ -84,7 +84,7 @@ export class MaritalStatusRoutes {
      *            schema:
      *              type: array
      *              items:
-     *                $ref: "#/components/schemas/Gender get"
+     *                $ref: "#/components/schemas/Marital status get"
      *      '404':
      *        description: "Gender not found"
      *    security:

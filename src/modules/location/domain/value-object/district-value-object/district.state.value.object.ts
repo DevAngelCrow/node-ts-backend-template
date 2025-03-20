@@ -6,7 +6,7 @@ export class DistrictState {
   }
 
   private required() {
-    if (!this.value) {
+    if (this.value === undefined || this.value === null) {
       throw CustomError.badRequest("The field state is required");
     }
   }

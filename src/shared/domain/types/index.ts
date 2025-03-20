@@ -5,3 +5,4 @@ export * from './multimedia-types/multimediaFile';
 export * from './postgres-types/postgresPeopleStatus';
 export * from './postgres-types/postgresGender';
 export * from './postgres-types/postgresMaritalStatus';
+export * from './postgres-types/postgresDistrict';

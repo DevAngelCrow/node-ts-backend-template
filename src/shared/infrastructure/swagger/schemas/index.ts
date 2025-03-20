@@ -12,6 +12,8 @@ import {gender} from "./genderSchema";
 import { genderGetSchema } from "./genderGetSchema";
 import {maritalStatus}  from "./maritalStatusSchema";
 import { maritalStatusGetSchema } from "./maritalStatusGetSchema";
+import { peopleStatus } from "./peopleStatusSchema";
+import { peopleStatusGetSchema } from "./peopleStatusGetSchema";
 
 
 export default {
@@ -28,5 +30,7 @@ export default {
     gender,
     genderGetSchema,
     maritalStatus,
-    maritalStatusGetSchema
+    maritalStatusGetSchema,
+    peopleStatus,
+    peopleStatusGetSchema
 }

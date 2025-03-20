@@ -45,6 +45,11 @@ import {
   CountryEdit,
   CountryGetAll,
   CountryGetOneById,
+  DistrictCreate,
+  DistrictDelete,
+  DistrictGetAll,
+  DistrictGetById,
+  DistrictUpdate,
 } from "../../../modules/location/application/index";
 import { envs } from "../config/envs";
 import {
@@ -92,6 +97,7 @@ import {
 import { AddressChangePlaceResidence } from "../../../modules/profile/application/use-case/address/address-change-place-residence/addressChangePlaceResidence";
 import { ImplGenderRepository } from "../../../modules/profile/infrastructure/implementation/genderRepository/impl.GenderRepository";
 import { ImplMaritalStatusRepository } from "../../../modules/profile/infrastructure/implementation/maritalStatusRepository/impl.MaritalStatusRepository";
+import { ImplDistrictRepository } from "../../../modules/location/infrastructure";
 
 const entityManager = AppDataSource.dataSource.manager;
 const optionsEmail = {
@@ -123,6 +129,7 @@ const emailService = new ImplEmailService(optionsEmail);
 const addressRepository = new ImplAddressRepository(entityManager);
 const genderRepository = new ImplGenderRepository(entityManager);
 const maritalStatusRepository = new ImplMaritalStatusRepository(entityManager);
+const districtRepository = new ImplDistrictRepository(entityManager);
 
 export const ServiceContainer = {
   example: {
@@ -230,5 +237,12 @@ export const ServiceContainer = {
     update: new PeopleStatusUpdate(peopleStatusRepository),
     getAll: new PeopleStatusGetAll(peopleStatusRepository),
     getOneById: new PeopleStatusGetById(peopleStatusRepository)
+  },
+  district: {
+    create: new DistrictCreate(districtRepository, transactionManagerRepository),
+    update: new DistrictUpdate(districtRepository),
+    getAll: new DistrictGetAll(districtRepository),
+    getOneById: new DistrictGetById(districtRepository),
+    delete: new DistrictDelete(districtRepository)
   }
 };

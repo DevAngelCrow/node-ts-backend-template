@@ -7,5 +7,5 @@ export interface DistrictRepository <T>{
     getOneById(id: DistrictId, transactionClient?: T): Promise<District | null>;
     update(district: District, transactionClient?: T): Promise<void>;
     delete(id: DistrictId, transactionClient?: T): Promise<void>;
-    findMany(countries: DistrictId[], transactionClient?: T) : Promise<DistrictId[] | null>
+    //findMany(countries: DistrictId[], transactionClient?: T) : Promise<DistrictId[] | null>
 }
