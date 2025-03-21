@@ -39,7 +39,9 @@ const swaggerDefinition: OAS3Definition = {
       "Marital status create": schemas.maritalStatus,
       "Marital status get": schemas.maritalStatusGetSchema,
       "People status create": schemas.peopleStatus,
-      "People status get": schemas.peopleStatusGetSchema
+      "People status get": schemas.peopleStatusGetSchema,
+      "District create" : schemas.district,
+      "District get" : schemas.districtGetSchema
     },
   },
 };
@@ -54,7 +56,8 @@ const swaggerOptions: OAS3Options = {
     "./src/modules/profile/infrastructure/controllers/address-controller/address.routes.ts",
     "./src/modules/profile/infrastructure/controllers/gender-controller/gender.routes.ts",
     "./src/modules/profile/infrastructure/controllers/marital-status-controller/maritalStatus.routes.ts",
-    "./src/modules/profile/infrastructure/controllers/people-status-controller/peopleStatus.routes.ts"
+    "./src/modules/profile/infrastructure/controllers/people-status-controller/peopleStatus.routes.ts",
+    "./src/modules/location/infrastructure/controllers/district-controller/district.routes.ts"
   ],
 };
 

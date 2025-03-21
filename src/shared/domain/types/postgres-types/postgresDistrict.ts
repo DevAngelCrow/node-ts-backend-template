@@ -6,7 +6,7 @@ export type PostgresDistrict = {
   state?: boolean | null;
   ctl_municipality: {
     id: number;
-    idDepartament: { id: number;};
+    idDepartament: { id: number };
     name: string;
     description?: string | null;
   };

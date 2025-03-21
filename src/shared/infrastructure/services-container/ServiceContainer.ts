@@ -45,6 +45,11 @@ import {
   CountryEdit,
   CountryGetAll,
   CountryGetOneById,
+  DepartmentCreate,
+  DepartmentDelete,
+  DepartmentGet,
+  DepartmentGetById,
+  DepartmentUpdate,
   DistrictCreate,
   DistrictDelete,
   DistrictGetAll,
@@ -97,7 +102,9 @@ import {
 import { AddressChangePlaceResidence } from "../../../modules/profile/application/use-case/address/address-change-place-residence/addressChangePlaceResidence";
 import { ImplGenderRepository } from "../../../modules/profile/infrastructure/implementation/genderRepository/impl.GenderRepository";
 import { ImplMaritalStatusRepository } from "../../../modules/profile/infrastructure/implementation/maritalStatusRepository/impl.MaritalStatusRepository";
-import { ImplDistrictRepository } from "../../../modules/location/infrastructure";
+import { ImplDepartmentRepository, ImplDistrictRepository } from "../../../modules/location/infrastructure";
+import { ImplMunicipalityRepository } from "../../../modules/location/infrastructure/implementation/municipalityRepository/impl.MunicipalityRepository";
+import { MunicipalityCreate, MunicipalityDelete, MunicipalityGetAll, MunicipalityGetById, MunicipalityUpdate } from "../../../modules/location/application/use-case/municipality";
 
 const entityManager = AppDataSource.dataSource.manager;
 const optionsEmail = {
@@ -130,6 +137,8 @@ const addressRepository = new ImplAddressRepository(entityManager);
 const genderRepository = new ImplGenderRepository(entityManager);
 const maritalStatusRepository = new ImplMaritalStatusRepository(entityManager);
 const districtRepository = new ImplDistrictRepository(entityManager);
+const departmentRepository = new ImplDepartmentRepository(entityManager);
+const municipalityRepository = new ImplMunicipalityRepository(entityManager);
 
 export const ServiceContainer = {
   example: {
@@ -239,10 +248,24 @@ export const ServiceContainer = {
     getOneById: new PeopleStatusGetById(peopleStatusRepository)
   },
   district: {
-    create: new DistrictCreate(districtRepository, transactionManagerRepository),
-    update: new DistrictUpdate(districtRepository),
+    create: new DistrictCreate(districtRepository, transactionManagerRepository, municipalityRepository),
+    update: new DistrictUpdate(districtRepository, transactionManagerRepository, municipalityRepository),
     getAll: new DistrictGetAll(districtRepository),
     getOneById: new DistrictGetById(districtRepository),
     delete: new DistrictDelete(districtRepository)
+  },
+  department: {
+    create: new DepartmentCreate(departmentRepository, transactionManagerRepository, countryRepository),
+    update: new DepartmentUpdate(departmentRepository, transactionManagerRepository, countryRepository),
+    getAll: new DepartmentGet(departmentRepository),
+    getOneById: new DepartmentGetById(departmentRepository),
+    delete: new DepartmentDelete(departmentRepository),
+  },
+  municipality: {
+    create: new MunicipalityCreate(municipalityRepository, transactionManagerRepository, departmentRepository),
+    update: new MunicipalityUpdate(municipalityRepository, transactionManagerRepository, departmentRepository),
+    getAll: new MunicipalityGetAll(municipalityRepository),
+    getOneById: new MunicipalityGetById(municipalityRepository),
+    delete: new MunicipalityDelete(municipalityRepository),
   }
 };

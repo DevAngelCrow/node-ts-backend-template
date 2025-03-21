@@ -67,7 +67,6 @@ export class ImplDistrictRepository
           },
         },
       });
-      console.log(districts, "districts");
       this.districts = districts.map((district) => {
         return this.mapToDomain({
           id: district.id,
@@ -159,6 +158,7 @@ export class ImplDistrictRepository
         { id: district.id?.value },
         {
           name: district.name.value,
+          idMunicipality: {id: district.id_municipality.value},
           description: district.description.value,
           state: district.state.value,
           updatedAt: dt.now().toFormat("yyyy-MM-dd HH:mm:ss"),
