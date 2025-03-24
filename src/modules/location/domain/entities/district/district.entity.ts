@@ -1,3 +1,5 @@
+import { PaginationLimit } from "../../../../../shared/domain/value-object/pagination.limit.value.object";
+import { Pagination } from "../../../../../shared/domain/value-object/pagination.value.object";
 import {
   DistrictDescription,
   DistrictId,
@@ -14,7 +16,8 @@ export class District {
     readonly description: DistrictDescription,
     readonly state: DistrictState,
     readonly id?: DistrictId,
-    readonly ctl_municipality?: Municipality
+    readonly ctl_municipality?: Municipality,
+
   ) {}
 
   public mapToPrimitives() {

@@ -1,7 +1,5 @@
-import { EntityManager } from "typeorm";
+import { EntityManager, FindOperator, Like } from "typeorm";
 import {
-  Department,
-  DepartmentIdCountry,
   District,
   DistrictDescription,
   DistrictId,
@@ -19,6 +17,10 @@ import { CtlDistrict } from "../../../../../shared/infrastructure/db/entities/Ct
 import { CustomError } from "../../../../../shared/domain/errors/custom.error";
 import { PostgresDistrict } from "../../../../../shared/domain/types";
 import DateTimeService from "../../../../../shared/infrastructure/services/date-time/date.time.services";
+import { ParamsDistrict } from "../../../domain/interface/district/ParamsInterface";
+import { Pagination } from "../../../../../shared/domain/value-object/pagination.value.object";
+import { PaginationLimit } from "../../../../../shared/domain/value-object/pagination.limit.value.object";
+import { ResponseDistrict } from "../../../domain/interface/district/ResponseInterface";
 
 export class ImplDistrictRepository
   implements DistrictRepository<EntityManager>
@@ -43,10 +45,19 @@ export class ImplDistrictRepository
       throw CustomError.internalServer("Internal server error");
     }
   }
-  async getAll(): Promise<District[]> {
+  async getAll(params?: ParamsDistrict): Promise<ResponseDistrict> {
     try {
+      console.log(params, "parametros que recibo");
+      let filter: FindOperator<string> | undefined = undefined;
       const districtRepo = this.manager.getRepository(CtlDistrict);
+      if (params?.filter?.value) {
+        filter = Like(`%${params.filter.value}%`);
+      }
+
       const districts = await districtRepo.find({
+        where: {
+          name: filter,
+        },
         select: {
           id: true,
           name: true,
@@ -66,28 +77,39 @@ export class ImplDistrictRepository
             idDepartament: true,
           },
         },
+        take: params?.limit.value ? params.limit.value : undefined,
+        skip: params?.page.value
+          ? (params.page.value - 1) * params.limit.value
+          : undefined,
       });
+
       this.districts = districts.map((district) => {
-        return this.mapToDomain({
-          id: district.id,
-          id_municipality: district.idMunicipality.id,
-          name: district.name,
-          description: district.description,
-          state: district.state,
-          ctl_municipality: {
-            id: district.idMunicipality.id,
-            idDepartament: {
-              id: district.idMunicipality.idDepartament.id,
+        return this.mapToDomain(
+          {
+            id: district.id,
+            id_municipality: district.idMunicipality.id,
+            name: district.name,
+            description: district.description,
+            state: district.state,
+            ctl_municipality: {
+              id: district.idMunicipality.id,
+              idDepartament: {
+                id: district.idMunicipality.idDepartament.id,
+              },
+              name: district.idMunicipality.name,
+              description: district.idMunicipality.description,
             },
-            name: district.idMunicipality.name,
-            description: district.idMunicipality.description,
           },
-        });
+          params
+        );
       });
-      console.log(this.districts, 'this.district')
-      return this.districts;
+      return {
+        data: this.districts,
+        total_page: 1,
+        limit: params?.limit,
+        page: params?.page,
+      };
     } catch (error) {
-      console.log(error);
       throw CustomError.internalServer("Internal server error");
     }
   }
@@ -158,7 +180,7 @@ export class ImplDistrictRepository
         { id: district.id?.value },
         {
           name: district.name.value,
-          idMunicipality: {id: district.id_municipality.value},
+          idMunicipality: { id: district.id_municipality.value },
           description: district.description.value,
           state: district.state.value,
           updatedAt: dt.now().toFormat("yyyy-MM-dd HH:mm:ss"),
@@ -169,17 +191,20 @@ export class ImplDistrictRepository
       throw CustomError.internalServer("Internal server error");
     }
   }
-  async delete(id: DistrictId, manager: EntityManager = this.manager): Promise<void> {
+  async delete(
+    id: DistrictId,
+    manager: EntityManager = this.manager
+  ): Promise<void> {
     try {
-        const dt = new DateTimeService().dateTime;
-        const districtRepo = manager.getRepository(CtlDistrict);
+      const dt = new DateTimeService().dateTime;
+      const districtRepo = manager.getRepository(CtlDistrict);
 
-        await districtRepo.update(
-            {id: id.value},
-            {state: false, deletedAt: dt.now().toFormat("yyyy-MM-dd HH:mm:ss")}
-        );
+      await districtRepo.update(
+        { id: id.value },
+        { state: false, deletedAt: dt.now().toFormat("yyyy-MM-dd HH:mm:ss") }
+      );
     } catch (error) {
-        throw CustomError.internalServer("Internal server error")
+      throw CustomError.internalServer("Internal server error");
     }
   }
   //   findMany(
@@ -188,7 +213,13 @@ export class ImplDistrictRepository
   //   ): Promise<DistrictId[] | null> {
   //     throw new Error("Method not implemented.");
   //   }
-  private mapToDomain(district: PostgresDistrict) {
+  private mapToDomain(district: PostgresDistrict, params?: ParamsDistrict) {
+    let pagination: Pagination | undefined;
+    let limit: PaginationLimit | undefined;
+    if (params) {
+      pagination = new Pagination(params.page.value);
+      limit = new PaginationLimit(params.limit.value);
+    }
     return new District(
       new DistrictIdMunicipality(district.id_municipality),
       new DistrictName(district.name),
@@ -204,7 +235,7 @@ export class ImplDistrictRepository
           district.ctl_municipality.description ?? ""
         ),
         new MunicipalityId(district.ctl_municipality.id)
-      )
+      ),
     );
   }
 }
