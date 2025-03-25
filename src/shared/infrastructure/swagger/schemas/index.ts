@@ -16,6 +16,8 @@ import { peopleStatus } from "./peopleStatusSchema";
 import { peopleStatusGetSchema } from "./peopleStatusGetSchema";
 import { district } from "./districtSchema";
 import { districtGetSchema } from "./districtGetSchema";
+import { deparment } from "./departmentSchema";
+import { departmentGetSchema } from "./departmentGetSchema";
 
 
 export default {
@@ -36,5 +38,7 @@ export default {
     peopleStatus,
     peopleStatusGetSchema,
     district,
-    districtGetSchema
+    districtGetSchema,
+    deparment,
+    departmentGetSchema
 }
