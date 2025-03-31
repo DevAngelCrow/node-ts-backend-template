@@ -57,13 +57,18 @@ export class DistrictController {
     ServiceContainer.district.getAll
       .run(params)
       .then((districts) =>
+      {
+        const page = districts.page?.value ? districts.page?.value : undefined;
+        const limit = districts.limit?.value ? districts.limit?.value : undefined; 
         response
           .status(HttpStatusCode.HTTP_OK)
           .json(
             Array.isArray(districts.data)
-              ? districts.data.map((district) => district.mapToPrimitives())
+              ? {page,limit,data: districts.data.map((district) => district.mapToPrimitives())}
               : []
           )
+      }
+        
       )
       .catch((error) =>
         response.status(error.statusCode).json({ message: error.message })

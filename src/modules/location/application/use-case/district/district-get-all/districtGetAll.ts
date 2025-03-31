@@ -1,6 +1,6 @@
 import { PaginationLimit } from "../../../../../../shared/domain/value-object/pagination.limit.value.object";
 import { Pagination } from "../../../../../../shared/domain/value-object/pagination.value.object";
-import { District, DistrictName, DistrictRepository } from "../../../../domain";
+import { DistrictName, DistrictRepository } from "../../../../domain";
 import { ParamsDistrict } from "../../../../domain/interface/district/ParamsInterface";
 import { ResponseDistrict } from "../../../../domain/interface/district/ResponseInterface";
 interface Params {

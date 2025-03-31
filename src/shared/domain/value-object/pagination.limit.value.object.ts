@@ -2,7 +2,9 @@ import { CustomError } from "../errors/custom.error";
 
 export class PaginationLimit {
   constructor(readonly value: number) {
-    this.idIsNumberValid();
+    if(this.value){
+      this.idIsNumberValid();
+    }
   }
 
   private idIsNumberValid() {

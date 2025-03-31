@@ -1,14 +1,15 @@
 import { Request, Response } from "express";
 import { ServiceContainer } from "../../../../../shared/infrastructure/services-container/ServiceContainer";
-
+import { HttpResponseHelper } from "../../../../../shared/infrastructure/config/httpResponseHelper";
+import { HttpStatusCode } from "../../../../../shared/infrastructure/config/httpCodes";
 export class CountryController {
     async create(request: Request, response: Response){
         const { name, abbreviation, code, state } = request.body;
         await ServiceContainer.country.create.run(
             name, abbreviation, code, state
         )
-        .then(()=> response.status(201).send({message: "Country created successful"}))
-        .catch((error) => {response.status(error.statusCode).json({message: error.message})})
+        .then(()=> response.status(HttpStatusCode.HTTP_CREATED).send(HttpResponseHelper.created({message: "OK"})))
+        .catch((error) => {response.status(error.statusCode).json(HttpResponseHelper.createErrorResponse(error))})
     }
     async getById(request: Request, response: Response){
         const { id } = request.params;

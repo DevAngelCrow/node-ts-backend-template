@@ -31,7 +31,7 @@ export class CountryRoutes {
      *     - bearerAuth: []
      */
 
-    router.post("/create", authMiddleware, controller.create);
+    router.post("/create", /*authMiddleware,*/ controller.create);
 
     /**
      * @openapi
